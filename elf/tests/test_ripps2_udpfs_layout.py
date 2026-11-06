@@ -6,6 +6,7 @@ must never replace the last-good list or detach its exact server paths.
 import os
 from pathlib import Path
 import re
+import struct
 import subprocess
 import tempfile
 
@@ -46,6 +47,13 @@ typedef uint32_t u32;
 #define FOLDER_DEPTH_MAX 8
 static int cancelled, probes, allocation = -1, readFailure = -1, statFailure;
 static int openDirs, maxDirs, closeResult;
+static int unknownMetadata;
+static int gRipps2FastCache, gEnableWrite, writeAllowed = 1, writes, activeWrites;
+static int ioWriteBegin(void) {
+    if (!writeAllowed) return 0;
+    writes++; activeWrites++; return 1;
+}
+static void ioWriteEnd(void) { assert(activeWrites == 1); activeWrites--; }
 static void *test_malloc(size_t n) {
     if (allocation == 0) return NULL;
     if (allocation > 0) allocation--;
@@ -74,6 +82,7 @@ static int realStat(const char *path, iox_stat_t *info) {
     if (strstr(path, "Root.iso")) { info->size = 0x4000007b; info->hisize = 1; } // 5 GiB + 123
     modified = st.st_mtime;
     memcpy(info->mtime, &modified, 8);
+    if (unknownMetadata && strstr(path, ".iso")) memset(info->mtime, 0, 8);
     return 0;
 }
 static int fileXioGetStat(const char *path, iox_stat_t *info) {
@@ -124,6 +133,7 @@ int sbIsoStartup(const char *path, char *startup, int size) {
     assert(openDirs <= 1); // leave the other UDPFS handles to art and ISO mounts
     if (!f) return 0;
     ok = fgets(startup, size, f) && !strncmp(startup, "SLUS_", 5);
+    startup[strcspn(startup, "\r\n")] = 0;
     fclose(f);
     return ok;
 }
@@ -152,8 +162,32 @@ int main(int argc, char **argv) {
     udpfs_game_file_t *files = NULL, *oldFiles;
     char prefix[256], path[256], expected[256];
     int count = 0, oldCount, i, before, failures = 0;
-    assert(argc == 2);
+    assert(argc == 2 || argc == 7);
     snprintf(prefix, sizeof(prefix), "%s/", argv[1]);
+    if (argc == 7) {
+        int result;
+        gRipps2FastCache = strcmp(argv[2], "cache-disabled") != 0;
+        gEnableWrite = strcmp(argv[2], "write-disabled") != 0;
+        writeAllowed = strcmp(argv[2], "write-blocked") != 0;
+        unknownMetadata = !strcmp(argv[2], "unknown-stat");
+        cancelled = !strcmp(argv[2], "cancel");
+        if (!strcmp(argv[2], "read-failure")) readFailure = 0;
+        result = udpfsReadList(&games, &files, &count, prefix, "", !strcmp(argv[2], "browse"));
+        assert(result == atoi(argv[4]) && probes == atoi(argv[3]) && writes == atoi(argv[5]));
+        assert(!activeWrites && !openDirs);
+        if (result > 0) {
+            i = find(games, count, "Compressed.cso");
+            assert(!strcmp(games[i].startup, argv[6]));
+            assert(strstr(files[i].path, "Compressed.cso.iso"));
+            i = find(games, count, "Classic");
+            assert(!strcmp(games[i].startup, "SLUS_222.22"));
+            // Fresh metadata still populates the list and exact paths on cache hits.
+            i = find(games, count, "Root");
+            assert(games[i].sizeMB == 5120);
+        }
+        free(games); free(files); udpfsListReset();
+        return 0;
+    }
     closeResult = 1; // PS2 fileXio can report positive success through newlib
     assert(udpfsReadList(&games, &files, &count, prefix, "", 0) == 10);
     assert(openDirs == 0 && maxDirs == 1);
@@ -266,3 +300,101 @@ with tempfile.TemporaryDirectory(prefix='ripps2-udpfs-') as tmp:
     subprocess.run([str(exe), str(share)], check=True)
     after = {str(p.relative_to(share)): p.read_bytes() for p in share.rglob('*') if p.is_file()}
     assert before == after, 'Scanning must not write to the server'
+
+    def scan(mode='cache', probes=1, count=10, writes=0, startup='SLUS_111.11'):
+        # A new process for every call: no in-memory IDs survive a restart.
+        subprocess.run([str(exe), str(share), mode, str(probes), str(count), str(writes), startup], check=True)
+
+    cache = share / 'RIPPS2.UID'
+    scan('write-disabled', probes=10)
+    assert not cache.exists()
+    scan('write-blocked', probes=10)
+    assert not cache.exists()
+    scan(probes=10, writes=1)
+    good = cache.read_bytes()
+    assert good[:8] == b'RIPUID01'
+    assert struct.unpack_from('<I', good, 8)[0] == 9
+    scan()  # Only the invalid ISO is probed; valid compressed and plain ISOs are unopened.
+    scan('write-disabled')  # A read-only library can consume a previously generated cache.
+    scan('browse', count=8)
+    scan('cancel', probes=0, count=-1)
+    scan('read-failure', probes=0, count=-1)
+    assert cache.read_bytes() == good, 'Incomplete/subfolder/unchanged scans must not rewrite IDs'
+    scan('cache-disabled', probes=10)
+    assert cache.read_bytes() == good
+    scan('unknown-stat', probes=10)
+    assert cache.read_bytes() == good
+
+    # Changes must re-read SYSTEM.CNF, including same-size replacements with a new timestamp.
+    compressed = share / 'Compressed.cso.iso'
+    stamp = compressed.stat().st_mtime
+    compressed.write_bytes(b'SLUS_333.33')
+    os.utime(compressed, (stamp + 5, stamp + 5))
+    scan(probes=2, writes=1, startup='SLUS_333.33')
+    scan(startup='SLUS_333.33')
+    compressed.write_bytes(b'SLUS_444.44\nextra bytes')
+    os.utime(compressed, (stamp + 5, stamp + 5))
+    scan(probes=2, writes=1, startup='SLUS_444.44')
+    scan(startup='SLUS_444.44')
+    compressed.write_bytes(b'SLUS_111.11')
+    os.utime(compressed, (stamp, stamp))
+    scan(probes=2, writes=1)
+
+    new = share / 'New.iso'
+    new.write_bytes(b'SLUS_555.55')
+    scan(probes=2, count=11, writes=1)
+    new.unlink()
+    scan(writes=1)
+    original = share / 'flat/Flat.iso'
+    renamed = share / 'flat/Renamed.iso'
+    original.rename(renamed)
+    scan(probes=2, writes=1)
+    renamed.rename(original)
+    scan(probes=2, writes=1)
+    good = cache.read_bytes()
+
+    def checksum(data):
+        value = 2166136261
+        for byte in data:
+            value = ((value ^ byte) * 16777619) & 0xffffffff
+        return value
+
+    malformed = [b'', good[:19], good[:-1], good + b'x', b'BADMAGIC' + good[8:]]
+    for offset, value in [(8, 0xffffffff), (12, 1), (16, 0)]:
+        bad = bytearray(good)
+        struct.pack_into('<I', bad, offset, value)
+        malformed.append(bad)
+    # Even checksum-valid malformed strings/duplicate paths cannot supply IDs.
+    entry_size = struct.unpack_from('<I', good, 12)[0]
+    for kind in ['path', 'startup', 'duplicate']:
+        bad = bytearray(good)
+        if kind == 'path':
+            bad[20:20+256] = b'x' * 256
+        elif kind == 'startup':
+            bad[20+272:20+285] = b'x' * 13
+        else:
+            bad[20+entry_size:20+entry_size+256] = bad[20:20+256]
+        struct.pack_into('<I', bad, 16, checksum(bad[20:]))
+        malformed.append(bad)
+    for bad in malformed:
+        cache.write_bytes(bad)
+        scan(probes=10, writes=1)
+        assert cache.read_bytes() == good
+
+    # An unwritable cache path is only a performance loss, never a missing game.
+    cache.unlink()
+    cache.mkdir()
+    scan(probes=10, writes=1)
+    cache.rmdir()
+    scan(probes=10, writes=1)
+    assert {str(p.relative_to(share)): p.read_bytes() for p in share.rglob('*')
+            if p.is_file() and p != cache} == before
+    # Library-sized case: 291 valid games, one legacy filename, no invalid image.
+    (share / 'Broken.iso').unlink()
+    cache.unlink()
+    for i in range(281):
+        (share / f'Library {i:03}.cso.iso').write_bytes(b'SLUS_111.11')
+    scan(probes=290, count=291, writes=1)
+    scan(probes=0, count=291)
+    print('PASS: persistent UDPFS IDs, restart probe reduction 10 -> 1, invalidation, corruption and write guards')
+    print('PASS: 291-game library, cold 290 ISO probes -> warm 0 after process restart')

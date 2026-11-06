@@ -44,8 +44,9 @@ shared-folder/
 
 The scan does not create `CD/`, `DVD/` or `games.bin`. Existing optional asset
 folder setup is retained. A read-only share can be listed without those folders.
-Unchanged image IDs are reused from the current in-memory list; this does not
-change the OPL cache format. A failed, cancelled or incomplete directory scan
+Unchanged image IDs are reused from the current in-memory list and, from build
+152, the optional `RIPPS2.UID` cache described below; this does not change the OPL
+cache format. A failed, cancelled or incomplete directory scan
 keeps both the previous games and their paths. Automatic refresh checks the
 directories visited by the last successful scan; SELECT explicitly rescans.
 
@@ -53,6 +54,56 @@ Paths must fit the loader's existing 256-byte path buffers, and display titles
 must fit 160 bytes. Longer entries are skipped, never truncated into a different
 file. Discovery uses 64-bit directory-entry sizes, including DVD9 images larger
 than 4 GiB. `CD/` supplies the CD media hint; other locations use the DVD hint.
+
+## Faster repeat scans (build 152)
+
+With **Fast Cache** and writes enabled, a successful scan with folder browsing
+off saves verified disc IDs in `RIPPS2.UID` at the share root. The next start still
+enumerates the live directories, but reuses an ID only when the exact advertised
+path, 64-bit size and modification timestamp match. New, renamed or changed
+images use the existing `SYSTEM.CNF` probe. Legacy OPL filenames already contain
+their IDs and need no image probe.
+
+This follows LUNA's persistent title-ID cache approach, reviewed at
+[LUNA bbd2b70](https://github.com/Warksmith/LUNA/tree/bbd2b70d4f983528c1620481deb5686f8bb305e3)
+and its pinned
+[NHDDL scanner b2b11f4](https://github.com/Warksmith/nhddl-luna/blob/b2b11f45f843ba44cd46cae4c731c749f7945f7e/src/devices/iso.c).
+RIPPS2 additionally validates size and timestamp instead of relying on path alone.
+No LUNA cache file or game-ID parser is imported.
+
+- The first scan of plain-named games still opens each image. A server's
+  `decompressing` log line indicates that it opened a compressed-image reader;
+  it does not by itself mean the entire image was decompressed.
+- The cache contains IDs, not a saved game list, artwork or settings. Live
+  discovery still supplies titles, paths, sizes, media hints and folder rows.
+  Artwork, CFG/metadata, themes, languages and launch paths keep their existing
+  discovery code and disc-ID keys.
+- Folder browsing can read an existing cache. It does not replace it with a
+  partial folder view; scan once with folder browsing off to populate it.
+- Unknown sizes or timestamps cannot produce persistent cache hits. Invalid
+  images are not cached as failures and are retried.
+- Disabled writes and read-only shares still scan normally and can read an
+  existing cache. **Fast Cache** off bypasses persistent ID reads and writes.
+  Failed/cancelled directory scans never save IDs; unchanged caches are not
+  rewritten. Writes use the existing launch-drain guard.
+- The versioned cache is bounded to 4,096 catalogue rows and checked for exact
+  length, checksum, terminated strings and duplicate paths. UDPFS has no rename
+  operation, so an interrupted cache write is discarded on the next read and
+  the images are probed again. Cache failures never gate listing or launching.
+- As with any size/timestamp cache, replacing an image while preserving both
+  values cannot be detected. Delete `RIPPS2.UID` and refresh to rebuild its IDs.
+  SELECT otherwise enumerates the server and reuses matching IDs.
+
+The host regression fixture with 291 valid games (one legacy filename) takes
+290 image probes on its first scan and zero after a process restart. This is a
+probe-count measurement, not console timing. The harness also checks changed
+IDs, additions/removals/renames, corrupt caches, missing metadata, read-only and
+failed writes, folder navigation, cancellation and existing catalogue behavior.
+
+Validation: all 248 host checks completed with zero unexpected failures and the
+existing expected-failure list unchanged. The RA-enabled build 152 compiled with
+the workflow's pinned PS2DEV image; the changed scanner produced no warnings.
+Console timing, artwork/metadata display and launch validation remain pending.
 
 ## Server interoperability
 
