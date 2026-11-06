@@ -34,8 +34,9 @@ the same. This package does not change RIPPS2, its settings, or the boot loader.
 
 Validation: target build passed; host loader regression tests passed with
 ASan/UBSan; RIPPS2 recognizes the packed loader's full 0xfff capabilities.
-The baseline nigr has console confirmation. This h1 variant still needs the
-console check above. Native OPL is not tested by launching a UDPFS game.
+Both baseline nigr and this h1 variant now have user confirmation of direct
+memory-card return to RIPPS2. The steps above remain the retest procedure for
+other installations. Native OPL is not tested by launching a UDPFS game.
 
 Source: Warksmith/neutrino-luna af68bf4c285d6d9114a60675edff0cf7306a4f54,
 plus the included igr-runtime-hardening.patch. The source archive is the

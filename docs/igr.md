@@ -263,8 +263,10 @@ and executes the actual loader code with ASan/UBSan. It checks both slots,
 quick and non-quick launch paths, missing/truncated/mismatched core data,
 short/error reads, invalid paths, MMCE send/status errors and polling limits.
 The target build and RIPPS2 packed capability probe pass (`0xfff`, including
-IGR and MMCE GameID). The hardened variant still needs a console test; the
-successful direct-return report applies to the unchanged `nigr` baseline.
+IGR and MMCE GameID). The user subsequently confirmed the hardened h1 test
+kit also works for direct return to RIPPS2 on the restored memory card.
+This hardware confirmation does not cover every slot, backend or failure
+case exercised by the host tests.
 
 ## Reference and provenance
 

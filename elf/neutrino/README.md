@@ -39,7 +39,8 @@ ABI checks, complete module reads, early return-path validation and explicit
 failure for missing restoration support or an unconfirmed card switch.
 It preserves the working resident return sequence. Install its entire
 folder separately and select that loader explicitly. The build includes
-`SHA256SUMS`; this variant needs console validation. Host regression checks:
+`SHA256SUMS`; the user has confirmed this variant also works for direct
+memory-card return to RIPPS2. Host regression checks:
 
 ```sh
 NEUTRINO_DIR=/path/to/patched/neutrino python3 elf/neutrino/test_igr_runtime.py
