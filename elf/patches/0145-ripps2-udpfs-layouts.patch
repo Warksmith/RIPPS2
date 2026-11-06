@@ -1,0 +1,670 @@
+diff --git a/.github/scripts/test_udpfs_art.py b/.github/scripts/test_udpfs_art.py
+index 9949baa..0ea23fd 100644
+--- a/.github/scripts/test_udpfs_art.py
++++ b/.github/scripts/test_udpfs_art.py
+@@ -72,7 +72,7 @@ if any(word in get_image for word in ("opendir(", "readdir(", "stat(", "udpfsDis
+     failures.append("The per-image hot path must not perform extra directory/network discovery")
+ if "udpfsArtCaseChecked = 0;" not in init or "udpfsArtCaseIndex = 0;" not in init:
+     failures.append("Reinitialization must reset ART resolution for a different share")
+-if update.find("udpfsDiscoverArtFolder();") > update.find("sbCreateFolders(udpfsPrefix, 1);"):
++if update.find("udpfsDiscoverArtFolder();") > update.find("sbCreateFolders(udpfsPrefix, 0);"):
+     failures.append("The case resolver must run BEFORE an empty uppercase ART can be created")
+ if "cacheInvalidateFailMemo();" not in discover:
+     failures.append("Changing ART spelling must re-arm earlier cached missing-cover results")
+@@ -121,6 +121,7 @@ static void udpfsDiscoverThemes(void) {}
+ static void udpfsDiscoverLanguages(void) {}
+ static int libViewConsumeDirty(int mode) { return 0; }
+ static int folderConsumeDirty(int mode) { return 0; }
++static int udpfsListChanged(void) { return 0; }
+ static int libListViewActive(item_list_t *list) { return LIB_VIEW_PS1; }
+ static int stub_stat(const char *path, struct stat *st) { memset(st, 0, sizeof(*st)); return 0; }
+ #define stat(path, st) stub_stat(path, st)
+diff --git a/.github/scripts/test_udpfs_iso_only.py b/.github/scripts/test_udpfs_iso_only.py
+index 3128e51..f1bf826 100644
+--- a/.github/scripts/test_udpfs_iso_only.py
++++ b/.github/scripts/test_udpfs_iso_only.py
+@@ -24,8 +24,11 @@ check("return fsize == NULL ? -1 : *gamecount;" in support,
+       "ISO-only total read failures must retain cached games and request retry")
+ 
+ # Neutrino-backed UDPFS should never probe or publish USBExtreme split games.
+-check(bool(re.search(r"sbReadList\(&udpfsGames,\s*udpfsPrefix,\s*folderGetSub\(itemList->mode\),\s*NULL,\s*&udpfsGameCount\)", udpfs)),
+-      "UDPFS must request ISO-only enumeration")
++check("udpfsReadList(&udpfsGames, &udpfsFiles, &udpfsGameCount" in udpfs,
++      "UDPFS must enumerate ISO files with their exact paths")
++scanner = (ROOT / "src/udpfslist.c").read_text(encoding="utf-8")
++check('openFile(' not in scanner and 'GAME_FORMAT_USBLD' not in scanner,
++      "UDPFS scanner must not load USBExtreme lists")
+ check("sbIsSameSize(udpfsPrefix" not in udpfs, "UDPFS must not stat ul.cfg during refresh")
+ check("udpfsULSizePrev" not in udpfs, "Remove obsolete UDPFS UL-size state")
+ check("if (!udpfsIsoScanned)" in udpfs and "udpfsIsoScanned = answeredBefore;" in udpfs,
+diff --git a/.github/scripts/test_udpfs_themes.py b/.github/scripts/test_udpfs_themes.py
+index 9dc53e2..613668b 100644
+--- a/.github/scripts/test_udpfs_themes.py
++++ b/.github/scripts/test_udpfs_themes.py
+@@ -239,7 +239,7 @@ if update:
+         failures.append("the pre-scan server check must come before the Ember scan")
+     if "if (answeredBefore)\n        udpfsDiscoverThemes();" not in update:
+         failures.append("a scan that reaches the server must also register its themes")
+-    folders = update.find("sbCreateFolders(udpfsPrefix, 1);")
++    folders = update.find("sbCreateFolders(udpfsPrefix, 0);")
+     discover_after = update.find("udpfsDiscoverThemes();")
+     if folders < 0 or discover_after < 0 or discover_after < folders:
+         failures.append("UDPFS must create the standard folders before attempting THM discovery")
+diff --git a/Makefile b/Makefile
+index 024df5c..e65e609 100644
+--- a/Makefile
++++ b/Makefile
+@@ -141,7 +141,7 @@ endif
+ endif
+ 
+ FRONTEND_OBJS = ripps2.o ripps2color.o ripps2ui.o ripps2side.o ripps2seance.o ripps2games.o ripps2boot.o ripps2ra.o ripps2status.o ripps2ember.o ripps2art.o ripps2artpack.o ripps2cd.o ripps2disc.o ripps2shot.o ripps2sfxpack.o ripps2bg.o ripps2files.o ripps2edit.o ripps2hdd.o ripps2card.o ripps2biossnd.o ripps2hints.o ripps2media.o ripps2iconrip.o rahunt.o ripps2kbd.o ripps2saves.o ripps2about.o ripps2tr.o padfile.o ripps2pads.o pad.o xparam.o fntsys.o renderman.o menusys.o OSDHistory.o system.o elfldr_noreset.o elfldr.o lang.o lang_internal.o config.o hdd.o dialogs.o favsupport.o mixsupport.o metadb.o \
+-		dia.o ioman.o texcache.o themes.o supportbase.o bdmsupport.o netsupport.o ethsupport.o httpcatalog.o httpsupport.o udpfssupport.o hddsupport.o zso.o lz4.o launchdiag.o \
++		dia.o ioman.o texcache.o themes.o supportbase.o bdmsupport.o netsupport.o ethsupport.o httpcatalog.o httpsupport.o udpfssupport.o udpfslist.o hddsupport.o zso.o lz4.o launchdiag.o \
+ 		appsupport.o mmcesupport.o artindex.o vcdsupport.o cuesupport.o libview.o retrogem.o folderbrowse.o gui.o guigame.o vmcrebuild.o vmc_groups.o textures.o opl.o atlas.o nbns.o httpclient.o gsm.o cheatman.o cheatconfig.o sound.o ps2cnf.o tar.o saveicon.o cfgtitle.o
+ 
+ IOP_OBJS =	iomanx.o filexio.o ps2fs.o usbd.o usbhdfsd.o bdmevent.o dvrdrv.o dvrfile.o \
+diff --git a/include/udpfslist.h b/include/udpfslist.h
+new file mode 100644
+index 0000000..91eb7f3
+--- /dev/null
++++ b/include/udpfslist.h
+@@ -0,0 +1,25 @@
++#ifndef __UDPFS_LIST_H
++#define __UDPFS_LIST_H
++
++#include "include/supportbase.h"
++
++/* Kept separately from base_game_info_t: do not change the on-disk OPL caches. */
++typedef struct
++{
++    char path[256];
++    unsigned long long bytes;
++    unsigned long long modified;
++} udpfs_game_file_t;
++
++/* Publish games AND their exact server paths together. Any incomplete scan keeps
++   the previous list. No ul.cfg, games.bin or directory creation on the server. */
++int udpfsReadList(base_game_info_t **games, udpfs_game_file_t **files, int *count,
++                  const char *prefix, const char *sub, int browse);
++int udpfsListChanged(void);
++void udpfsListReset(void);
++
++/* Compose a rename in the same directory, retaining legacy ID prefixes. */
++int udpfsFilePath(const base_game_info_t *game, const udpfs_game_file_t *file,
++                  const char *name, char *path, int size);
++
++#endif
+diff --git a/modules/network/udpfs_shared/src/udpfs_core.c b/modules/network/udpfs_shared/src/udpfs_core.c
+index 497d78a..328dee3 100644
+--- a/modules/network/udpfs_shared/src/udpfs_core.c
++++ b/modules/network/udpfs_shared/src/udpfs_core.c
+@@ -557,6 +557,33 @@ int udpfs_core_dread(int32_t handle, iox_stat_t *stat, char *name, int name_max)
+ /*
+  * Get file/directory statistics
+  */
++static int udpfs_stat_from_open(const char *path, iox_stat_t *stat)
++{
++    udpfs_msg_open_reply_t *reply = (udpfs_msg_open_reply_t *)g_rx_buf;
++    int32_t handle;
++    int ret;
++
++    /* Some servers implement OPEN/DREAD but return EIO for GETSTAT (including
++     * virtual compressed ISO names). OPEN already carries the needed metadata.
++     * This is read-only, and the temporary handle is closed on every success. */
++    ret = udpfs_core_open(path, 0x0001 /* PS2 O_RDONLY */, 0, path[0] == '\0', &handle);
++    if (ret == -EISDIR)
++        ret = udpfs_core_open(path, 0x0001, 0, 1, &handle);
++    if (ret < 0)
++        return ret;
++
++    memset(stat, 0, sizeof(*stat));
++    stat->mode = reply->mode;
++    stat->size = reply->size;
++    stat->hisize = reply->hisize;
++    memcpy(stat->ctime, reply->ctime, 8);
++    memcpy(stat->mtime, reply->mtime, 8);
++    memcpy(stat->atime, reply->mtime, 8); // OPEN has no access timestamp
++    /* close reuses g_rx_buf: copy the metadata before issuing that request. */
++    ret = udpfs_core_close(handle);
++    return ret < 0 ? ret : (stat->mode != 0 ? 0 : -EIO);
++}
++
+ int udpfs_core_getstat(const char *path, iox_stat_t *stat)
+ {
+     udpfs_msg_getstat_req_t *req = (udpfs_msg_getstat_req_t *)g_tx_buf;
+@@ -594,6 +621,10 @@ int udpfs_core_getstat(const char *path, iox_stat_t *stat)
+         return -EIO;
+     }
+ 
++    /* Only an explicit server error enables the fallback. Timeouts, a dead
++     * transport and malformed responses above remain failures, never emptiness. */
++    if (reply->result == -EIO || reply->result == -ENOSYS)
++        return udpfs_stat_from_open(path, stat);
+     if (reply->result < 0)
+         return reply->result;
+ 
+diff --git a/src/supportbase.c b/src/supportbase.c
+index 1d5fe0d..aae3ad7 100644
+--- a/src/supportbase.c
++++ b/src/supportbase.c
+@@ -1321,6 +1321,11 @@ int sbIsoStartup(const char *path, char *startup, int size)
+ 
+ static void sbCreatePath_name(const base_game_info_t *game, char *path, const char *prefix, const char *sep, int part, const char *game_name)
+ {
++    // Weak for host harnesses that build the shared helpers without the frontend.
++    extern int udpfsGamePath(const base_game_info_t *, const char *, char *, int) __attribute__((weak));
++    if (!strncmp(prefix, "udpfs", 5) && udpfsGamePath != NULL && udpfsGamePath(game, game_name, path, 256))
++        return;
++
+     if (sbPathOverride[0] != '\0' && (game->format == GAME_FORMAT_ISO || game->format == GAME_FORMAT_OLD_ISO)) {
+         snprintf(path, 256, "%s", sbPathOverride); // build 100: the file where it sits
+         return;
+@@ -1530,7 +1535,10 @@ config_set_t *sbPopulateConfig(base_game_info_t *game, const char *prefix, const
+     if (sbConfigStatSize && !isPs1 && game->sizeMB == 0) {
+         char gamepath[256];
+ 
+-        if (game->format == GAME_FORMAT_ISO) {
++        if (!strncmp(prefix, "udpfs", 5)) {
++            sbCreatePath(game, gamepath, prefix, sep, 0);
++            game->sizeMB = sbFileSizeMB(gamepath);
++        } else if (game->format == GAME_FORMAT_ISO) {
+             snprintf(gamepath, sizeof(gamepath), "%s%s%s%s%s%s%s", prefix, sep, game->media == SCECdPS2CD ? "CD" : "DVD", sep, subseg, game->name, game->extension);
+ 
+             game->sizeMB = sbFileSizeMB(gamepath);
+@@ -1555,9 +1563,9 @@ config_set_t *sbPopulateConfig(base_game_info_t *game, const char *prefix, const
+     configSetInt(config, CONFIG_ITEM_SIZE, game->sizeMB);
+ 
+     if (game->format != GAME_FORMAT_USBLD) {
+-        if (!strcmp(game->extension, ".iso"))
++        if (!strcasecmp(game->extension, ".iso"))
+             configSetStr(config, CONFIG_ITEM_FORMAT, "ISO");
+-        else if (!strcmp(game->extension, ".zso"))
++        else if (!strcasecmp(game->extension, ".zso"))
+             configSetStr(config, CONFIG_ITEM_FORMAT, "ZSO");
+         else if (isVcd)
+             configSetStr(config, CONFIG_ITEM_FORMAT, "VCD"); // VCD listing -> the VCD format glyph
+diff --git a/src/udpfslist.c b/src/udpfslist.c
+new file mode 100644
+index 0000000..da9e7f1
+--- /dev/null
++++ b/src/udpfslist.c
+@@ -0,0 +1,359 @@
++#include "include/opl.h"
++#include "include/udpfslist.h"
++#include "include/folderbrowse.h"
++#include <errno.h>
++#include <stdlib.h>
++#include <string.h>
++#define NEWLIB_PORT_AWARE
++#include <fileXio_rpc.h>
++
++int ioScanCancelled(void);
++
++typedef struct
++{
++    unsigned long long bytes, modified;
++    unsigned int mode;
++} udpfs_scan_stat_t;
++
++static void udpfsCopyStat(udpfs_scan_stat_t *st, const iox_stat_t *info)
++{
++    // Keep directory-entry metadata: some decompression servers return zero
++    // sizes/timestamps from OPEN for virtual ISOs, but accurate values in DREAD.
++    st->bytes = ((unsigned long long)info->hisize << 32) | info->size;
++    memcpy(&st->modified, info->mtime, sizeof(st->modified));
++    st->mode = info->mode;
++}
++
++static int udpfsReadStat(const char *path, udpfs_scan_stat_t *st)
++{
++    iox_stat_t info;
++    int result = fileXioGetStat(path, &info);
++    if (result < 0) {
++        errno = -result;
++        return -1;
++    }
++    // EE newlib stat() has a 32-bit off_t. Preserve DVD9 sizes and do not
++    // reject a valid image with EOVERFLOW before the ISO probe can read it.
++    udpfsCopyStat(st, &info);
++    return 0;
++}
++
++typedef struct udpfs_scan_dir
++{
++    char path[256];
++    int media;
++    unsigned long long modified;
++    struct udpfs_scan_dir *next;
++} udpfs_scan_dir_t;
++
++static udpfs_scan_dir_t *udpfsDirectories;
++
++static void udpfsFreeDirectories(udpfs_scan_dir_t *dirs)
++{
++    while (dirs != NULL) {
++        udpfs_scan_dir_t *next = dirs->next;
++        free(dirs);
++        dirs = next;
++    }
++}
++
++void udpfsListReset(void)
++{
++    udpfsFreeDirectories(udpfsDirectories);
++    udpfsDirectories = NULL;
++}
++
++int udpfsListChanged(void)
++{
++    udpfs_scan_dir_t *dir;
++    for (dir = udpfsDirectories; dir != NULL; dir = dir->next) {
++        udpfs_scan_stat_t st;
++        if (udpfsReadStat(dir->path, &st) != 0 || st.modified != dir->modified)
++            return 1;
++    }
++    return 0;
++}
++
++typedef struct udpfs_scan_node
++{
++    base_game_info_t game;
++    udpfs_game_file_t file;
++    struct udpfs_scan_node *next;
++} udpfs_scan_node_t;
++
++typedef struct
++{
++    udpfs_scan_node_t *head;
++    udpfs_scan_dir_t *directories;
++    const base_game_info_t *oldGames;
++    const udpfs_game_file_t *oldFiles;
++    int oldCount, count, browse;
++    const char *sub;
++} udpfs_scan_t;
++
++/* Do not crawl assets, launchers, saves or host metadata as game libraries. */
++static int udpfsSkipDirectory(const char *name)
++{
++    static const char *const skip[] = {
++        "ART", "CFG", "CHT", "VMC", "THM", "LNG", "APPS", "POPS", "EMBER",
++        "AUDIO", "MEDIA", "PADS", "RIPPS2", "neutrino", "LUNA", "nhddl",
++        "System Volume Information", "lost+found"};
++    unsigned int i;
++    if (name[0] == '.' || name[0] == '$')
++        return 1;
++    for (i = 0; i < sizeof(skip) / sizeof(skip[0]); i++)
++        if (!strcasecmp(name, skip[i]))
++            return 1;
++    return 0;
++}
++
++static int udpfsAddEntry(udpfs_scan_t *scan, const char *path, const char *name,
++                         const udpfs_scan_stat_t *st, int media, int folder)
++{
++    udpfs_scan_node_t *node;
++    int i, length = (int)strlen(name), legacy = 0;
++
++    if (folder) {
++        if (length > ISO_GAME_NAME_MAX || strlen(scan->sub) + length + 1 >= FOLDER_SUB_MAX)
++            return 0;
++    } else {
++        /* Neutrino consumes uncompressed sectors. Compressed server aliases
++           such as Title.cso.iso are ISO files here; raw .zso/.cso are not. */
++        if (length < 5 || strcasecmp(name + length - 4, ".iso"))
++            return 0;
++        legacy = length >= 17 && name[4] == '_' && name[8] == '.' && name[11] == '.';
++        length -= legacy ? 16 : 4;
++        if (length > ISO_GAME_NAME_MAX)
++            return 0;
++    }
++
++    /* A shared CD/DVD subfolder is one navigation row. Games are deduplicated
++       by exact path only, never by title or ID (two discs may share either). */
++    for (node = scan->head; node != NULL; node = node->next)
++        if ((folder && node->game.format == GAME_FORMAT_FOLDER && !strcmp(node->game.name, name)) ||
++            (!folder && !strcmp(node->file.path, path)))
++            return 0;
++    node = calloc(1, sizeof(*node));
++    if (node == NULL)
++        return -1;
++    strcpy(node->file.path, path);
++    node->file.bytes = st->bytes;
++    node->file.modified = st->modified;
++    node->game.media = media;
++    node->game.format = folder ? GAME_FORMAT_FOLDER : (legacy ? GAME_FORMAT_OLD_ISO : GAME_FORMAT_ISO);
++    memcpy(node->game.name, name + (legacy ? GAME_STARTUP_MAX : 0), length);
++    if (!folder) {
++        strcpy(node->game.extension, name + strlen(name) - 4);
++        node->game.parts = 1;
++        node->game.sizeMB = (unsigned long long)st->bytes >> 20;
++        if (legacy) {
++            memcpy(node->game.startup, name, GAME_STARTUP_MAX - 1);
++        } else {
++            for (i = 0; i < scan->oldCount; i++)
++                if (!strcmp(scan->oldFiles[i].path, path) &&
++                    scan->oldFiles[i].bytes == node->file.bytes &&
++                    scan->oldFiles[i].modified == node->file.modified &&
++                    scan->oldGames[i].format != GAME_FORMAT_FOLDER)
++                    break;
++            if (i < scan->oldCount)
++                strcpy(node->game.startup, scan->oldGames[i].startup);
++            else if (!sbIsoStartup(path, node->game.startup, sizeof(node->game.startup))) {
++                free(node);
++                return 0; // not a PS2 disc
++            }
++        }
++    }
++    node->next = scan->head;
++    scan->head = node;
++    scan->count++;
++    return 0;
++}
++
++/* In browse mode root CD/DVD contents remain flattened as in OPL, while other
++   folders are browsable from the share root. Without browsing, walk the tree as
++   LUNA does. Depth and path limits bound memory, open handles and cyclic trees. */
++static int udpfsScanDirectory(udpfs_scan_t *scan, const char *path, int media,
++                              int depth, int shareRoot, int containersOnly)
++{
++    int dir = fileXioDopen(path);
++    iox_dirent_t entry;
++    udpfs_scan_dir_t *children = NULL, *childDir;
++    udpfs_scan_stat_t directoryStat;
++    int result = 0;
++    if (dir < 0)
++        return -1;
++    childDir = malloc(sizeof(*childDir));
++    if (childDir == NULL || udpfsReadStat(path, &directoryStat) != 0) {
++        free(childDir);
++        fileXioDclose(dir);
++        return -1;
++    }
++    strcpy(childDir->path, path);
++    childDir->modified = directoryStat.modified;
++    childDir->next = scan->directories;
++    scan->directories = childDir;
++    for (;;) {
++        char child[256];
++        udpfs_scan_stat_t st;
++        int n, container, childMedia = media;
++        if (ioScanCancelled()) {
++            result = -1;
++            break;
++        }
++        n = fileXioDread(dir, &entry);
++        if (n <= 0) {
++            if (n < 0)
++                result = -1;
++            break;
++        }
++        if (entry.name[0] == '.' || strchr(entry.name, '/') || strchr(entry.name, '\\'))
++            continue;
++        container = shareRoot && (!strcasecmp(entry.name, "CD") || !strcasecmp(entry.name, "DVD"));
++        if (containersOnly && !container)
++            continue;
++        n = snprintf(child, sizeof(child), "%s%s%s", path, path[strlen(path) - 1] == '/' ? "" : "/", entry.name);
++        if (n < 0 || n >= (int)sizeof(child))
++            continue;
++        udpfsCopyStat(&st, &entry.stat);
++        if (FIO_S_ISDIR(st.mode)) {
++            int descend = 0;
++            if (udpfsSkipDirectory(entry.name))
++                continue;
++            if (container)
++                childMedia = !strcasecmp(entry.name, "CD") ? SCECdPS2CD : SCECdPS2DVD;
++            if (scan->browse && container) {
++                if (scan->sub[0]) {
++                    n = snprintf(child, sizeof(child), "%s%s%s/%s", path,
++                                 path[strlen(path) - 1] == '/' ? "" : "/", entry.name, scan->sub);
++                    if (n < 0 || n >= (int)sizeof(child))
++                        continue;
++                    if (udpfsReadStat(child, &st) != 0) {
++                        if (errno == ENOENT || errno == ENOTDIR)
++                            continue; // the subfolder need not exist in all three roots
++                        result = -1;
++                        break;
++                    }
++                }
++                descend = 1;
++            } else if (scan->browse) {
++                result = udpfsAddEntry(scan, child, entry.name, &st, childMedia, 1);
++            } else if (depth < FOLDER_DEPTH_MAX) {
++                descend = 1;
++            }
++            if (descend) {
++                childDir = malloc(sizeof(*childDir));
++                if (childDir == NULL)
++                    result = -1;
++                else {
++                    strcpy(childDir->path, child);
++                    childDir->media = childMedia;
++                    childDir->next = children;
++                    children = childDir;
++                }
++            }
++        } else if (FIO_S_ISREG(st.mode) && !containersOnly) {
++            result = udpfsAddEntry(scan, child, entry.name, &st, childMedia, 0);
++        }
++        if (result < 0)
++            break;
++    }
++    if (fileXioDclose(dir) < 0)
++        result = -1;
++    /* The IOP has only eight UDPFS handles, also used by art and ISO probes.
++       Never hold ancestor directories open during recursion. */
++    while ((childDir = children) != NULL) {
++        children = childDir->next;
++        if (result == 0)
++            result = udpfsScanDirectory(scan, childDir->path, childDir->media, depth + 1, 0, 0);
++        free(childDir);
++    }
++    return result;
++}
++
++int udpfsReadList(base_game_info_t **games, udpfs_game_file_t **files, int *count,
++                  const char *prefix, const char *sub, int browse)
++{
++    udpfs_scan_t scan = {0};
++    base_game_info_t *newGames = NULL;
++    udpfs_game_file_t *newFiles = NULL;
++    udpfs_scan_node_t *node;
++    int result, i = 0;
++    scan.oldGames = *games;
++    scan.oldFiles = *files;
++    scan.oldCount = *count;
++    scan.browse = browse;
++    scan.sub = browse && sub != NULL ? sub : "";
++
++    if (scan.sub[0]) {
++        char path[256];
++        udpfs_scan_stat_t st;
++        int n = snprintf(path, sizeof(path), "%s%s", prefix, scan.sub);
++        result = -1;
++        if (n >= 0 && n < (int)sizeof(path)) {
++            if (udpfsReadStat(path, &st) == 0)
++                result = udpfsScanDirectory(&scan, path, SCECdPS2DVD, 0, 0, 0);
++            else if (errno == ENOENT || errno == ENOTDIR)
++                result = 0;
++        }
++        if (result == 0)
++            result = udpfsScanDirectory(&scan, prefix, SCECdPS2DVD, 0, 1, 1);
++    } else {
++        result = udpfsScanDirectory(&scan, prefix, SCECdPS2DVD, 0, 1, 0);
++    }
++    if (result == 0 && scan.count > 0) {
++        newGames = malloc(scan.count * sizeof(*newGames));
++        newFiles = malloc(scan.count * sizeof(*newFiles));
++        if (newGames == NULL || newFiles == NULL)
++            result = -1;
++    }
++    while ((node = scan.head) != NULL) {
++        scan.head = node->next;
++        if (result == 0) {
++            newGames[i] = node->game;
++            newFiles[i++] = node->file;
++        }
++        free(node);
++    }
++    if (result < 0) {
++        free(newGames);
++        free(newFiles);
++        udpfsFreeDirectories(scan.directories);
++        return -1;
++    }
++    udpfsListReset();
++    udpfsDirectories = scan.directories;
++    free(*games);
++    free(*files);
++    *games = newGames;
++    *files = newFiles;
++    *count = scan.count;
++    return scan.count;
++}
++
++int udpfsFilePath(const base_game_info_t *game, const udpfs_game_file_t *file,
++                  const char *name, char *path, int size)
++{
++    const char *slash;
++    int n;
++    if (size <= 0)
++        return 0;
++    path[0] = '\0';
++    if (game->format == GAME_FORMAT_FOLDER)
++        return 0;
++    if (!strcmp(name, game->name))
++        n = snprintf(path, size, "%s", file->path);
++    else {
++        slash = strrchr(file->path, '/');
++        if (slash == NULL || !name[0] || strchr(name, '/') || strchr(name, '\\') || strchr(name, ':') ||
++            !strcmp(name, ".") || !strcmp(name, ".."))
++            return 0;
++        n = snprintf(path, size, "%.*s%s%s%s%s", (int)(slash - file->path + 1), file->path,
++                     game->format == GAME_FORMAT_OLD_ISO ? game->startup : "",
++                     game->format == GAME_FORMAT_OLD_ISO ? "." : "", name, game->extension);
++    }
++    if (n < 0 || n >= size) {
++        path[0] = '\0';
++        return 0;
++    }
++    return 1;
++}
+diff --git a/src/udpfssupport.c b/src/udpfssupport.c
+index 4477915..1f6702a 100644
+--- a/src/udpfssupport.c
++++ b/src/udpfssupport.c
+@@ -5,6 +5,7 @@
+ #include "include/gui.h"
+ #include "include/supportbase.h"
+ #include "include/udpfssupport.h"
++#include "include/udpfslist.h"
+ #include "include/cuesupport.h"
+ #include "include/vcdsupport.h"
+ #include "include/libview.h" // libViewActive / libListViewActive -- which list this page shows
+@@ -41,6 +42,7 @@ static time_t udpfsModifiedCDPrev;
+ static time_t udpfsModifiedDVDPrev;
+ static int udpfsGameCount = 0;
+ static base_game_info_t *udpfsGames = NULL;
++static udpfs_game_file_t *udpfsFiles = NULL;
+ static int udpfsPs1GameCount = 0;
+ static base_game_info_t *udpfsPs1Games = NULL;
+ static int udpfsIomanModLoaded = 0;
+@@ -248,10 +250,14 @@ void udpfsInit(item_list_t *itemList)
+     // The games live directly at the device root; no share/prefix to prepend (unlike SMB).
+     snprintf(udpfsPrefix, sizeof(udpfsPrefix), "udpfs:/");
+     udpfsIsoScanned = 0;
++    udpfsListReset();
+     udpfsModifiedCDPrev = 0;
+     udpfsModifiedDVDPrev = 0;
+     udpfsGameCount = 0;
++    free(udpfsGames);
+     udpfsGames = NULL;
++    free(udpfsFiles);
++    udpfsFiles = NULL;
+     udpfsPs1GameCount = 0;
+     udpfsPs1Games = NULL;
+     udpfsGameList.delay = gArtDelay;
+@@ -307,6 +313,20 @@ static base_game_info_t *udpfsActiveGame(item_list_t *itemList, int id)
+     return &games[id];
+ }
+ 
++// Shared path consumers (launch, info, rename/delete, compression) use the
++// selected row's server path, independent of media, case and current browse state.
++int udpfsGamePath(const base_game_info_t *game, const char *name, char *path, int size)
++{
++    int i;
++    for (i = 0; i < udpfsGameCount; i++) {
++        if (game == &udpfsGames[i]) {
++            udpfsFilePath(game, &udpfsFiles[i], name, path, size);
++            return 1; // handled, including an invalid rename (empty path)
++        }
++    }
++    return 0;
++}
++
+ // Theme discovery used to be missing entirely from the UDPFS filesystem backend: BDM, MMCE, SMB and
+ // APA all register their THM directories when the device becomes usable, while UDPFS only scanned
+ // games/art. Once the server-backed root actually answers, register udpfs:/THM exactly once for this
+@@ -432,6 +452,8 @@ static int udpfsNeedsUpdate(item_list_t *itemList)
+     // Only stat the mount once the ioman device is actually up -- statting "udpfs:/..." before then
+     // just fails and would keep result at 0 anyway, but guard it to avoid pointless RPC churn.
+     if (udpfsIomanModLoaded) {
++        if (udpfsListChanged())
++            result = 1;
+         struct stat st;
+         char path[256];
+ 
+@@ -601,10 +623,9 @@ static int udpfsUpdateGameList(item_list_t *itemList)
+     if (answeredBefore)
+         udpfsDiscoverArtFolder();
+ 
+-    // Latch only once the server can hear us. A scan that ran before it answered used to latch here, so
+-    // the CD/DVD folders were never created for the rest of the boot.
++    // Optional asset setup is latched only once the server can hear us.
+     if (!udpfsFoldersCreated && answeredBefore) {
+-        sbCreateFolders(udpfsPrefix, 1);
++        sbCreateFolders(udpfsPrefix, 0); // generic shares do not require CD/DVD
+         udpfsFoldersCreated = 1;
+     }
+ 
+@@ -627,9 +648,9 @@ static int udpfsUpdateGameList(item_list_t *itemList)
+     if (view == LIB_VIEW_ISO || view == LIB_VIEW_MIXED) {
+         // Neutrino launches disc images, not USBExtreme split parts. Avoid even
+         // probing ul.cfg on the network share, and never publish unlaunchable UL rows.
+-        if (sbReadList(&udpfsGames, udpfsPrefix, folderGetSub(itemList->mode), NULL, &udpfsGameCount) < 0) {
+-            // A failed CD/DVD scan is not an empty library. Keep the last-good
+-            // games and retry on the regular idle refresh until a folder opens.
++        if (udpfsReadList(&udpfsGames, &udpfsFiles, &udpfsGameCount, udpfsPrefix, folderGetSub(itemList->mode), gEnableFolderNav) < 0) {
++            // An incomplete scan must not discard games or their matching paths.
++            // Keep both last-good arrays and retry on the idle refresh.
+             udpfsIsoScanned = 0;
+         } else {
+             reached = 1;
+@@ -637,7 +658,7 @@ static int udpfsUpdateGameList(item_list_t *itemList)
+             udpfsIsoScanned = answeredBefore;
+         }
+     }
+-    // Only a readable CD/DVD scan proves the server answered. A share without those folders, or the PS1
++    // A complete ISO scan proves the server answered. A failed scan, or the PS1
+     // view (whose empty result can't tell "no titles" from "no answer"), asks the server itself before
+     // deciding to wait -- otherwise a working server would be polled and rescanned every two seconds.
+     udpfsSetWaitingForServer(!answeredBefore || (!reached && !udpfsServerAnswers()));
+@@ -976,6 +997,9 @@ static void udpfsCleanUp(item_list_t *itemList, int exception)
+         LOG("UDPFSSUPPORT CleanUp\n");
+         free(udpfsGames);
+         udpfsGames = NULL;
++        free(udpfsFiles);
++        udpfsFiles = NULL;
++        udpfsListReset();
+         udpfsGameCount = 0;
+         free(udpfsPs1Games);
+         udpfsPs1Games = NULL;
+@@ -993,6 +1017,9 @@ static void udpfsShutdown(item_list_t *itemList)
+         LOG("UDPFSSUPPORT Shutdown\n");
+         free(udpfsGames);
+         udpfsGames = NULL;
++        free(udpfsFiles);
++        udpfsFiles = NULL;
++        udpfsListReset();
+         udpfsGameCount = 0;
+         free(udpfsPs1Games);
+         udpfsPs1Games = NULL;
