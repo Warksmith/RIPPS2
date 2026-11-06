@@ -145,6 +145,57 @@ Console acceptance checks:
 - Test a game with Mode 6 and a normal physical memory card; neither should
   gain an automatic MMCE switch/return behavior it does not support.
 
+### Build 150: direct BIBLE return bridge
+
+Build 149 console feedback confirmed the chord and boot-card switch, followed
+by a black screen. The supplied DIAG.TXT confirms Neutrino armed
+`-mmce_gameid=0:SLUS_201.52`. The matching library cache lists that Ace Combat 4
+image on UDPFS. UDPFS has no native OPL backend, so selecting an OPL default
+does not establish a native OPL test. The Neutrino preview is showing the
+actual launch path. Build 150 also logs that backend explicitly.
+
+The black screen's exact location remains unverified. Both the `hdd` Neutrino
+target and native Browser fallback depend on the system-menu boot route.
+Build 150 adds an optional direct memory-card route: a dedicated plain BIBLE
+MMCE ELF at `mc0:/RIPPS2/IGR.ELF` or `mc1:/RIPPS2/IGR.ELF`. It starts RIPPS2
+using the existing `SYS-CONF/PS2BBL.INI`. It does not replace or rebind the
+installed system update. This route still needs a console test.
+
+Installation for the test kit:
+
+1. Replace the RIPPS2 ELF on MMCE SD with build 150. Keep the build 149 `nigr/`
+   runtime and select it in RIPPS2.
+2. Copy `bridge/RIPPS2/IGR.ELF` into the restored boot card's `RIPPS2` folder,
+   so the console sees `mc0:/RIPPS2/IGR.ELF` (or `mc1:`). This is the virtual
+   memory card, not a folder directly on MMCE SD. On the tested folder-backed
+   setup the destination is `MemoryCards/PS2/BOOT/BootCard-2.folder/RIPPS2/IGR.ELF`.
+3. Leave IGR Path empty and restart RIPPS2 with that card selected. Startup
+   checks the optional helper's ELF header and caches its path before GameID
+   switching. With no helper, the existing Browser fallback remains. An
+   explicit IGR Path, including `Browser`, takes precedence.
+4. Confirm the Neutrino preview now has `-igr=mc0:/RIPPS2/IGR.ELF` (or `mc1:`)
+   and `-mmce_gameid=...`, then test the chord. Release it when reset begins.
+
+The dedicated bridge bypasses BIBLE's startup hotkeys and uses its AUTO
+entry. The IGR chord includes BIBLE's R1+START rescue and L2+R2 keys-page
+shortcuts; those must not redirect a return. The installed power-on BIBLE
+and its configuration are unchanged. The bridge's fallback emergency screen
+still reports failure if no AUTO target can be loaded.
+
+For native numbered-card restoration, the helper and BIBLE configuration
+must be available on the restored card (or on another unchanged physical
+card). The bridge does not override the captured card/channel to force boot.
+For an independent native OPL test, use a supported game source such as
+MMCE, USB or APA HDD and explicitly select OPL for that game.
+
+`elf/bible/build_igr_bridge.sh` builds the plain MMCE ELF from BIBLE
+`f5705eb6ae422b95c08d4e5662f72b54e133e857`, the version already used by this
+project, with `igr-bridge-auto-start.patch` and the pinned PS2SDK image.
+The kit includes the source archive, patch, build script and GPL-3 license.
+Host tests cover pre-switch caching, header rejection, explicit overrides,
+Neutrino argument composition and the bridge's shortcut bypass. They do not
+prove return timing or successful console boot.
+
 ## Reference and provenance
 
 - [LUNA GameID integration](https://github.com/Warksmith/LUNA/commit/6796954f4c5ce5c40d4dd074cfff0bfa1ba56325).
