@@ -71,7 +71,9 @@ also avoids a separate metadata request for every discovered file.
 ## Building and checking
 
 The change is `elf/patches/0145-ripps2-udpfs-layouts.patch`, applied after the
-existing patch series. Use the pinned PS2DEV image from
+existing patch series. Build 146 adds
+`elf/patches/0146-ripps2-vsync-handoff.patch` for the launch handoff described
+below. Use the pinned PS2DEV image from
 `.github/workflows/build-elf.yml` and the existing `elf/build.sh` workflow.
 When staging files from a Windows checkout into a Linux container, preserve
 LF line endings in the scripts and `elf/RIPTOPL_UPSTREAM`.
@@ -103,3 +105,31 @@ matched their exact paths and advertised sizes, including 70 images larger than
 The full host suite ran 242 tests with zero unexpected failures; its existing
 expected-failure list was unchanged. Emulator results do not replace a console
 test of discovery, refresh and Neutrino launch on the intended hardware.
+
+## Neutrino handoff with arguments hidden
+
+Console testing with Neutrino on MMCE exposed an intermittent freeze at
+"Please Wait" when `neutrino_show_args=0`. Stage markers narrowed it to the
+renderer sleeping for vertical sync during the handoff fade, before pad
+shutdown or loading Neutrino. Showing the arguments avoided the freeze in
+initial console tests; display blanking alone did not resolve it.
+
+Build 146 replaces the normal renderer's thread wakeup/latch pair with a
+dedicated vertical-sync semaphore. Each interrupt signals the semaphore,
+coalescing old ticks so time spent in device preflight cannot create a backlog
+of frames. The interrupt is detached before its semaphore is deleted, including
+when changing video modes. If creating the semaphore or installing the handler
+fails, the renderer uses gsKit's polling wait. The high-resolution renderer
+keeps its existing synchronization.
+
+The normal fade and optional argument preview remain available. The change
+does not add a launch delay or change Neutrino arguments, MMCE settings or
+device teardown order. `test_ripps2_vsync.py` compiles the actual synchronization
+helpers and checks interrupts before/during a wait, notification loss, long
+preflight gaps, unrelated thread wakeups, mode-change lifecycle and allocation
+or handler failures.
+
+The full host suite with this follow-up passes 243 tests with zero unexpected
+failures. The RA-enabled build also launches through Neutrino in RIPPCSX2 with
+arguments hidden (NTSC) and with the argument preview enabled (PAL). Console
+verification of the build-146 fix is still pending.
