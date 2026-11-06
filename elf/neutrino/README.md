@@ -27,3 +27,20 @@ GameID-capable LUNA runtime at `af68bf4` into a separate directory. It uses
 LUNA's pinned build image documented in the script and IGR setup guide.
 This optional runtime is not embedded in RIPPS2 or installed over an
 existing Neutrino folder.
+
+Console testing confirmed `af68bf4-IGR` can return directly to RIPPS2 on the
+restored boot card without the BIBLE bridge. The failing `F:/neutrino` was
+the older `02cbf4f` build, which lacks MMCE restoration. Merely having `-igr`
+support does not make a runtime compatible with GameID-switched cards.
+
+The optional `hardened` third argument to `build_igr_runtime.sh` applies
+`igr-runtime-hardening.patch` and builds `af68bf4-IGR-h1`. It adds loader/core
+ABI checks, complete module reads, early return-path validation and explicit
+failure for missing restoration support or an unconfirmed card switch.
+It preserves the working resident return sequence. Install its entire
+folder separately and select that loader explicitly. The build includes
+`SHA256SUMS`; this variant needs console validation. Host regression checks:
+
+```sh
+NEUTRINO_DIR=/path/to/patched/neutrino python3 elf/neutrino/test_igr_runtime.py
+```

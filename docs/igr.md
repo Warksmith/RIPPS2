@@ -2,6 +2,12 @@
 
 Hold **L1 + L2 + R1 + R2 + SELECT + START** to leave a PS2 game.
 
+Console status: Ace Combat 4 over UDPFS now returns successfully through the
+BIBLE bridge, and also directly to `mc0:/RIPPS2/RIPPS2.ELF` with the `nigr`
+runtime. Native OPL still needs an independent test with a supported backend.
+The older `F:/neutrino` installation is a different LUNA revision; see
+[the runtime comparison](#luna-runtime-comparison-and-hardening).
+
 With **Neutrino LUNA**, the chord returns directly. With the **built-in OPL
 core**, it opens RIPPS2's in-game menu: choose **Exit Game**, or turn off
 **Settings > Game Launching > In-Game Menu** to make the chord exit directly.
@@ -19,11 +25,13 @@ For an installation where the boot card starts RIPPS2 from the MMCE SD:
    also present in the fork's later `udpfs-speed` branch. Replacing only
    `neutrino.elf` is insufficient; install the complete matching runtime.
 3. Enable **Send GameID on Launch** for MMCE. Leave **IGR Path** empty or
-   `Browser` to use the boot-loader route.
+   `Browser` to use the boot-loader route. With build 150, an empty path
+   prefers the optional BIBLE bridge when installed (instructions below).
 4. Launch a PS2 game and use the chord. Neutrino switches the MMCE back to its
-   boot card, then returns through OSDSYS. The boot loader starts RIPPS2 again.
+   boot card, then follows the selected return route. On the tested BIBLE
+   setup, use the bridge for RIPPS2 on MMCE SD; the `hdd`/Browser route stalled.
 
-RIPPS2 automatically supplies `-igr=hdd` and, for an eligible MMCE slot,
+Without a direct return target, RIPPS2 supplies `-igr=hdd` and, for an eligible MMCE slot,
 `-mmce_gameid=0:SLUS_203.12` (example). Despite the name, LUNA's `hdd` target
 means **return through the console boot chain**; it does not require RIPPS2 or
 the game to be on an HDD. Without an installed/configured boot loader it goes
@@ -128,7 +136,8 @@ beside RIPPS2 and select `nigr/neutrino.elf` in the Neutrino settings. Keep
 the existing LUNA directory intact. The launch preview must contain both
 `-igr=hdd` and `-mmce_gameid=<slot>:<game>` for automatic boot-card restoration.
 If the second argument is absent, the new `DIAG.TXT` records which gate
-prevented it. This kit still needs a console retest.
+prevented it. Subsequent console tests confirmed this runtime restores the
+boot card and returns both through the bridge and directly to a memory-card ELF.
 
 `elf/neutrino/build_igr_runtime.sh <new-build-dir> <new-output-dir>` reproduces
 the optional runtime inside LUNA's pinned
@@ -159,7 +168,7 @@ target and native Browser fallback depend on the system-menu boot route.
 Build 150 adds an optional direct memory-card route: a dedicated plain BIBLE
 MMCE ELF at `mc0:/RIPPS2/IGR.ELF` or `mc1:/RIPPS2/IGR.ELF`. It starts RIPPS2
 using the existing `SYS-CONF/PS2BBL.INI`. It does not replace or rebind the
-installed system update. This route still needs a console test.
+installed system update. Subsequent console testing confirmed this bridge route.
 
 Installation for the test kit:
 
@@ -193,8 +202,69 @@ MMCE, USB or APA HDD and explicitly select OPL for that game.
 project, with `igr-bridge-auto-start.patch` and the pinned PS2SDK image.
 The kit includes the source archive, patch, build script and GPL-3 license.
 Host tests cover pre-switch caching, header rejection, explicit overrides,
-Neutrino argument composition and the bridge's shortcut bypass. They do not
-prove return timing or successful console boot.
+Neutrino argument composition and the bridge's shortcut bypass. Console
+confirmation is limited to the reported Neutrino/Ace Combat 4 setup.
+
+### LUNA runtime comparison and hardening
+
+The failing and working SD installations were read and hashed on 2026-11-06:
+
+| Installation | Version | MMCE return support |
+| --- | --- | --- |
+| `F:/neutrino` | `v1.8.0-73-g02cbf4f` | `-igr` only; no `-mmce_gameid` parser or `modules/mmceigr.irx` |
+| `F:/nigr` | `af68bf4-IGR` | Includes deferred GameID switching and boot-card restoration |
+
+The failing loader's SHA-256 is
+`ef16db16ae6a9e63fcf24eefc69bd5dbd8598a8e221a2b67fd149dec039068f7`.
+The working loader's SHA-256 is
+`c84d3e3c6c1b532638727762ff00fa61fbc1a6ef8be9734cdb25ba1e968556a9`,
+identical to the build 149 test kit. `nigr` is itself LUNA Neutrino.
+Commit `3a60180`, after `02cbf4f`, adds the missing restoration before MCMAN
+and the ELF load. The older runtime can attempt a direct memory-card return,
+but cannot restore an MMCE card switched by the frontend. It then looks for
+the return ELF on the game card. This explains the red load-failure screen
+without requiring a different RIPPS2 ELF loader.
+
+For direct return, keep RIPPS2 on the restored boot card at
+`mc0:/RIPPS2/RIPPS2.ELF`, and set **IGR Path** to that exact path. Confirm
+both `-igr=mc0:/RIPPS2/RIPPS2.ELF` and `-mmce_gameid=0:<game>` in the preview.
+The bridge is unnecessary for this route. It remains useful for starting
+RIPPS2 from MMCE SD, which the resident return loader cannot directly mount.
+
+`elf/neutrino/igr-runtime-hardening.patch` strengthens the working `af68bf4`
+baseline without changing its resident return sequence:
+
+- A dedicated settings signature and size check reject older or mismatched
+  EE cores before card switching or IOP reset. This prevents copying the
+  larger restore configuration into an older core's smaller structure.
+- Missing/empty/unreadable restore modules and invalid explicit MMCE/return
+  arguments stop launch instead of silently dropping restoration support.
+- Module reads handle partial reads and interruptions; failed reads discard
+  their buffers. Settings scans stay inside the loaded file.
+- Failed GameID sends and status-poll exhaustion stop launch. The old loop
+  incorrectly reported success even if every status query failed or stayed
+  busy. A timeout can leave selection uncertain; restart before retrying.
+
+Build the optional full runtime with:
+
+```sh
+sh elf/neutrino/build_igr_runtime.sh /tmp/neutrino-h1 /artifacts/nligr hardened
+```
+
+Use the same pinned LUNA container listed above. The default `baseline` mode
+still builds the unmodified, console-tested `af68bf4-IGR`. The hardened build
+reports `af68bf4-IGR-h1` and ships a SHA-256 manifest. Install the whole
+`nligr/` folder separately, then explicitly select its `neutrino.elf` in
+RIPPS2. Do not mix its loader/core with files from either older runtime.
+RIPPS2 build 150 needs no changes for this runtime.
+
+`NEUTRINO_DIR=<patched-tree> python3 elf/neutrino/test_igr_runtime.py` compiles
+and executes the actual loader code with ASan/UBSan. It checks both slots,
+quick and non-quick launch paths, missing/truncated/mismatched core data,
+short/error reads, invalid paths, MMCE send/status errors and polling limits.
+The target build and RIPPS2 packed capability probe pass (`0xfff`, including
+IGR and MMCE GameID). The hardened variant still needs a console test; the
+successful direct-return report applies to the unchanged `nigr` baseline.
 
 ## Reference and provenance
 
