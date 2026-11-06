@@ -13,3 +13,9 @@ Builds 77 to 134 carried Neutrino inside RIPPS2.elf and installed it where the u
 the development build v1.8.0-61-g7be8de2). That tar is in this folder's history:
 `git log -- elf/neutrino/neutrino-1.8.0-61-g7be8de2.tar.gz`. `tools/dev/pack_neutrino.py` still repacks a release
 the same way, for anyone who wants that copy.
+
+On the IGR branch, GameID-capable **Neutrino LUNA** installations receive the
+return and deferred card-switch arguments automatically. Install the full
+matching runtime, including `modules/mmceigr.irx`. For RIPPS2 on MMCE SD,
+IGR restores the boot card and follows its boot loader back to RIPPS2.
+See [IGR setup and engine-specific behavior](../../docs/igr.md).
