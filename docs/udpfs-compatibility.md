@@ -131,5 +131,6 @@ or handler failures.
 
 The full host suite with this follow-up passes 243 tests with zero unexpected
 failures. The RA-enabled build also launches through Neutrino in RIPPCSX2 with
-arguments hidden (NTSC) and with the argument preview enabled (PAL). Console
-verification of the build-146 fix is still pending.
+arguments hidden (NTSC) and with the argument preview enabled (PAL). On the
+affected physical PS2 with Neutrino on MMCE, build 146 passed three fresh
+launches of the same UDPFS game with `neutrino_show_args=0`.
