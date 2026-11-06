@@ -101,9 +101,39 @@ and reset hook with a replaced call site, checking recovery in both standard
 and RetroAchievements configurations. Temporary pauses in controller DMA
 still do not trigger scans. Each actual IOP reset now incurs a pad scan.
 
-The reported Ace Combat 4 failure still needs a console retest in each
-engine. These tests establish the recovery behavior, not that this was the
-cause of that game's native OPL failure on the console.
+Console feedback for build 148 (Ace Combat 4, wired controller in port 1):
+both chords now lead to a black screen, but the card stays on the game card
+and RIPPS2 does not restart. OPL was explicitly selected with Mode 6 off.
+The Neutrino preview shows `-igr=hdd` and `-qb`, but no `-mmce_gameid=` despite
+Send GameID on Launch being enabled. This does not yet verify either engine's
+card restoration or return path.
+
+Build 149 is a follow-up test build:
+
+- Native shutdown RPC binding and completion share a two-second deadline.
+  If the IOP is stuck, reset can proceed to the restore module. RPC client
+  and argument storage remain valid for a late completion. Power-off
+  requests retain their original meaning.
+- Both native GameID sending and Neutrino slot selection retry a failed
+  presence ping, using the same three-attempt policy as MMCE discovery.
+- `DIAG.TXT` beside RIPPS2 on its drive records the Neutrino capability/slot
+  decision before launch and the native restore record before teardown.
+  These records show whether restoration was armed; they do not prove that
+  the in-game restore module ran or that the card accepted its command.
+
+The optional test kit contains a separate `nigr/` runtime built from
+Neutrino LUNA `af68bf4c285d6d9114a60675edff0cf7306a4f54`, with its matching
+loader, EE core, configuration and IOP modules. Copy that whole directory
+beside RIPPS2 and select `nigr/neutrino.elf` in the Neutrino settings. Keep
+the existing LUNA directory intact. The launch preview must contain both
+`-igr=hdd` and `-mmce_gameid=<slot>:<game>` for automatic boot-card restoration.
+If the second argument is absent, the new `DIAG.TXT` records which gate
+prevented it. This kit still needs a console retest.
+
+`elf/neutrino/build_igr_runtime.sh <new-build-dir> <new-output-dir>` reproduces
+the optional runtime inside LUNA's pinned
+`ps2max/dev@sha256:e390699d46818e7c736f414ae5b1789d3ef7d3d914ce646a8a7bd027bd7e4521`
+container. RIPPS2 itself continues using its existing pinned ps2dev image.
 
 Console acceptance checks:
 

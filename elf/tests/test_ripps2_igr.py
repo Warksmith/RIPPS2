@@ -45,6 +45,7 @@ with tempfile.TemporaryDirectory() as temp:
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#define ripps2Diag(...) ((void)0)
 #define COMPAT_MODE_6 32
 #define NF_IGR 0x400
 #define NF_MMCE_GAMEID 0x800
@@ -188,17 +189,20 @@ int main(void) {
 #define LOG(...) ((void)0)
 #define _l(x) "protected"
 #define MMCE_GAMEID_START_MS 2000
+#define MMCE_PRESENCE_PROBE_MAX 3
+#define MMCE_PRESENCE_RETRY_US 200000
 static int gMMCEIGRSlot, gMMCEEnableGameID=1, mmceModLoaded=1;
 static char mmcePrefix[]="mmce0:/", mmceGameIdTarget[8];
-static int card=42, channel=3, sendError, deferred, sends, queries, present=3;
+static int card=42, channel=3, sendError, deferred, sends, queries, present=3, missedPings, waits;
 static void mmceGetDeviceRoot(char *p, int n) { snprintf(p,n,"%s",mmcePrefix); }
 static int sysNeutrinoDefersGameID(const char *p,const char *g) { (void)p; (void)g; return deferred; }
 static void guiWarning(const char *s,int n) { (void)s; (void)n; }
 static void ripps2Diag(const char *s,...) { (void)s; }
-static void DelayThread(int us) { (void)us; }
+static void DelayThread(int us) { (void)us; waits++; }
 static int mmceWaitCardReady(const char *p) { (void)p; return 1; }
 static int fileXioDevctl(const char *p,int cmd,void *a,int al,void *b,int bl) {
     (void)a; (void)al; (void)b; (void)bl;
+    if(cmd==1 && missedPings>0) { missedPings--; return -1; }
     if(!(present & (1 << (p[4]-'0')))) return -1;
     if(cmd==3) { queries++; return card; }
     if(cmd==5) { queries++; return channel; }
@@ -209,7 +213,17 @@ static int fileXioDevctl(const char *p,int cmd,void *a,int al,void *b,int bl) {
 int main(void) {
     char args[MMCE_RETURN_ARG_SIZE];
     assert(mmceGameIDSlot(0)==0 && mmceGameIDSlot(1)==1 && mmceGameIDSlot(3)==-1);
-    assert(mmceSendGameID("SLUS_203.12",NULL,0)==1 && sends==1);
+    present=0; waits=0;
+    assert(mmceGameIDSlot(0)==-1 && waits==4);
+    present=3; gMMCEEnableGameID=0; waits=0;
+    assert(mmceGameIDSlot(0)==-1 && waits==0);
+    gMMCEEnableGameID=1; mmceModLoaded=0;
+    assert(mmceGameIDSlot(0)==-1 && waits==0);
+    mmceModLoaded=1;
+    missedPings=2; waits=0;
+    assert(mmceGameIDSlot(0)==0 && waits==2);
+    missedPings=2; waits=0;
+    assert(mmceSendGameID("SLUS_203.12",NULL,0)==1 && sends==1 && waits>=2);
     mmceReturnArgs(args);
     assert(!strcmp(args,"R2002a0003000000000") && mmceReturnNeeded());
     gMMCEIGRSlot=3;

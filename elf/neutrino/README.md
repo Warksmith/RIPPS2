@@ -21,3 +21,9 @@ IGR restores the boot card and follows its boot loader back to RIPPS2.
 Build 148 recognizes both unpacked and standard ps2-packer LZMA LUNA
 executables; build 147 missed the packed executable's IGR options.
 See [IGR setup and engine-specific behavior](../../docs/igr.md).
+
+For the build 149 IGR test kit, `build_igr_runtime.sh` builds the complete
+GameID-capable LUNA runtime at `af68bf4` into a separate directory. It uses
+LUNA's pinned build image documented in the script and IGR setup guide.
+This optional runtime is not embedded in RIPPS2 or installed over an
+existing Neutrino folder.
