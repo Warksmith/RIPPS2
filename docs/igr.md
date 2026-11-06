@@ -44,9 +44,12 @@ locations use the boot-loader route. Explicit global/per-game `-igr=` and
 disabled `$` arguments and arguments after `--b` do not override the defaults.
 
 RIPPS2 detects LUNA's options from the executable's parser strings, even when
-`version.txt` only reports an upstream version such as `v1.8.0`. Stock,
-unrecognized or packed executables do **not** automatically receive fork-only
-arguments. Use an unpacked LUNA executable for automatic detection. An older
+`version.txt` only reports an upstream version such as `v1.8.0`. Build 148
+also inspects the normal **ps2-packer LZMA** executable distributed by LUNA;
+an unpacked executable is supported too. Build 147 missed packed executables
+and therefore omitted automatic `-igr=` and `-mmce_gameid=` arguments.
+Stock, unrecognized, corrupt or unsupported packed executables do **not**
+automatically receive fork-only arguments. An older
 LUNA build with only `-igr` can return, but does not provide the deferred
 GameID/boot-card restore contract: use the complete GameID-capable runtime
 for MMCE switching. The existing launch-argument budget is still enforced
@@ -82,6 +85,26 @@ argument/capability and native restore code using host mocks. This checks
 protocol ordering and failure handling; it cannot verify a console's SIO2
 timing, boot exploit, or game-specific pad hook.
 
+`elf/tests/test_ripps2_neutrino_packed_probe.py` exercises the actual decoder and
+capability scanner with AddressSanitizer and UndefinedBehaviorSanitizer.
+It covers merged/separate ELF segments, older packer sizes, multiple payload
+sections, fork versus stock options, truncation and invalid size fields.
+Host tests need a C compiler and `liblzma-dev`; the pinned PS2 toolchain
+already supplies the target liblzma library. The decoder never executes the
+payload or writes to addresses from the inspected ELF.
+
+Build 148 fixes the confirmed Neutrino launch-argument omission and rearms
+native OPL's pad-hook search at an IOP reset. Previously, a latched flag from
+the old game code could suppress retries after the controller buffer was
+invalidated. The new `test_ripps2_igr_rehook.py` executes the native scanner
+and reset hook with a replaced call site, checking recovery in both standard
+and RetroAchievements configurations. Temporary pauses in controller DMA
+still do not trigger scans. Each actual IOP reset now incurs a pad scan.
+
+The reported Ace Combat 4 failure still needs a console retest in each
+engine. These tests establish the recovery behavior, not that this was the
+cause of that game's native OPL failure on the console.
+
 Console acceptance checks:
 
 - Launch through Neutrino LUNA from MMCE SD, confirm the per-game card,
@@ -99,3 +122,5 @@ Console acceptance checks:
 - [MMCE driver/protocol source](https://github.com/ps2-mmce/mmceman/tree/de28936fdf45fe445554cfa0b8f058b05fa8212f).
   The native restore module adapts its PIO transport, carries its MIT license,
   and retains the PS2SDK AFL-2.0 notice on the SIO2 register definitions.
+- [ps2-packer layout reference](https://github.com/ps2dev/ps2-packer/tree/d43ac514cd9bcce3e04f0ea54509d88d1f4b9719).
+  The probe reads its stub/header layout and decodes raw LZMA1 through liblzma.

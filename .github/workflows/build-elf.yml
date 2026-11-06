@@ -90,6 +90,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Install host probe dependency
+        run: sudo apt-get update && sudo apt-get install -y liblzma-dev
+
       - name: Apply the patch series
         run: sh elf/build.sh --prepare-only
 

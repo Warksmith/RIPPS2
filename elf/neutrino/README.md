@@ -18,4 +18,6 @@ On the IGR branch, GameID-capable **Neutrino LUNA** installations receive the
 return and deferred card-switch arguments automatically. Install the full
 matching runtime, including `modules/mmceigr.irx`. For RIPPS2 on MMCE SD,
 IGR restores the boot card and follows its boot loader back to RIPPS2.
+Build 148 recognizes both unpacked and standard ps2-packer LZMA LUNA
+executables; build 147 missed the packed executable's IGR options.
 See [IGR setup and engine-specific behavior](../../docs/igr.md).

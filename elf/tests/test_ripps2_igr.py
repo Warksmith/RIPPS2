@@ -32,7 +32,7 @@ def run(source, name, td):
     exe = td / name
     file.write_text(source)
     subprocess.run([cc, '-std=c99', '-Wall', '-Wextra', '-Werror', '-I', str(root),
-                    str(file), '-o', str(exe)], check=True)
+                    str(file), str(root / 'src/elfprobe.c'), '-I', str(root / 'include'), '-llzma', '-o', str(exe)], check=True)
     subprocess.run([str(exe)], check=True, cwd=td)
 
 
@@ -114,6 +114,7 @@ int main(void) {
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "include/elfprobe.h"
 #define LOG(...) ((void)0)
 ''' + probe + r'''
 int main(void) {
@@ -183,6 +184,7 @@ int main(void) {
 #include <stdio.h>
 #include <string.h>
 #include "include/mmcereturn.h"
+#include "include/elfprobe.h"
 #define LOG(...) ((void)0)
 #define _l(x) "protected"
 #define MMCE_GAMEID_START_MS 2000
