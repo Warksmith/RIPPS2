@@ -179,6 +179,8 @@ From build 118, **Settings > Game Sources > Cache > ART Pack** packs the `ART` f
 
 UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
 
+The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+
 ## Your hardware
 
 - **Network adapters and the internal HDD.** RIPPS2 drives every network adapter with the PS2SDK's own DEV9 driver, the one current loaders use, and it tells the two kinds apart by itself: the expansion bay adapters of the fat consoles (SCPH-10281, SCPH-10350, and the IDE and SATA adapters made from them) and the slim's built-in port, and the PC CARD adapter of the first Japanese consoles (SCPH-10000 to 18000). There is no legacy driver to choose. The HDD is read the same way whether it is APA or exFAT, and an HDPro adapter gets its own driver. SMB games, UDPBD and the art download all use the same adapter. If yours does not show up, post the adapter's and the console's model.

@@ -5,6 +5,9 @@ Select **UDPFS**, **Files** in Network settings, start the source, and refresh
 the list after changing files on the PC. Games still launch through your own
 Neutrino installation.
 
+For release notes, the causes and fixes, and the validation record, see the
+[branch release and PR writeup](udpfs-layout-compatibility-release-and-pr.md).
+
 ```text
 shared-folder/
   Game.iso
@@ -55,10 +58,10 @@ than 4 GiB. `CD/` supplies the CD media hint; other locations use the DVD hint.
 
 Some UDPFS servers can list and open files but return `EIO` or `ENOSYS` for
 `GETSTAT`, including for virtual ISO names. For an explicit server error of
-either kind, the filesystem driver obtains the same metadata from a temporary
-read-only `OPEN` and closes it immediately. Transport timeouts, permission
-failures and missing files remain errors. The block-device capacity query is
-unchanged.
+either kind, the filesystem driver obtains the metadata available from a
+temporary read-only `OPEN` and closes it immediately. Transport timeouts,
+permission failures and missing files remain errors. The block-device capacity
+query is unchanged.
 
 The server used for development was an already-running `udpfsd.exe -fsroot
 GAMES -verbose` on Windows. A read-only protocol probe found 275 ISO names at
@@ -119,8 +122,9 @@ dedicated vertical-sync semaphore. Each interrupt signals the semaphore,
 coalescing old ticks so time spent in device preflight cannot create a backlog
 of frames. The interrupt is detached before its semaphore is deleted, including
 when changing video modes. If creating the semaphore or installing the handler
-fails, the renderer uses gsKit's polling wait. The high-resolution renderer
-keeps its existing synchronization.
+fails, the renderer uses gsKit's polling wait. This applies to all video modes
+using the normal renderer; gsKit's separate `hires` rendering path keeps its
+existing synchronization.
 
 The normal fade and optional argument preview remain available. The change
 does not add a launch delay or change Neutrino arguments, MMCE settings or
