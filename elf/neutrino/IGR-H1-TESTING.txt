@@ -1,4 +1,4 @@
-LUNA Neutrino IGR h1 -- companion runtime for RIPPS2 build 150
+LUNA Neutrino IGR h1 -- companion runtime for RIPPS2 IGR
 
 The working nigr runtime is LUNA Neutrino af68bf4. The failing old neutrino
 runtime was 02cbf4f: it has IGR but no MMCE GameID/boot-card restoration.
@@ -18,7 +18,7 @@ handling. Its resident reset/restore/ELF-load sequence is unchanged.
    The example is Ace Combat 4 in slot 1. Adjust slot/game as appropriate.
 6. Launch the same Ace Combat 4 image, confirm the game card, then hold
    L1+L2+R1+R2+SELECT+START. Release when reset begins. Confirm the boot card
-   returns and RIPPS2 starts directly, without BIBLE.
+   returns and RIPPS2 starts directly.
 
 Expected version: af68bf4-IGR-h1
 The full folder is required, including matching modules/ee_core.elf and

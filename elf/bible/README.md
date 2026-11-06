@@ -49,23 +49,3 @@ to start from `mc?:/BOOT/BOOT.ELF`. RIPPS2 does not carry or install that one; M
 so its settings rows work.
 
 Everything PS2BBL does is El Isra's work, and PS2BBL Extended's is saildot4k's. Thank you.
-
-## Optional IGR return ELF
-
-`build_igr_bridge.sh <new-build-dir> <new-output-dir>` builds a separate plain
-MMCE ELF from `f5705eb6ae422b95c08d4e5662f72b54e133e857`, using the same pinned
-PS2SDK image as BIBLE's CI:
-`ps2dev/ps2dev@sha256:c64ae69c9817865ed98ff054e4ae5360b9e280ed952c97946bca95d9d35be995`.
-The image also needs `apk add build-base git p7zip python3`.
-
-Only this return copy gets `igr-bridge-auto-start.patch`: it uses AUTO and
-skips startup shortcuts because the IGR chord includes BIBLE's rescue and
-keys-page combinations. The installed power-on BIBLE and its configuration
-are untouched. The script packages the base source, patch, build script and
-license alongside `RIPPS2/IGR.ELF`. It does not sign, bind or install anything.
-
-Place that ELF inside the restored memory card's `RIPPS2` folder. Build 150
-detects it at startup when IGR Path is empty and caches the path before GameID
-switching. Both native OPL and compatible Neutrino can load it after restoring
-the card; BIBLE then reads the existing `SYS-CONF/PS2BBL.INI` to start RIPPS2
-from MMCE SD. See [IGR setup and limitations](../../docs/igr.md).

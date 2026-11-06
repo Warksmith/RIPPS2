@@ -16,8 +16,8 @@ the same way, for anyone who wants that copy.
 
 On the IGR branch, GameID-capable **Neutrino LUNA** installations receive the
 return and deferred card-switch arguments automatically. Install the full
-matching runtime, including `modules/mmceigr.irx`. For RIPPS2 on MMCE SD,
-IGR restores the boot card and follows its boot loader back to RIPPS2.
+matching runtime, including `modules/mmceigr.irx`. Put RIPPS2 on the restored
+boot memory card and set IGR Path to its `mc0:/` or `mc1:/` ELF path.
 Build 148 recognizes both unpacked and standard ps2-packer LZMA LUNA
 executables; build 147 missed the packed executable's IGR options.
 See [IGR setup and engine-specific behavior](../../docs/igr.md).
@@ -29,7 +29,7 @@ This optional runtime is not embedded in RIPPS2 or installed over an
 existing Neutrino folder.
 
 Console testing confirmed `af68bf4-IGR` can return directly to RIPPS2 on the
-restored boot card without the BIBLE bridge. The failing `F:/neutrino` was
+restored boot card. The failing `F:/neutrino` was
 the older `02cbf4f` build, which lacks MMCE restoration. Merely having `-igr`
 support does not make a runtime compatible with GameID-switched cards.
 

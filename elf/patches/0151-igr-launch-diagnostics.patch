@@ -1,0 +1,20 @@
+diff --git a/src/system.c b/src/system.c
+index 1719eec..a8d56e2 100644
+--- a/src/system.c
++++ b/src/system.c
+@@ -2464,6 +2464,7 @@ static void sysPrepareNeutrinoIgr(const char *path, const char *startup, int com
+         snprintf(target, sizeof(target), "%s", chosen);
+         snprintf(sysIgrArg, sizeof(sysIgrArg), "-igr=%s", target);
+     }
++    ripps2Diag("IGR: Neutrino return target %s", target);
+     if (!sysNeutrinoIgrTarget(target) || !sysNeutrinoTakes(path, NF_MMCE_GAMEID))
+         return;
+ 
+@@ -2800,6 +2801,7 @@ static int sysRunNeutrinoLaunch(const char *driver, const char *path, const char
+     }
+ 
+     if (checkOnly) {
++        ripps2Diag("IGR: launch engine Neutrino, backend %s, game %s", driver, startup ? startup : "?");
+         ripps2DiagBeforeLaunch(); // persist the IGR decision before any card switch or teardown
+         return sysNeutrinoConfirmArgv(argc, argv) ? 0 : NEUTRINO_LAUNCH_DECLINED;
+     }

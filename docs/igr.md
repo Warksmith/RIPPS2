@@ -1,279 +1,128 @@
 # In-game return (IGR branch)
 
 Hold **L1 + L2 + R1 + R2 + SELECT + START** to leave a PS2 game.
-
-Console status: Ace Combat 4 over UDPFS now returns successfully through the
-BIBLE bridge, and also directly to `mc0:/RIPPS2/RIPPS2.ELF` with the `nigr`
-runtime. Native OPL still needs an independent test with a supported backend.
-The older `F:/neutrino` installation is a different LUNA revision; see
-[the runtime comparison](#luna-runtime-comparison-and-hardening).
-
 With **Neutrino LUNA**, the chord returns directly. With the **built-in OPL
-core**, it opens RIPPS2's in-game menu: choose **Exit Game**, or turn off
-**Settings > Game Launching > In-Game Menu** to make the chord exit directly.
+core**, it opens the in-game menu: choose **Exit Game**, or disable
+**Settings > Game Launching > In-Game Menu** for a direct exit.
 Compatibility **Mode 6 (Disable IGR)** disables automatic IGR integration.
 
-## RIPPS2 on MMCE SD
+## Direct return to RIPPS2
 
-For an installation where the boot card starts RIPPS2 from the MMCE SD:
+1. Install a complete GameID-capable **Neutrino LUNA** runtime, including its
+   matching `neutrino.elf`, `modules/ee_core.elf` and `modules/mmceigr.irx`.
+   Warksmith's [igr-hardening branch](https://github.com/Warksmith/neutrino-luna/tree/igr-hardening)
+   at `9798232` includes the tested restoration and runtime validation.
+2. Select that runtime explicitly under **Game Launching > Neutrino**.
+   Automatic discovery can select an older installation when several exist.
+3. Put RIPPS2 on the restored boot memory card, for example at
+   `mc0:/RIPPS2/RIPPS2.ELF`. RIPPS2 can still initially start from MMCE SD;
+   the memory-card copy is the IGR destination.
+4. Set **Settings > Game Launching > In-Game Menu > IGR Path** to that exact
+   memory-card path, and enable MMCE **Send GameID on Launch**.
+5. Check the preview for both `-igr=mc0:/RIPPS2/RIPPS2.ELF` and
+   `-mmce_gameid=0:SLUS_201.52` (slot 1 / Ace Combat 4 example).
+6. Launch and use the chord. Release it when reset begins. The selected
+   slot's boot card is restored before RIPPS2 is loaded from it.
 
-1. Keep the boot card configured to start RIPPS2 (BIBLE/Boot Lock or your
-   existing boot-loader configuration).
-2. Use the **GameID-capable Neutrino LUNA runtime**, including its matching
-   `ee_core.elf` and `modules/mmceigr.irx`. The reference implementation is
-   [neutrino-luna commit 3a60180](https://github.com/Warksmith/neutrino-luna/commit/3a601805da490fb276a6febe32bbd5cab954c684),
-   also present in the fork's later `udpfs-speed` branch. Replacing only
-   `neutrino.elf` is insufficient; install the complete matching runtime.
-3. Enable **Send GameID on Launch** for MMCE. Leave **IGR Path** empty or
-   `Browser` to use the boot-loader route. With build 150, an empty path
-   prefers the optional BIBLE bridge when installed (instructions below).
-4. Launch a PS2 game and use the chord. Neutrino switches the MMCE back to its
-   boot card, then follows the selected return route. On the tested BIBLE
-   setup, use the bridge for RIPPS2 on MMCE SD; the `hdd`/Browser route stalled.
+Use `mc1:` and slot `1` when appropriate. The ELF must exist on the card
+that will be restored. Neutrino's resident return loader accepts memory-card
+ELF paths, not direct MMCE SD, USB or network ELF paths.
 
-Without a direct return target, RIPPS2 supplies `-igr=hdd` and, for an eligible MMCE slot,
-`-mmce_gameid=0:SLUS_203.12` (example). Despite the name, LUNA's `hdd` target
-means **return through the console boot chain**; it does not require RIPPS2 or
-the game to be on an HDD. Without an installed/configured boot loader it goes
-to the PS2 browser.
+The user confirmed this route with Ace Combat 4 over UDPFS using both
+`af68bf4-IGR` and `af68bf4-IGR-h1`. The published `9798232-igr-hardening`
+build contains the same hardened source; its 41 modules match the test kit.
 
-RIPPS2 no longer sends the GameID itself for this handoff. Neutrino performs
-the switch after loading its files and arms the matching IGR restoration.
-Slots covered by virtual memory-card arguments are excluded. The selected
-slot is the same preferred-slot/fallback order used by RIPPS2's existing
-GameID support; this feature does not introduce switching of both cards.
+## Destination selection
 
-## Return destinations and compatibility
+An explicit memory-card IGR Path takes precedence. When it is empty,
+Neutrino uses RIPPS2's own launch path if it is on a memory card; otherwise
+it uses the existing `hdd`/Browser fallback. Typing `Browser` explicitly
+selects that fallback. `hdd` means the console's browser/HDD boot chain,
+not a direct load of RIPPS2 from an HDD. This fallback stalled on the tested
+BIBLE setup; use the explicit memory-card destination above for that setup.
 
-For RIPPS2 launched from `mc0:/` or `mc1:/`, Neutrino's automatic destination
-is that ELF. An explicit memory-card **IGR Path** takes precedence. Other
-locations use the boot-loader route. Explicit global/per-game `-igr=` and
-`-mmce_gameid=` arguments retain their existing last-value-wins behavior;
-disabled `$` arguments and arguments after `--b` do not override the defaults.
+The native OPL destination policy is unchanged: an empty path means Browser,
+and existing reachability/stale-path checks still apply to explicit paths.
+Its policy can reject a self-return path that Neutrino accepts.
 
-RIPPS2 detects LUNA's options from the executable's parser strings, even when
-`version.txt` only reports an upstream version such as `v1.8.0`. Build 148
-also inspects the normal **ps2-packer LZMA** executable distributed by LUNA;
-an unpacked executable is supported too. Build 147 missed packed executables
-and therefore omitted automatic `-igr=` and `-mmce_gameid=` arguments.
-Stock, unrecognized, corrupt or unsupported packed executables do **not**
-automatically receive fork-only arguments. An older
-LUNA build with only `-igr` can return, but does not provide the deferred
-GameID/boot-card restore contract: use the complete GameID-capable runtime
-for MMCE switching. The existing launch-argument budget is still enforced
-before teardown and before any GameID switch.
+Global/per-game `-igr=` and `-mmce_gameid=` arguments retain their
+last-value-wins behavior. Disabled `$` arguments and options after `--b`
+do not override the automatic handoff. The argument budget is checked before
+teardown or any GameID switch. Build 151 does not discover or cache another
+return executable when IGR Path is empty.
+
+## MMCE restoration
 
 | Engine | Card restored on IGR |
 | --- | --- |
-| Neutrino LUNA | The selected slot's boot card, using LUNA's bundled `mmceigr.irx` |
-| Built-in OPL | The numbered card and channel captured immediately before RIPPS2 sent GameID; boot card if that identity is unavailable or special |
+| Neutrino LUNA | The selected slot's boot card, using `mmceigr.irx` |
+| Built-in OPL | The numbered card and channel captured before RIPPS2 sent GameID; boot fallback when that identity is unavailable or special |
 
-MMCE's current API does not distinguish boot, named and GameID cards reliably
-on SD2PSX-family devices. The boot-card fallback follows LUNA's behavior. It
-does not promise restoration of an arbitrary named card. Neutrino's current
-external protocol supports boot-card restoration only, including when the
-previous selection was numbered.
+For Neutrino, RIPPS2 leaves the GameID send to the external runtime, which
+loads its files before switching and arms restoration at the same time.
+VMC-protected slots are excluded. Slot selection follows the existing
+preferred-slot/fallback order; it does not switch both cards.
 
-The native OPL restoration runs after shutdown and the IOP reset, before
-MCMAN or the boot loader probes the card. It uses baseline Set Card and Set
-Channel commands, waits between them, and bounds both the SIO2 transaction
-and card-ready polling. A failed GameID send does not arm an automatic
-restore. Explicit MMCE IGR slot settings still request boot-card restoration
-for slots without a captured previous selection. The existing native IGR
-destination policy remains in effect (boot-loader route by default).
+MMCE's current API does not reliably distinguish boot, named and GameID
+cards on SD2PSX-family devices. Boot fallback follows LUNA's behavior. The
+external Neutrino protocol does not restore arbitrary numbered/named cards.
 
-PS1/POPStarter, physical reboot/power-cycle behavior, and arbitrary external
-Neutrino runtimes are outside this change.
+Native restoration runs after shutdown and IOP reset, before MCMAN probes
+the card. It uses Set Card/Set Channel with bounded SIO2 and card-ready
+polling. A failed GameID send does not arm automatic restoration. Explicit
+MMCE IGR slot settings request boot fallback where no previous selection
+was captured. PS1/POPStarter and physical power cycles are outside this feature.
 
-## Validation
+## Runtime compatibility and diagnostics
 
-The regression harness is `elf/tests/test_ripps2_igr.py`, run against the
-prepared patch tree with `RIPTOPL_DIR=<tree>`. It executes the actual C
-argument/capability and native restore code using host mocks. This checks
-protocol ordering and failure handling; it cannot verify a console's SIO2
-timing, boot exploit, or game-specific pad hook.
+RIPPS2 detects LUNA options from executable parser strings, including
+standard ps2-packer LZMA executables. Stock, unrecognized or malformed
+executables do not automatically receive fork-only arguments.
 
-`elf/tests/test_ripps2_neutrino_packed_probe.py` exercises the actual decoder and
-capability scanner with AddressSanitizer and UndefinedBehaviorSanitizer.
-It covers merged/separate ELF segments, older packer sizes, multiple payload
-sections, fork versus stock options, truncation and invalid size fields.
-Host tests need a C compiler and `liblzma-dev`; the pinned PS2 toolchain
-already supplies the target liblzma library. The decoder never executes the
-payload or writes to addresses from the inspected ELF.
+The previously failing `F:/neutrino` was `02cbf4f`: it supported `-igr` but
+lacked `-mmce_gameid` and the restore module. The working `nigr` was Warksmith
+LUNA `af68bf4`, which includes MMCE restoration from `3a60180`. The older
+runtime attempted to open the return ELF while the game card was selected.
+Install the complete matching runtime rather than replacing only its loader.
 
-Build 148 fixes the confirmed Neutrino launch-argument omission and rearms
-native OPL's pad-hook search at an IOP reset. Previously, a latched flag from
-the old game code could suppress retries after the controller buffer was
-invalidated. The new `test_ripps2_igr_rehook.py` executes the native scanner
-and reset hook with a replaced call site, checking recovery in both standard
-and RetroAchievements configurations. Temporary pauses in controller DMA
-still do not trigger scans. Each actual IOP reset now incurs a pad scan.
+Hardened LUNA checks the loader/core configuration signature and size,
+validates return paths before switching, requires complete module reads,
+and stops launch on missing restoration support, GameID errors or exhausted
+status polling. After a timeout, restart before retrying because card
+selection may be uncertain. Polling assumes individual driver calls return.
 
-Console feedback for build 148 (Ace Combat 4, wired controller in port 1):
-both chords now lead to a black screen, but the card stays on the game card
-and RIPPS2 does not restart. OPL was explicitly selected with Mode 6 off.
-The Neutrino preview shows `-igr=hdd` and `-qb`, but no `-mmce_gameid=` despite
-Send GameID on Launch being enabled. This does not yet verify either engine's
-card restoration or return path.
+`DIAG.TXT` beside RIPPS2 records the actual backend, return target and restore
+decision before teardown. These records show what was armed; they do not
+prove that hardware accepted the return command. UDPFS uses Neutrino even
+when OPL is selected as a default. Build 151 retains these diagnostics.
 
-Build 149 is a follow-up test build:
+## Validation and reproduction
 
-- Native shutdown RPC binding and completion share a two-second deadline.
-  If the IOP is stuck, reset can proceed to the restore module. RPC client
-  and argument storage remain valid for a late completion. Power-off
-  requests retain their original meaning.
-- Both native GameID sending and Neutrino slot selection retry a failed
-  presence ping, using the same three-attempt policy as MMCE discovery.
-- `DIAG.TXT` beside RIPPS2 on its drive records the Neutrino capability/slot
-  decision before launch and the native restore record before teardown.
-  These records show whether restoration was armed; they do not prove that
-  the in-game restore module ran or that the card accepted its command.
+`elf/build.sh` applies the committed patch series and derives the version
+from the last patch: build 151 is `v1.5.1-beta`. The pinned target image and
+host prerequisites are in `.github/workflows/build-elf.yml`.
 
-The optional test kit contains a separate `nigr/` runtime built from
-Neutrino LUNA `af68bf4c285d6d9114a60675edff0cf7306a4f54`, with its matching
-loader, EE core, configuration and IOP modules. Copy that whole directory
-beside RIPPS2 and select `nigr/neutrino.elf` in the Neutrino settings. Keep
-the existing LUNA directory intact. The launch preview must contain both
-`-igr=hdd` and `-mmce_gameid=<slot>:<game>` for automatic boot-card restoration.
-If the second argument is absent, the new `DIAG.TXT` records which gate
-prevented it. Subsequent console tests confirmed this runtime restores the
-boot card and returns both through the bridge and directly to a memory-card ELF.
+`python3 elf/tests/run_host_tests.py <prepared-tree>` runs the host suite.
+IGR harnesses execute argument selection, native restoration, pad-hook
+recovery, shutdown deadlines and return-path selection with host mocks.
+The packed capability probe runs with ASan/UBSan. These checks do not
+establish physical SIO2 timing or every game's pad compatibility.
 
-`elf/neutrino/build_igr_runtime.sh <new-build-dir> <new-output-dir>` reproduces
-the optional runtime inside LUNA's pinned
-`ps2max/dev@sha256:e390699d46818e7c736f414ae5b1789d3ef7d3d914ce646a8a7bd027bd7e4521`
-container. RIPPS2 itself continues using its existing pinned ps2dev image.
+`elf/neutrino/build_igr_runtime.sh <new-work-dir> <new-out-dir> hardened`
+reproduces `af68bf4-IGR-h1` using the pinned LUNA image documented in that
+script. Its patch is also committed upstream as `9798232`; the external
+runtime is not embedded in RIPPS2.
 
-Console acceptance checks:
-
-- Launch through Neutrino LUNA from MMCE SD, confirm the per-game card,
-  hold the chord, confirm boot card restoration and RIPPS2 restart.
-- Repeat with the card in slot 2, and with a VMC covering one physical slot.
-- For the native core, start from a numbered card on a non-default channel;
-  exit and confirm both are restored. Repeat from the boot card.
-- Test a game with Mode 6 and a normal physical memory card; neither should
-  gain an automatic MMCE switch/return behavior it does not support.
-
-### Build 150: direct BIBLE return bridge
-
-Build 149 console feedback confirmed the chord and boot-card switch, followed
-by a black screen. The supplied DIAG.TXT confirms Neutrino armed
-`-mmce_gameid=0:SLUS_201.52`. The matching library cache lists that Ace Combat 4
-image on UDPFS. UDPFS has no native OPL backend, so selecting an OPL default
-does not establish a native OPL test. The Neutrino preview is showing the
-actual launch path. Build 150 also logs that backend explicitly.
-
-The black screen's exact location remains unverified. Both the `hdd` Neutrino
-target and native Browser fallback depend on the system-menu boot route.
-Build 150 adds an optional direct memory-card route: a dedicated plain BIBLE
-MMCE ELF at `mc0:/RIPPS2/IGR.ELF` or `mc1:/RIPPS2/IGR.ELF`. It starts RIPPS2
-using the existing `SYS-CONF/PS2BBL.INI`. It does not replace or rebind the
-installed system update. Subsequent console testing confirmed this bridge route.
-
-Installation for the test kit:
-
-1. Replace the RIPPS2 ELF on MMCE SD with build 150. Keep the build 149 `nigr/`
-   runtime and select it in RIPPS2.
-2. Copy `bridge/RIPPS2/IGR.ELF` into the restored boot card's `RIPPS2` folder,
-   so the console sees `mc0:/RIPPS2/IGR.ELF` (or `mc1:`). This is the virtual
-   memory card, not a folder directly on MMCE SD. On the tested folder-backed
-   setup the destination is `MemoryCards/PS2/BOOT/BootCard-2.folder/RIPPS2/IGR.ELF`.
-3. Leave IGR Path empty and restart RIPPS2 with that card selected. Startup
-   checks the optional helper's ELF header and caches its path before GameID
-   switching. With no helper, the existing Browser fallback remains. An
-   explicit IGR Path, including `Browser`, takes precedence.
-4. Confirm the Neutrino preview now has `-igr=mc0:/RIPPS2/IGR.ELF` (or `mc1:`)
-   and `-mmce_gameid=...`, then test the chord. Release it when reset begins.
-
-The dedicated bridge bypasses BIBLE's startup hotkeys and uses its AUTO
-entry. The IGR chord includes BIBLE's R1+START rescue and L2+R2 keys-page
-shortcuts; those must not redirect a return. The installed power-on BIBLE
-and its configuration are unchanged. The bridge's fallback emergency screen
-still reports failure if no AUTO target can be loaded.
-
-For native numbered-card restoration, the helper and BIBLE configuration
-must be available on the restored card (or on another unchanged physical
-card). The bridge does not override the captured card/channel to force boot.
-For an independent native OPL test, use a supported game source such as
-MMCE, USB or APA HDD and explicitly select OPL for that game.
-
-`elf/bible/build_igr_bridge.sh` builds the plain MMCE ELF from BIBLE
-`f5705eb6ae422b95c08d4e5662f72b54e133e857`, the version already used by this
-project, with `igr-bridge-auto-start.patch` and the pinned PS2SDK image.
-The kit includes the source archive, patch, build script and GPL-3 license.
-Host tests cover pre-switch caching, header rejection, explicit overrides,
-Neutrino argument composition and the bridge's shortcut bypass. Console
-confirmation is limited to the reported Neutrino/Ace Combat 4 setup.
-
-### LUNA runtime comparison and hardening
-
-The failing and working SD installations were read and hashed on 2026-11-06:
-
-| Installation | Version | MMCE return support |
-| --- | --- | --- |
-| `F:/neutrino` | `v1.8.0-73-g02cbf4f` | `-igr` only; no `-mmce_gameid` parser or `modules/mmceigr.irx` |
-| `F:/nigr` | `af68bf4-IGR` | Includes deferred GameID switching and boot-card restoration |
-
-The failing loader's SHA-256 is
-`ef16db16ae6a9e63fcf24eefc69bd5dbd8598a8e221a2b67fd149dec039068f7`.
-The working loader's SHA-256 is
-`c84d3e3c6c1b532638727762ff00fa61fbc1a6ef8be9734cdb25ba1e968556a9`,
-identical to the build 149 test kit. `nigr` is itself LUNA Neutrino.
-Commit `3a60180`, after `02cbf4f`, adds the missing restoration before MCMAN
-and the ELF load. The older runtime can attempt a direct memory-card return,
-but cannot restore an MMCE card switched by the frontend. It then looks for
-the return ELF on the game card. This explains the red load-failure screen
-without requiring a different RIPPS2 ELF loader.
-
-For direct return, keep RIPPS2 on the restored boot card at
-`mc0:/RIPPS2/RIPPS2.ELF`, and set **IGR Path** to that exact path. Confirm
-both `-igr=mc0:/RIPPS2/RIPPS2.ELF` and `-mmce_gameid=0:<game>` in the preview.
-The bridge is unnecessary for this route. It remains useful for starting
-RIPPS2 from MMCE SD, which the resident return loader cannot directly mount.
-
-`elf/neutrino/igr-runtime-hardening.patch` strengthens the working `af68bf4`
-baseline without changing its resident return sequence:
-
-- A dedicated settings signature and size check reject older or mismatched
-  EE cores before card switching or IOP reset. This prevents copying the
-  larger restore configuration into an older core's smaller structure.
-- Missing/empty/unreadable restore modules and invalid explicit MMCE/return
-  arguments stop launch instead of silently dropping restoration support.
-- Module reads handle partial reads and interruptions; failed reads discard
-  their buffers. Settings scans stay inside the loaded file.
-- Failed GameID sends and status-poll exhaustion stop launch. The old loop
-  incorrectly reported success even if every status query failed or stayed
-  busy. A timeout can leave selection uncertain; restart before retrying.
-
-Build the optional full runtime with:
-
-```sh
-sh elf/neutrino/build_igr_runtime.sh /tmp/neutrino-h1 /artifacts/nligr hardened
-```
-
-Use the same pinned LUNA container listed above. The default `baseline` mode
-still builds the unmodified, console-tested `af68bf4-IGR`. The hardened build
-reports `af68bf4-IGR-h1` and ships a SHA-256 manifest. Install the whole
-`nligr/` folder separately, then explicitly select its `neutrino.elf` in
-RIPPS2. Do not mix its loader/core with files from either older runtime.
-RIPPS2 build 150 needs no changes for this runtime.
-
-`NEUTRINO_DIR=<patched-tree> python3 elf/neutrino/test_igr_runtime.py` compiles
-and executes the actual loader code with ASan/UBSan. It checks both slots,
-quick and non-quick launch paths, missing/truncated/mismatched core data,
-short/error reads, invalid paths, MMCE send/status errors and polling limits.
-The target build and RIPPS2 packed capability probe pass (`0xfff`, including
-IGR and MMCE GameID). The user subsequently confirmed the hardened h1 test
-kit also works for direct return to RIPPS2 on the restored memory card.
-This hardware confirmation does not cover every slot, backend or failure
-case exercised by the host tests.
+Native OPL still needs independent console testing on a supported backend
+such as MMCE, USB or APA HDD. Test numbered-card/channel restoration and
+boot fallback separately. Slot 2, VMC-protected slots, Mode 6 and other
+games/backends also need broader hardware coverage.
 
 ## Reference and provenance
 
 - [LUNA GameID integration](https://github.com/Warksmith/LUNA/commit/6796954f4c5ce5c40d4dd074cfff0bfa1ba56325).
+- [Neutrino MMCE restoration](https://github.com/Warksmith/neutrino-luna/commit/3a601805da490fb276a6febe32bbd5cab954c684).
 - [LUNA's OPL return hook](https://github.com/Warksmith/Open-PS2-Loader/commit/b881438a916ab1d2706134350dc850dc040d2604).
 - [MMCE driver/protocol source](https://github.com/ps2-mmce/mmceman/tree/de28936fdf45fe445554cfa0b8f058b05fa8212f).
-  The native restore module adapts its PIO transport, carries its MIT license,
-  and retains the PS2SDK AFL-2.0 notice on the SIO2 register definitions.
+  The native restore module retains its MIT license and PS2SDK AFL-2.0 notice.
 - [ps2-packer layout reference](https://github.com/ps2dev/ps2-packer/tree/d43ac514cd9bcce3e04f0ea54509d88d1f4b9719).
-  The probe reads its stub/header layout and decodes raw LZMA1 through liblzma.

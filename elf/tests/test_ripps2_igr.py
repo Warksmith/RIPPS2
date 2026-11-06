@@ -51,8 +51,6 @@ with tempfile.TemporaryDirectory() as temp:
 #define NF_MMCE_GAMEID 0x800
 typedef struct { char arg[2][160]; } neutrino_vmc_args_t;
 static char gNeutrinoArgs[256], gExitPath[256], boot[256] = "mmce0:/RIPPS2.ELF";
-static char bridge[256] = "Browser";
-static const char *ripps2ExitPath(char *p, int n) { (void)p; (void)n; return bridge; }
 static int flags = NF_IGR | NF_MMCE_GAMEID, available = 1, seenMask;
 static int sysNeutrinoTakes(const char *p, unsigned bit) { (void)p; return (flags & bit) != 0; }
 static int ripps2GetBootPath(char *p, int n) { snprintf(p,n,"%s",boot); return boot[0] != 0; }
@@ -77,15 +75,11 @@ int main(void) {
     sysPrepareNeutrinoIgr(p,g,0,NULL,NULL);
     assert(!strcmp(sysIgrArg,"-igr=hdd") && !sysIgrGameArg[0]);
     flags |= NF_MMCE_GAMEID;
-    strcpy(bridge,"mc1:/RIPPS2/IGR.ELF");
-    sysPrepareNeutrinoIgr(p,g,0,NULL,NULL);
-    assert(!strcmp(sysIgrArg,"-igr=mc1:/RIPPS2/IGR.ELF"));
-    assert(!strcmp(sysIgrGameArg,"-mmce_gameid=0:SLUS_203.12"));
     strcpy(gExitPath,"mc0:/EXPLICIT.ELF");
     sysPrepareNeutrinoIgr(p,g,0,NULL,NULL);
     assert(!strcmp(sysIgrArg,"-igr=mc0:/EXPLICIT.ELF"));
+    assert(!strcmp(sysIgrGameArg,"-mmce_gameid=0:SLUS_203.12"));
     gExitPath[0]=0;
-    strcpy(bridge,"Browser");
     strcpy(boot,"mc1:/RIPPS2/RIPPS2.ELF");
     sysPrepareNeutrinoIgr(p,g,0,NULL,NULL);
     assert(!strcmp(sysIgrArg,"-igr=mc1:/RIPPS2/RIPPS2.ELF"));
