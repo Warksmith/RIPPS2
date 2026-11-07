@@ -1,0 +1,116 @@
+diff --git a/include/udpfslist.h b/include/udpfslist.h
+--- a/include/udpfslist.h
++++ b/include/udpfslist.h
+@@ -28,6 +28,9 @@
+                   const char *prefix, const char *sub, int browse);
+ int udpfsListChanged(void);
+ void udpfsListReset(void);
++/* Explicit SELECT: bypass both ID caches on the next successful ISO scan.
++   Failed/cancelled scans retain the request; normal startup keeps using IDs. */
++void udpfsRequestRescan(void);
+ 
+ /* Compose a rename in the same directory, retaining legacy ID prefixes. */
+ int udpfsFilePath(const base_game_info_t *game, const udpfs_game_file_t *file,
+diff --git a/src/udpfslist.c b/src/udpfslist.c
+--- a/src/udpfslist.c
++++ b/src/udpfslist.c
+@@ -14,6 +14,15 @@
+ 
+ static udpfs_asset_names_t udpfsAssetNames;
+ static int udpfsAssetNamesReady;
++static volatile unsigned int udpfsRescanRequested;
++static unsigned int udpfsRescanCompleted;
++
++void udpfsRequestRescan(void)
++{
++    // GUI produces requests; the list worker retires only the generation it
++    // scanned, so a press during a running scan is not accidentally consumed.
++    udpfsRescanRequested++;
++}
+ 
+ static void udpfsAddAssetName(udpfs_asset_names_t *names, const char *name)
+ {
+@@ -493,15 +502,21 @@
+     udpfs_scan_node_t *node;
+     udpfs_id_entry_t *ids;
+     int result, i = 0;
++    unsigned int rescan = udpfsRescanRequested;
++    int force = rescan != udpfsRescanCompleted;
++    int idCount;
+     udpfsAssetNamesReady = 0;
+-    ripps2Diag("UDPFS: list scan begin");
++    ripps2Diag("UDPFS: list scan begin%s", force ? " (forced ID refresh)" : "");
+     scan.oldGames = *games;
+     scan.oldFiles = *files;
+-    scan.oldCount = *count;
++    scan.oldCount = force ? 0 : *count;
+     scan.browse = browse;
+     scan.sub = browse && sub != NULL ? sub : "";
+-    ids = udpfsLoadIds(prefix, &scan.idCount);
+-    scan.ids = ids;
++    // Load the old cache only to avoid rewriting identical results after a
++    // forced scan. Neither disk nor in-memory IDs may satisfy that scan.
++    ids = udpfsLoadIds(prefix, &idCount);
++    scan.idCount = force ? 0 : idCount;
++    scan.ids = force ? NULL : ids;
+ 
+     if (scan.sub[0]) {
+         char path[256];
+@@ -545,7 +560,7 @@
+     // A folder view is only a subset of the share. It can reuse IDs, but must
+     // not replace the complete cache with that subset.
+     if (!browse)
+-        udpfsSaveIds(prefix, newGames, newFiles, scan.count, ids, scan.idCount);
++        udpfsSaveIds(prefix, newGames, newFiles, scan.count, ids, idCount);
+     free(ids);
+     udpfsListReset();
+     udpfsAssetNames = scan.assets;
+@@ -556,6 +571,7 @@
+     *games = newGames;
+     *files = newFiles;
+     *count = scan.count;
++    udpfsRescanCompleted = rescan;
+     ripps2Diag("UDPFS: list ready: %d games, %d reused IDs, %d ISO probes", scan.count, scan.reused, scan.probes);
+     return scan.count;
+ }
+diff --git a/src/opl.c b/src/opl.c
+--- a/src/opl.c
++++ b/src/opl.c
+@@ -38,6 +38,7 @@
+ #include "include/bdmsupport.h"
+ #include "include/ethsupport.h"
+ #include "include/udpfssupport.h"
++#include "include/udpfslist.h"
+ #include "include/httpsupport.h"
+ #include "include/hddsupport.h"
+ #include "include/appsupport.h"
+@@ -615,6 +616,14 @@
+ {
+     item_list_t *support = curMenu->userdata;
+     int pageMode = support != NULL ? mixPageMode(support) : -1;
++
++    // SELECT requests fresh disc IDs as well as directory entries, including
++    // saved drive pages and All Games. Automatic updates keep their fast IDs.
++    if (support && (support->mode == UDPFS_MODE || pageMode == UDPFS_MODE ||
++                    (pageMode < 0 && MODE_IS_MIX(support->mode) && gNetworkProtocol == NET_PROTO_UDPFS))) {
++        udpfsRequestRescan();
++        libViewMarkDirty(UDPFS_MODE);
++    }
+ 
+     // build 116: a drive page showing its saved games: SELECT starts its drive, whose list (and art) then takes the page
+     if (pageMode >= 0) {
+diff --git a/.github/scripts/test_udpfs_assets.py b/.github/scripts/test_udpfs_assets.py
+--- a/.github/scripts/test_udpfs_assets.py
++++ b/.github/scripts/test_udpfs_assets.py
+@@ -16,7 +16,10 @@
+ 
+ 
+ names_type = header[header.index('typedef struct', header.index('At most eight')):header.index('} udpfs_asset_names_t;') + len('} udpfs_asset_names_t;')]
+-shared = scanner[scanner.index('static udpfs_asset_names_t udpfsAssetNames;'):scanner.index('/* A hint cache')]
++shared = scanner[scanner.index('static udpfs_asset_names_t udpfsAssetNames;'):
++                 scanner.index('static int udpfsAssetNamesReady;') + len('static int udpfsAssetNamesReady;')]
++shared += '\n' + '\n'.join(function(scanner, sig) for sig in [
++    'static void udpfsAddAssetName(', 'int udpfsTakeAssetNames(', 'int udpfsReadAssetNames('])
+ table = re.search(r'static const char \*const udpfsArtCaseNames\[8\] = \{.*?\};', source, re.S).group()
+ parts = [function(source, sig) for sig in [
+     'static void udpfsSetWaitingForServer(int waiting)\n{',

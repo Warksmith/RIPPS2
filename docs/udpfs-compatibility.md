@@ -90,9 +90,18 @@ No LUNA cache file or game-ID parser is imported.
   length, checksum, terminated strings and duplicate paths. UDPFS has no rename
   operation, so an interrupted cache write is discarded on the next read and
   the images are probed again. Cache failures never gate listing or launching.
-- As with any size/timestamp cache, replacing an image while preserving both
-  values cannot be detected. Delete `RIPPS2.UID` and refresh to rebuild its IDs.
-  SELECT otherwise enumerates the server and reuses matching IDs.
+- As with any size/timestamp cache, automatic scans cannot detect a replacement
+  that preserves both values. From build 154, SELECT bypasses both in-memory
+  and persistent IDs and reopens plain-named images in the scanned view.
+  Legacy filenames still supply their embedded IDs. All Games and saved UDPFS
+  pages request the same forced refresh. Normal boot, folder navigation and
+  background scans retain cache reuse. A failed/cancelled directory scan keeps
+  the last-good list and the refresh request for the next attempt.
+- `allgames.bin` stores the combined All Games snapshot; deleting it does not
+  invalidate UDPFS's `RIPPS2.UID` or IDs already in memory. No cache deletion is
+  needed for SELECT. With folder browsing off, a successful forced refresh also
+  saves corrected IDs when writes and Fast Cache are enabled; a partial folder
+  view still cannot replace the whole-library cache.
 
 The host regression fixture with 291 valid games (one legacy filename) takes
 290 image probes on its first scan and zero after a process restart. This is a
@@ -140,6 +149,29 @@ shared-discovery harness covers case collisions, late folders, failed opens,
 partial reads, close failures, cancellation and unchanged per-image art paths.
 The RA-enabled PS2 build passed with no warnings in the changed scanners.
 Physical-console startup timing remains to be checked.
+
+## Explicit title refresh (build 154)
+
+SELECT now requests a fresh disc-ID pass from the UDPFS page, its saved page,
+or All Games. It bypasses both ID caches for that scan; ordinary startup still
+uses the fast path. Requests made during a scan remain pending for the next
+queued pass. Failed directory scans do not consume the request or replace the
+visible catalogue. Refreshing another drive's saved page does not affect UDPFS.
+
+The host regressions compile the production SELECT handler and scanner. They
+cover routing, cancellation/failure recovery, a request during an active scan,
+same-size/same-timestamp image replacements and reuse after the corrected ID
+is saved. In RIPPCSX2, SELECT on the 291-game share produced 291 ISO probes and
+zero reused IDs, while normal startup produced zero probes and 291 reused IDs.
+Every path, ID and size matched before/after refresh; ART/THM/LNG stayed ready.
+The emulator uses disabled writes against the live share; cache corrections
+are verified separately by the writable host fixture. Physical-console SELECT
+and startup timing still require validation.
+
+Validation exercised all 250 host checks. The asset harness needed a narrower
+source extraction after the refresh state was added; its rerun and the theme
+and language checks passed, leaving no unresolved unexpected failures. The
+RA-enabled PS2DEV build passed; the scanner introduced no compiler warnings.
 
 ## Server interoperability
 

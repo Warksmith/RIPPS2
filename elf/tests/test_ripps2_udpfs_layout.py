@@ -49,6 +49,8 @@ typedef uint32_t u32;
 static int cancelled, probes, allocation = -1, readFailure = -1, statFailure;
 static int openDirs, maxDirs, closeResult;
 static int unknownMetadata;
+static int requestDuringProbe;
+void udpfsRequestRescan(void);
 static int gRipps2FastCache, gEnableWrite, writeAllowed = 1, writes, activeWrites;
 static int ioWriteBegin(void) {
     if (!writeAllowed) return 0;
@@ -131,6 +133,10 @@ int sbIsoStartup(const char *path, char *startup, int size) {
     FILE *f = fopen(path, "rb");
     int ok;
     probes++;
+    if (requestDuringProbe) {
+        requestDuringProbe = 0;
+        udpfsRequestRescan();
+    }
     assert(openDirs <= 1); // leave the other UDPFS handles to art and ISO mounts
     if (!f) return 0;
     ok = fgets(startup, size, f) && !strncmp(startup, "SLUS_", 5);
@@ -174,6 +180,7 @@ int main(int argc, char **argv) {
         unknownMetadata = !strcmp(argv[2], "unknown-stat");
         cancelled = !strcmp(argv[2], "cancel");
         if (!strcmp(argv[2], "read-failure")) readFailure = 0;
+        if (!strcmp(argv[2], "force")) udpfsRequestRescan();
         result = udpfsReadList(&games, &files, &count, prefix, "", !strcmp(argv[2], "browse"));
         assert(result == atoi(argv[4]) && probes == atoi(argv[3]) && writes == atoi(argv[5]));
         assert(!activeWrites && !openDirs);
@@ -234,6 +241,26 @@ int main(int argc, char **argv) {
     before = probes;
     assert(udpfsReadList(&games, &files, &count, prefix, "", 0) == 10);
     assert(probes == before + 1); // only the intentionally invalid ISO is re-probed
+    // SELECT bypasses live IDs, survives failed/cancelled scans, then retires.
+    udpfsRequestRescan();
+    oldGames = games; oldFiles = files; oldCount = count;
+    cancelled = 1;
+    assert(udpfsReadList(&games, &files, &count, prefix, "", 0) < 0);
+    cancelled = 0;
+    readFailure = 0;
+    assert(udpfsReadList(&games, &files, &count, prefix, "", 0) < 0);
+    readFailure = -1;
+    assert(games == oldGames && files == oldFiles && count == oldCount);
+    before = probes;
+    requestDuringProbe = 1; // a later SELECT must survive completion of this scan
+    assert(udpfsReadList(&games, &files, &count, prefix, "", 0) == 10);
+    assert(probes == before + 10);
+    before = probes;
+    assert(udpfsReadList(&games, &files, &count, prefix, "", 0) == 10);
+    assert(probes == before + 10);
+    before = probes;
+    assert(udpfsReadList(&games, &files, &count, prefix, "", 0) == 10);
+    assert(probes == before + 1);
     oldGames = games; oldFiles = files; oldCount = count;
     cancelled = 1;
     assert(udpfsReadList(&games, &files, &count, prefix, "", 0) < 0);
@@ -330,6 +357,21 @@ with tempfile.TemporaryDirectory(prefix='ripps2-udpfs-') as tmp:
     assert cache.read_bytes() == good
     scan('unknown-stat', probes=10)
     assert cache.read_bytes() == good
+
+    # Same path/size/timestamp: normal startup may reuse the ID, but SELECT
+    # must reopen the image and persist the corrected ID for the next boot.
+    compressed = share / 'Compressed.cso.iso'
+    original = compressed.read_bytes()
+    metadata = compressed.stat()
+    compressed.write_bytes(b'SLUS_999.99')
+    os.utime(compressed, ns=(metadata.st_atime_ns, metadata.st_mtime_ns))
+    scan()
+    scan('force', probes=10, writes=1, startup='SLUS_999.99')
+    scan(startup='SLUS_999.99')
+    scan('force', probes=10, startup='SLUS_999.99')  # unchanged: no write
+    compressed.write_bytes(original)
+    os.utime(compressed, ns=(metadata.st_atime_ns, metadata.st_mtime_ns))
+    scan('force', probes=10, writes=1)
 
     # Changes must re-read SYSTEM.CNF, including same-size replacements with a new timestamp.
     compressed = share / 'Compressed.cso.iso'
