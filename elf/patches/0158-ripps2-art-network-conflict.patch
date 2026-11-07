@@ -1,0 +1,50 @@
+diff --git a/src/ripps2art.c b/src/ripps2art.c
+--- a/src/ripps2art.c
++++ b/src/ripps2art.c
+@@ -56,6 +56,8 @@
+ #include "include/iosupport.h"
+ #include "include/libview.h"
+ #include "include/netsupport.h"
++#include "include/bdmsupport.h"
++#include "include/udpfssupport.h"
+ #include "include/texcache.h"
+ #include "include/artindex.h"
+ #include "include/ripps2.h"
+@@ -731,11 +733,26 @@
+ }
+ 
+ // ---------------------------------------------------------------- the run
++static const char *artNetworkConflict(void)
++{
++    // Test resident drivers, not the selected protocol: changing Settings cannot
++    // unload a NIC driver, and a partially started UDPFS chain still owns it.
++    if (udpfsGetModulesLoaded() || bdmIsUDPBDLoaded())
++        return _t("Cover downloads cannot run while UDPFS or UDPBD owns Ethernet. Add covers to the server's ART folder from a PC. For console downloads, disable UDPFS/UDPBD, save settings and restart, then use a local drive or SMB game list.");
++    return NULL;
++}
++
+ void ripps2ArtDownload(void)
+ {
+     unsigned char *body = NULL, *rgb = NULL;
+     char err[96];
+     int i, len, status, connected = 0, saved;
++    const char *conflict = artNetworkConflict();
++
++    if (conflict != NULL) {
++        guiMsgBox(conflict, 0, NULL);
++        return;
++    }
+ 
+     artDone = artGot = artMissing = artFailed = 0;
+     artLine[0] = artLine2[0] = '\0';
+@@ -790,7 +807,9 @@
+         free(body);
+         free(rgb);
+         artTargets = NULL;
+-        guiMsgBox(_t("The network did not start. Check the cable, and the IP settings on this page."), 0, NULL);
++        // A background source startup may have claimed the NIC since entry.
++        conflict = artNetworkConflict();
++        guiMsgBox(conflict != NULL ? conflict : _t("The network did not start. Check the cable, and the IP settings on this page."), 0, NULL);
+         return;
+     }
+ 
