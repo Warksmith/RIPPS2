@@ -105,6 +105,42 @@ existing expected-failure list unchanged. The RA-enabled build 152 compiled with
 the workflow's pinned PS2DEV image; the changed scanner produced no warnings.
 Console timing, artwork/metadata display and launch validation remain pending.
 
+## Faster startup enumeration (build 153)
+
+The ID cache removed repeat ISO probes, but asset discovery still listed the
+entire share root separately for THM, LNG and ART before listing games. In a
+291-game emulator run these three redundant passes cost about 14 seconds.
+
+Build 153 collects the exact ART/THM/LNG directory spellings during the game
+scan and hands them to asset discovery before publishing the menu. This reduces
+the common PS2 startup from four root traversals to one. Only up to 24 short
+folder names are shared in memory; the live game list is still enumerated.
+PS1-only startup and subsequent asset retries use one shared root pass too.
+
+All case variants, populated-ART preference, CFG/metadata keys and existing
+theme/language registration callbacks are retained. Partial, failed or cancelled
+listings never publish folder names. Names are consumed once so a failed asset
+probe can discover newly added folders on its next retry. Optional folder
+creation still happens after the existing ART spelling has been resolved.
+
+In one paired RIPPCSX2 test with the same read-only configuration and live
+291-game share, launch-to-menu time fell from **30.3 s to 15.9 s**. All 291 paths,
+disc IDs and sizes matched the baseline. The follow-up reported 291 reused IDs,
+zero ISO probes and completed ART/THM/LNG discovery. These are emulator wall-clock
+measurements, not a console timing guarantee. The first uncached scan still
+opens each plain-named image to identify it; the redundant root passes are
+removed for both cold and cached scans.
+
+**Status > Save Diagnostics** now records UDPFS module-load, catalogue and asset
+discovery milestones, including reused-ID and ISO-probe counts, in `DIAG.TXT`.
+This distinguishes remaining boot/network setup time from actual scanning.
+
+Validation: 249 host checks completed with zero unexpected failures. The new
+shared-discovery harness covers case collisions, late folders, failed opens,
+partial reads, close failures, cancellation and unchanged per-image art paths.
+The RA-enabled PS2 build passed with no warnings in the changed scanners.
+Physical-console startup timing remains to be checked.
+
 ## Server interoperability
 
 Some UDPFS servers can list and open files but return `EIO` or `ENOSYS` for

@@ -39,6 +39,7 @@ harness = r'''
 #include <strings.h>
 #include <sys/stat.h>
 #include <time.h>
+#define ripps2Diag(...) ((void)0)
 typedef uint8_t u8;
 typedef uint32_t u32;
 #define SCECdPS2CD 0x12
@@ -160,6 +161,7 @@ static int find(base_game_info_t *games, int count, const char *name) {
 int main(int argc, char **argv) {
     base_game_info_t *games = NULL, *oldGames;
     udpfs_game_file_t *files = NULL, *oldFiles;
+    udpfs_asset_names_t assets;
     char prefix[256], path[256], expected[256];
     int count = 0, oldCount, i, before, failures = 0;
     assert(argc == 2 || argc == 7);
@@ -190,6 +192,8 @@ int main(int argc, char **argv) {
     }
     closeResult = 1; // PS2 fileXio can report positive success through newlib
     assert(udpfsReadList(&games, &files, &count, prefix, "", 0) == 10);
+    assert(udpfsTakeAssetNames(&assets) && assets.count == 4);
+    assert(!udpfsTakeAssetNames(&assets)); // one use; missing folders must be retried live
     assert(openDirs == 0 && maxDirs == 1);
     assert(!udpfsListChanged());
     i = find(games, count, "Compressed.cso");
@@ -234,6 +238,7 @@ int main(int argc, char **argv) {
     cancelled = 1;
     assert(udpfsReadList(&games, &files, &count, prefix, "", 0) < 0);
     cancelled = 0;
+    assert(!udpfsTakeAssetNames(&assets)); // never publish roots from a cancelled scan
     closeResult = -1;
     assert(udpfsReadList(&games, &files, &count, prefix, "", 0) < 0);
     assert(games == oldGames && files == oldFiles && count == oldCount && !openDirs);
@@ -283,7 +288,8 @@ with tempfile.TemporaryDirectory(prefix='ripps2-udpfs-') as tmp:
         'Root.iso', 'DVD/SLUS_222.22.Classic.ISO', 'cd/CD game.iso',
         'RPG/Generic nested.iso', 'DVD/RPG/OPL nested.iso', 'cd/RPG/CD nested.iso',
         'Compressed.cso.iso', 'RPG/a/b/c/d/e/f/Deep.iso', 'flat/Flat.iso',
-        'DVD/Root.iso', 'ART/Ignore.iso', 'neutrino/Ignore.iso',
+        'DVD/Root.iso', 'ART/Ignore.iso', 'ARt/Ignore.iso', 'thm/Ignore.iso', 'LNG/Ignore.iso',
+        'RPG/THM/Ignore.iso', 'neutrino/Ignore.iso',
         'raw.cso', 'raw.zso', 'ul.cfg', 'Broken.iso',
     ]
     for name in fixture:
