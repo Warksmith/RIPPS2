@@ -74,9 +74,14 @@ int main(int argc, char **argv) {
         assert actual == expected, (label, actual, expected)
 
     luna = b'\0-dvd=\0-igr=\0-mmce_gameid=\0'
+    modern = b'\0-dvd=\0-igr=\0-mmce-gameid\0'
     for split in (False, True):
         for old_size in (False, True):
             check(packed([luna], split, old_size), (1, 0xC00), 'LUNA packed')
+            check(packed([modern], split, old_size), (1, 0x1400), 'modern LUNA packed')
+    check(packed([luna + modern]), (1, 0x1C00), 'both interfaces')
+    check(packed([b'-dvd=\0-mmce-gameid=\0']), (1, 0), 'modern flag must match exactly')
+    check(packed([b'-dvd=\0-mmce-gameid']), (1, 0), 'modern flag must terminate')
     check(packed([b'\0-dvd=\0-igr=\0']), (1, 0x400), 'older IGR-only LUNA')
     check(packed([b'-dvd=\0 usage -igr=<target> -mmce_gameid=<slot>']), (1, 0), 'stock usage')
     check(packed([b'\0-dvd=\0', b'\0-igr=\0-mmce_gameid=\0'], True), (1, 0xC00), 'multiple sections')

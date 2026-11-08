@@ -16,11 +16,21 @@ the same way, for anyone who wants that copy.
 
 On the IGR branch, GameID-capable **Neutrino LUNA** installations receive the
 return and deferred card-switch arguments automatically. Install the full
-matching runtime, including `modules/mmceigr.irx`. Put RIPPS2 on the restored
+matching runtime. The `igr-hardening` runtime requires `modules/mmceigr.irx`;
+current LUNA embeds restoration support in its EE core. Put RIPPS2 on the restored
 boot memory card and set IGR Path to its `mc0:/` or `mc1:/` ELF path.
 Build 148 recognizes both unpacked and standard ps2-packer LZMA LUNA
 executables; build 147 missed the packed executable's IGR options.
 See [IGR setup and engine-specific behavior](../../docs/igr.md).
+
+Build 160 recognizes both the legacy `-mmce_gameid=<slot>:<GameID>` parser
+and current LUNA's standalone `-mmce-gameid` flag, including packed loaders.
+It passes the supported form and leaves switching/restoration to Neutrino.
+The modern interface derives the ID and chooses slots itself. Because it
+cannot exclude VMC-protected slots, automatic switching is skipped with an
+active VMC unless the runtime also supports the legacy slot-specific form.
+Official stock Neutrino does not gain LUNA-only arguments from its version
+number or usage text.
 
 For the build 149 IGR test kit, `build_igr_runtime.sh` builds the complete
 GameID-capable LUNA runtime at `af68bf4` into a separate directory. It uses

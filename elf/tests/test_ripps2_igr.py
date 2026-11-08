@@ -49,12 +49,18 @@ with tempfile.TemporaryDirectory() as temp:
 #define COMPAT_MODE_6 32
 #define NF_IGR 0x400
 #define NF_MMCE_GAMEID 0x800
+#define NF_MMCE_GAMEID_AUTO 0x1000
 typedef struct { char arg[2][160]; } neutrino_vmc_args_t;
 static char gNeutrinoArgs[256], gExitPath[256], boot[256] = "mmce0:/RIPPS2.ELF";
-static int flags = NF_IGR | NF_MMCE_GAMEID, available = 1, seenMask;
+static int flags = NF_IGR | NF_MMCE_GAMEID, available = 1, seenMask, slotProbes;
+static int gMMCEEnableGameID = 1;
 static int sysNeutrinoTakes(const char *p, unsigned bit) { (void)p; return (flags & bit) != 0; }
 static int ripps2GetBootPath(char *p, int n) { snprintf(p,n,"%s",boot); return boot[0] != 0; }
-static int mmceGameIDSlot(int mask) { seenMask=mask; return available && !(mask & 1) ? 0 : -1; }
+static int mmceGameIDSlot(int mask) {
+    seenMask=mask; slotProbes++;
+    if ((available & 1) && !(mask & 1)) return 0;
+    return (available & 2) && !(mask & 2) ? 1 : -1;
+}
 ''' + helpers + contract + r'''
 int main(void) {
     neutrino_vmc_args_t vmc = {{{0}}};
@@ -105,7 +111,64 @@ int main(void) {
     assert(sysIgrArg[0] && !sysIgrGameArg[0]);
     sysPrepareNeutrinoIgr(p,g,0,"-mmce_gameid=1:SLUS_203.12",NULL);
     assert(sysIgrDeferred && !sysIgrGameArg[0]);
-    puts("Neutrino IGR: return targets, overrides, stale launches, Mode 6, VMC and absent cards passed");
+    available=2;
+    sysPrepareNeutrinoIgr(p,g,0,NULL,&vmc);
+    assert(!strcmp(sysIgrGameArg,"-mmce_gameid=1:SLUS_203.12") && sysIgrDeferred);
+    gMMCEEnableGameID=0;
+    sysPrepareNeutrinoIgr(p,g,0,NULL,NULL);
+    assert(!sysIgrGameArg[0] && sysIgrDeferred);
+    sysPrepareNeutrinoIgr(p,g,0,"-mmce_gameid=1:SLUS_203.12",NULL);
+    assert(!sysIgrGameArg[0] && sysIgrDeferred); // explicit preference still owns switching
+
+    flags=NF_IGR | NF_MMCE_GAMEID_AUTO;
+    sysPrepareNeutrinoIgr(p,g,0,NULL,NULL);
+    assert(!sysIgrGameArg[0] && sysIgrDeferred); // disabled: no frontend fallback
+    gMMCEEnableGameID=1;
+    available=0; slotProbes=0;
+    sysPrepareNeutrinoIgr(p,g,0,NULL,NULL);
+    assert(!strcmp(sysIgrGameArg,"-mmce-gameid") && sysIgrDeferred && !slotProbes);
+    sysPrepareNeutrinoIgr(p,"CUSTOM",0,NULL,NULL);
+    assert(!strcmp(sysIgrGameArg,"-mmce-gameid")); // runtime extracts the ID itself
+    assert(sysNeutrinoDefersGameID(p,"CUSTOM") && !sysNeutrinoDefersGameID(p,g));
+    for (int global=0; global<2; global++) {
+        strcpy(gNeutrinoArgs,global ? "-mmce-gameid" : "");
+        sysPrepareNeutrinoIgr(p,g,0,global ? NULL : "-mmce-gameid",NULL);
+        assert(!sysIgrGameArg[0] && sysIgrDeferred); // do not duplicate explicit flags
+        strcpy(gNeutrinoArgs,global ? "$-mmce-gameid" : "");
+        sysPrepareNeutrinoIgr(p,g,0,global ? NULL : "$-mmce-gameid",NULL);
+        assert(!strcmp(sysIgrGameArg,"-mmce-gameid"));
+        strcpy(gNeutrinoArgs,global ? "--b -mmce-gameid" : "");
+        sysPrepareNeutrinoIgr(p,g,0,global ? NULL : "--b -mmce-gameid",NULL);
+        assert(!strcmp(sysIgrGameArg,"-mmce-gameid"));
+    }
+    gNeutrinoArgs[0]=0;
+    sysPrepareNeutrinoIgr(p,g,0,"-mmce-gameid=1",NULL);
+    assert(!strcmp(sysIgrGameArg,"-mmce-gameid")); // exact flag recognition
+    sysPrepareNeutrinoIgr(p,g,0,NULL,&vmc);
+    assert(!sysIgrGameArg[0] && sysIgrDeferred && !slotProbes);
+    sysPrepareNeutrinoIgr(p,g,0,"-mc1=foo",NULL);
+    assert(!sysIgrGameArg[0] && sysIgrDeferred);
+    strcpy(gNeutrinoArgs,"-mc0=foo");
+    sysPrepareNeutrinoIgr(p,g,0,NULL,NULL);
+    assert(!sysIgrGameArg[0] && sysIgrDeferred);
+    strcpy(gNeutrinoArgs,"$-mc0=foo");
+    sysPrepareNeutrinoIgr(p,g,0,"--b -mc1=bar",NULL);
+    assert(!strcmp(sysIgrGameArg,"-mmce-gameid"));
+    gNeutrinoArgs[0]=0;
+    sysPrepareNeutrinoIgr(p,g,COMPAT_MODE_6,NULL,NULL);
+    assert(!sysIgrArg[0] && !sysIgrGameArg[0] && !sysIgrDeferred);
+    sysPrepareNeutrinoIgr(p,g,0,"-igr=mass:/UNSUPPORTED.ELF",NULL);
+    assert(!sysIgrGameArg[0] && !sysIgrDeferred);
+    flags |= NF_MMCE_GAMEID;
+    sysPrepareNeutrinoIgr(p,g,0,NULL,NULL);
+    assert(!strcmp(sysIgrGameArg,"-mmce-gameid")); // prefer modern when both exist
+    available=2;
+    sysPrepareNeutrinoIgr(p,g,0,NULL,&vmc);
+    assert(!strcmp(sysIgrGameArg,"-mmce_gameid=1:SLUS_203.12")); // legacy can exclude VMC slot
+    flags=0;
+    sysPrepareNeutrinoIgr(p,g,0,NULL,NULL);
+    assert(!sysIgrArg[0] && !sysIgrGameArg[0] && !sysIgrDeferred); // no stale ownership
+    puts("Neutrino IGR: both interfaces, ownership, overrides, preferences, VMC, Mode 6 and stale launches passed");
     return 0;
 }
 ''', 'contract', td)
@@ -113,6 +176,7 @@ int main(void) {
     # Read real fake ELF files with NUL-terminated parser literals, including a
     # literal split at the 32 KiB read boundary and an upstream version sidecar.
     probe = system[system.index('#define NF_CFG'):system.index('// 1 when the Neutrino at neutrinoPath')]
+    probe += '\n' + function(system, 'sysNeutrinoTakes')
     run(r'''
 #include <assert.h>
 #include <stdio.h>
@@ -131,14 +195,23 @@ int main(void) {
     fwrite(tokens,1,sizeof(tokens),f); fclose(f);
     sysNeutrinoReadFlags("./neutrino.elf");
     assert((sysNeutrinoFlagSet & (NF_IGR|NF_MMCE_GAMEID)) == (NF_IGR|NF_MMCE_GAMEID));
+    assert(!(sysNeutrinoFlagSet & NF_MMCE_GAMEID_AUTO));
+    f=fopen("neutrino.elf","wb");
+    const char modern[]="-dvd=\0-igr=\0-mmce-gameid\0";
+    fwrite(modern,1,sizeof(modern),f); fclose(f);
+    sysNeutrinoReadFlags("./neutrino.elf");
+    assert((sysNeutrinoFlagSet & (NF_IGR|NF_MMCE_GAMEID_AUTO)) == (NF_IGR|NF_MMCE_GAMEID_AUTO));
+    assert(!(sysNeutrinoFlagSet & NF_MMCE_GAMEID));
+    assert(!sysNeutrinoTakes(NULL,NF_MMCE_GAMEID_AUTO));
+    assert(!sysNeutrinoTakes("other",NF_MMCE_GAMEID_AUTO));
     f=fopen("neutrino.elf","wb"); fputs("packed unknown ELF",f); fclose(f);
     sysNeutrinoReadFlags("./neutrino.elf");
-    assert(!(sysNeutrinoFlagSet & (NF_IGR|NF_MMCE_GAMEID)));
+    assert(!(sysNeutrinoFlagSet & (NF_IGR|NF_MMCE_GAMEID|NF_MMCE_GAMEID_AUTO)));
     f=fopen("neutrino.elf","wb");
-    const char stock[]="-dvd=\0 usage -igr=<target> -mmce_gameid=<slot>:<id>";
+    const char stock[]="-dvd=\0 usage -igr=<target> -mmce_gameid=<slot>:<id> -mmce-gameid extra";
     fwrite(stock,1,sizeof(stock),f); fclose(f);
     sysNeutrinoReadFlags("./neutrino.elf");
-    assert(!(sysNeutrinoFlagSet & (NF_IGR|NF_MMCE_GAMEID)));
+    assert(!(sysNeutrinoFlagSet & (NF_IGR|NF_MMCE_GAMEID|NF_MMCE_GAMEID_AUTO)));
     puts("Neutrino capability probing: sidecar, boundary, packed and stock cases passed");
     return 0;
 }
