@@ -1,5 +1,17 @@
 # RIPPS2 changelog
 
+## Build 160 (not released)
+
+- **Neutrino MMCE return:** recognizes both `-mmce_gameid=<slot>:<GameID>`
+  and current LUNA's `-mmce-gameid` flag, including packed runtimes. RIPPS2
+  passes the supported interface and leaves card switching and IGR restoration
+  together in Neutrino, preventing a frontend switch that the runtime cannot
+  restore. Diagnostics report the interface and switching decision.
+- **VMC protection:** the modern flag cannot exclude individual slots, so
+  automatic GameID switching is skipped with an active VMC unless the runtime
+  also supports the legacy slot-specific interface. Explicit supported GameID
+  arguments remain user overrides.
+
 ## Build 157 (beta, v1.5.7-beta): RiptOPL's backend fixes since our last merge
 
 Picked from RiptOPL (rebuild/main) on 11/08, backend only, as RIPPS2 takes them: drivers, the game cores, compatibility. Nothing of
