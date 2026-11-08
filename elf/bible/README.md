@@ -4,17 +4,21 @@ From build 134 these files are **BIBLE**, akilluminati47's boot loader built on 
 BootLoader) by El Isra (israpps)** and saildot4k's PS2BBL Extended: its splash, its keys pages and its HD modes, from
 [github.com/akilluminati47/BIBLE](https://github.com/akilluminati47/BIBLE). Every build here was **signed by
 akilluminati47**, with kelftool on their own PC (build 133 and earlier carried El Isra's own PS2BBL 1.2.0 builds,
-unchanged). Build 143 carries BIBLE at commit `f5705eb`, signed 2026-11-04:
+unchanged). Build 155 carries BIBLE at commit `a060790`, signed 2026-11-07:
 
 | File here | BIBLE build | SHA-256 |
 |---|---|---|
-| `SYSTEM.XLF` | `PS2` (memory card KELF) | `0b251edcf67cf1ff7c9dd4bc7c420e5a33aa7415ecc69d5a9e4da9b13a7e4f52` |
-| `MX4SIO/SYSTEM.XLF` | `PS2_MX4SIO` (memory card KELF; also reads `mx4sio:/` in slot 2) | `bb927d630e27c4ab00080471bba9d0cce8691dbc3c768ca9209a2d5ef861fef8` |
-| `MMCE/SYSTEM.XLF` | `PS2_MMCE` (memory card KELF; also reads `mmce0:/` and `mmce1:/`, an SD2PSX or MemCard PRO 2) | `6a0e8364cec382c8cdd6da580de1f82a21edebc0ba1738a13b800c83b9d6e216` |
-| `HSYSTEM.XLF` | `PS2_HDD` (for the HDD's boot area) | `304f78ce6b772a70820d6f0c1c89116b469db5345e79c53136e3c0cc8d339e9c` |
+| `SYSTEM.XLF` | `PS2` (memory card KELF) | `7e1c919e7dca2e8629d183959afbda90ee5161df149b339fe9b5793b11679f43` |
+| `MX4SIO/SYSTEM.XLF` | `PS2_MX4SIO` (memory card KELF; also reads `mx4sio:/` in slot 2) | `245a63b9705f2fc95107820412ed2c35ec35e3a9d067c03097b55f16a6495831` |
+| `MMCE/SYSTEM.XLF` | `PS2_MMCE` (memory card KELF; also reads `mmce0:/` and `mmce1:/`, an SD2PSX or MemCard PRO 2) | `f5fe7e982ed34631de21e94ed0b37d7b89a2aba3d3c1ab93541d19812aea5009` |
+| `HSYSTEM.XLF` | `PS2_HDD` (for the HDD's boot area) | `adfff5c3a96564afa64032c205cf39d039a910f0bd981630f3658ae6bb19a9de` |
 | `bible.icn`, `icon.sys` | BIBLE's card icon and the colours and light it was checked under, from BIBLE's `assets/icon` (commit `c1e950c`) | |
 | `LICENSE.TXT` | GNU General Public License v3 | |
 
+- **Build 155 (BIBLE `a060790`):** a card keeps one settings file, in BIBLE's own system folder. BIBLE reads it from this
+  console's folder first, then the other regions' folders, then `mc?:/SYS-CONF` for a card set up before, so every region's copy
+  of BIBLE on the card shares it. RIPPS2's install now writes BIBLE's settings, their backup and the boot sound in that one folder,
+  and tidies away what an older install left in `SYS-CONF` and `PS2BBL`. Manage calls `f5705eb` older and offers the update.
 - **Build 143 (BIBLE `f5705eb`):** a missing file on an AUTO path, on a drive BIBLE has to load a driver for, no longer stops
   the boot on the splash (`301de13`): BIBLE moves on to the next path. BIBLE no longer reads `boot.adp` into memory: it only
   tells RIPPS2 the folder, and RIPPS2 reads it (BIBLE's `docs/boot-sound-handoff.md` has the lab's numbers). The stage 2
@@ -33,9 +37,10 @@ unchanged). Build 143 carries BIBLE at commit `f5705eb`, signed 2026-11-04:
 - A signature is proven only when a console binds the file. If a bind is refused, RIPPS2 puts the card back as it was.
 
 RIPPS2 carries them as data, inside RIPPS2.elf, and writes them to a memory card, or `HSYSTEM.XLF` to the internal
-HDD's boot area, when you choose **Settings > General > Boot Loader > Manage**. BIBLE reads its config from
-`mc?:/SYS-CONF/PS2BBL.INI` (PS2BBL Extended's place; PS2BBL 1.2.0 read `PS2BBL/CONFIG.INI`), so the install writes
-it there, waiting 0 ms for a button and starting RIPPS2 first, with BOOT LOCK on.
+HDD's boot area, when you choose **Settings > General > Boot Loader > Manage**. From build 155 the install writes BIBLE's
+config as `PS2BBL.INI` in BIBLE's own system folder (`mc?:/B?EXEC-SYSTEM`), where `a060790` looks first; older builds wrote
+`mc?:/SYS-CONF/PS2BBL.INI` (PS2BBL Extended's place; PS2BBL 1.2.0 read `PS2BBL/CONFIG.INI`). It waits 0 ms for a button
+and starts RIPPS2 first, with BOOT LOCK on.
 The HDD install follows the FHDB / OSDMenu MBR steps: the old boot program is read out and kept in
 `hdd0:__sysconf/RIPPS2/MBR-BACKUP.KELF` (Manage > Restore puts it back), HSYSTEM.XLF goes at sector
 0x2000 of `__mbr`, the `__mbr` header is pointed at it, and the console's HDD boot setting is turned on.

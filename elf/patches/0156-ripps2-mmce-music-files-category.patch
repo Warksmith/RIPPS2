@@ -1,0 +1,280 @@
+diff --git a/include/ripps2.h b/include/ripps2.h
+index d3aa754..c5cbb63 100644
+--- a/include/ripps2.h
++++ b/include/ripps2.h
+@@ -144,6 +144,7 @@ int ripps2GlyphSetFor(int themeSet);                      // the set in effect:
+ int ripps2ShowHintsConfig(void);                          // the page; 1 when anything changed (save it)
+ 
+ void ripps2SetCategory(int cat);    // switch screens and fly the PS2 mark
++void ripps2CategoryFollow(int cat); // build 156: the bar follows a screen already on its way there (no switch of its own)
+ void ripps2StepCategory(int dir);   // -1 / +1, clamped at the ends
+ int ripps2Legacy(void); // build 113: a theme without categories=three: Storage alone, the others in the START menu
+ void ripps2RenderCategoryBar(void); // the three labels plus the mark
+diff --git a/src/ripps2art.c b/src/ripps2art.c
+index 0ed3322..b8993ef 100644
+--- a/src/ripps2art.c
++++ b/src/ripps2art.c
+@@ -112,9 +112,8 @@ static void artDraw(void)
+     }
+     fntRenderString(RIPPS2_CASE_FONT, 60, 240, ALIGN_VCENTER, 520, 0, artLine, AR_SOFT);
+     fntRenderString(RIPPS2_CASE_FONT, 60, 264, ALIGN_VCENTER, 520, 0, artLine2, AR_DIM);
+-    int hx = 60;
+-    hx = ripps2HintText(hx, 448, gSelectButton == KEY_CIRCLE ? _t("Cross: stop") : _t("Circle: stop"), AR_SOFT);
+-    (void)hx;
++    // build 156 (the user, 11/08: "why would it say circle:stop like that"): the button's glyph, as every other page's hints
++    ripps2HintOneA(gSelectButton == KEY_CIRCLE ? CROSS_ICON : CIRCLE_ICON, _t("STOP"), 448, 0x80);
+     rmEndFrame();
+ }
+ 
+diff --git a/src/ripps2files.c b/src/ripps2files.c
+index 7196f2f..7e46638 100644
+--- a/src/ripps2files.c
++++ b/src/ripps2files.c
+@@ -1573,6 +1573,7 @@ void ripps2FilesRipped(const char *what, const char *dir)
+     if (!fbBusy)
+         fbOpenPath(dir, NULL);
+     guiSwitchScreen(GUI_SCREEN_RIPPS2_FILES);
++    ripps2CategoryFollow(RIPPS2_CAT_MEMORY); // build 156: the browser is Memory Files', wherever it was opened from
+ }
+ 
+ static void fbUp(void)
+@@ -1583,6 +1584,7 @@ static void fbUp(void)
+     sfxPlay(SFX_CANCEL);
+     if (len == 0) { // the drive list: back to the orbs
+         guiSwitchScreen(GUI_SCREEN_RIPPS2_MEMORY);
++        ripps2CategoryFollow(RIPPS2_CAT_MEMORY); // build 156: and the bar on MEMORY FILES with them
+         return;
+     }
+     if (len >= 2 && fbPath[len - 2] == ':') { // a drive's root ("mass0:/"): back to the drive list
+@@ -2854,6 +2856,7 @@ static void fbTile(int t)
+             sfxPlay(SFX_CANCEL);
+             fbGridOpen = 0;
+             guiSwitchScreen(GUI_SCREEN_RIPPS2_MEMORY);
++            ripps2CategoryFollow(RIPPS2_CAT_MEMORY); // build 156
+             break;
+     }
+ }
+diff --git a/src/ripps2media.c b/src/ripps2media.c
+index e69778d..c34e972 100644
+--- a/src/ripps2media.c
++++ b/src/ripps2media.c
+@@ -1373,9 +1373,9 @@ static void ripps2PlaySound(const char *path)
+         fntRenderString(gTheme->fonts[0], 320, 222, ALIGN_CENTER, 0, 0, line, GS_SETREG_RGBA(0xA0, 0xB0, 0xE0, 0x80));
+         rmDrawRect(120, 246, 400, 4, GS_SETREG_RGBAQ(0x10, 0x16, 0x2C, 0x60, 0x00));
+         rmDrawRect(120, 246, barW, 4, GS_SETREG_RGBAQ(0x6A, 0x9A, 0xFF, 0x80, 0x00));
+-        fntRenderString(gTheme->fonts[0], 320, 458, ALIGN_CENTER, 0, 0,
+-                        gSelectButton == KEY_CIRCLE ? _t("Circle play again   Cross close") : _t("Cross play again   Circle close"),
+-                        GS_SETREG_RGBA(0xA0, 0xB0, 0xE0, 0x80));
++        // build 156: the buttons' glyphs, not their names in words
++        ripps2HintPairA(gSelectButton == KEY_CIRCLE ? CIRCLE_ICON : CROSS_ICON, _t("PLAY"),
++                        gSelectButton == KEY_CIRCLE ? CROSS_ICON : CIRCLE_ICON, _t("CLOSE"), 458, 0x80);
+         guiEndFrame();
+ 
+         readPads();
+diff --git a/src/ripps2ui.c b/src/ripps2ui.c
+index 3afbcd3..8c81152 100644
+--- a/src/ripps2ui.c
++++ b/src/ripps2ui.c
+@@ -1510,10 +1510,8 @@ void ripps2SourceToast(const char *text)
+     ripps2ShowViewWord(word, -1, NULL);
+ }
+ 
+-void ripps2SetCategory(int cat)
++static void catTake(int cat)
+ {
+-    if (cat < 0 || cat >= RIPPS2_CAT_COUNT || cat == gRipps2Category)
+-        return;
+     if (gRipps2Category == RIPPS2_CAT_MEMORY && formationDirty) { // remember the formation left on
+         ripps2SaveSettingsInBackground();
+         formationDirty = 0;
+@@ -1525,6 +1523,24 @@ void ripps2SetCategory(int cat)
+         catSwitchAt = 1;
+     if (cat == RIPPS2_CAT_STORAGE)
+         srcToastArmed = 1; // build 81: Pop In names the source again on arrival
++}
++
++/* RIPPS2 build 156 (the user, 11/08): RIPDISC on Launch Disc hands its rip to Memory Files' browser, which opened with the bar
++   still on LAUNCH DISC. Backing out of the browser landed on Memory Files' orbs (START BROWSER, the formation names) under a bar
++   that said LAUNCH DISC, and the page's keys stepped from the wrong place. A screen that takes the menu to another category's
++   page by itself (a faded switch already asked for) now takes the bar with it, without a switch of its own. */
++void ripps2CategoryFollow(int cat)
++{
++    if (cat < 0 || cat >= RIPPS2_CAT_COUNT || cat == gRipps2Category)
++        return;
++    catTake(cat);
++}
++
++void ripps2SetCategory(int cat)
++{
++    if (cat < 0 || cat >= RIPPS2_CAT_COUNT || cat == gRipps2Category)
++        return;
++    catTake(cat);
+ 
+     // no fade: the mark's flight across the bar is the transition
+     if (cat == RIPPS2_CAT_STORAGE)
+diff --git a/src/sound.c b/src/sound.c
+index 0c8c5c8..ba0aec3 100644
+--- a/src/sound.c
++++ b/src/sound.c
+@@ -2306,8 +2306,11 @@ static int bgmQueueChunk(const char *chunk)
+         if (room > bgmRingMax)
+             bgmRingMax = room; // the most room seen: the ring empty
+         else if (room == bgmRingMax && bgmPlayed > 8 * BGM_RING_BUFFER_SIZE) {
+-            if (!bgmRingWasEmpty)
++            if (!bgmRingWasEmpty) {
+                 gBgmUnderruns++;
++                if (gBgmUnderruns <= 24 || gBgmUnderruns % 50 == 0) // build 156: a gap in the sound, in DIAG.TXT
++                    ripps2Diag("music: audsrv ran dry (%u), %d chunks waiting", gBgmUnderruns, bgmBufferedChunks);
++            }
+             bgmRingWasEmpty = 1;
+         } else
+             bgmRingWasEmpty = 0;
+@@ -2369,6 +2372,9 @@ static void bgmThread(void *arg)
+         // a small cushion instead of stuttering chunk-by-chunk on the verge of starvation.
+         if (bgmBufferedChunks <= 0 && !terminateFlag && bgmIoThreadRunning) {
+             int cushionWait = 0;
++            static unsigned int emptied = 0; // build 156: the decoder fell behind, in DIAG.TXT
++            if (++emptied <= 24 || emptied % 50 == 0)
++                ripps2Diag("music: the decoder fell behind (%u)", emptied);
+             while (!terminateFlag && bgmIoThreadRunning && bgmBufferedChunks < 16 && cushionWait < 20) {
+                 bgmFeedSilence(); // build 102: audsrv must not run dry while the cushion builds
+                 DelayThread(5 * 1000);
+@@ -2527,14 +2533,70 @@ typedef struct
+     unsigned char *cache;    // build 99: the file's bytes [cacheBase, cacheBase + cacheLen) in RAM (bgmCacheRead)
+     long cacheBase, cacheLen, cacheCap, cacheNext;
+     int noCache; // no memory for it: the drive is read directly, as before
++    int paced;          // build 156: on an MMCE card, read in paced pieces (bgmSourceGet)
++    int pieces, notes;  // build 156: pieces read, and how many of them went into DIAG.TXT (bgmReadNote)
+ } bgm_source_t;
+ 
++/* RIPPS2 build 156 (the user, 11/08: a ripped CD track "struggles to play the file on my mmce but can read the song fine from
++   disc"). The music's file was a buffered FILE, so a piece of it reached the drive as stdio's refills, one after another with
++   nothing between them. On an MMCE card each request holds the SIO2 bus (the pads' bus too) for the card's own SD time, and
++   audsrv keeps only ten SPU2 feeds (about 107 ms) on the IOP: while a run of requests held the IOP and the bus, audsrv's ring ran
++   dry and the sound skipped. An Ogg track needs a piece every ~13 s and the skips were rare; a CD .wav (176 KB/s, nine times the
++   bytes) needs one every 1.4 s. The file is now unbuffered, so each read is one request of the size asked for: 32 KB, and on an
++   MMCE card 16 KB (one fileXio piece) with a short gap after each, the pacing the art's MMCE reads have had since build 115. */
++#define BGM_READ_PIECE  (32 * 1024)
++#define BGM_MMCE_PIECE  (16 * 1024)
++#define BGM_MMCE_GAP_US 2000
++
++static FILE *bgmOpenFile(const char *path)
++{
++    FILE *f = fopen(path, "rb");
++
++    if (f != NULL)
++        setvbuf(f, NULL, _IONBF, 0); // build 156: each fread below is one device request
++    return f;
++}
++
++// want bytes from where the file is into dst, in pieces (see above); the bytes read
++static size_t bgmSourceGet(bgm_source_t *src, unsigned char *dst, size_t want)
++{
++    size_t got = 0, piece = src->paced ? BGM_MMCE_PIECE : BGM_READ_PIECE;
++
++    while (got < want) {
++        size_t n = want - got > piece ? piece : want - got, r;
++        if (got > 0 && src->paced)
++            DelayThread(BGM_MMCE_GAP_US); // the pads and audsrv have the bus and the IOP between pieces
++        r = fread(dst + got, 1, n, src->f);
++        got += r;
++        if (r < n)
++            break;
++    }
++    return got;
++}
++
++// build 156: the music's reads in DIAG.TXT (STATUS > SAVE DIAGNOSTICS), so a console run says how fast its drive really gives
++// the music: each file's first piece, then any piece that came slower than CD audio plays (176 KB/s) or took over half a
++// second, a few per file so the ring keeps the rest of the run
++#define BGM_READ_NOTES 12
++static void bgmReadNote(bgm_source_t *src, size_t got, clock_t ticks)
++{
++    unsigned int ms = (unsigned int)(((unsigned long long)ticks * 1000) / CLOCKS_PER_SEC);
++    unsigned int kbs = ms > 0 ? (unsigned int)(((unsigned long long)got * 1000 / 1024) / ms) : 0;
++
++    src->pieces++;
++    if (src->notes >= BGM_READ_NOTES || (src->pieces > 1 && ms < 500 && (ms == 0 || kbs >= 176)))
++        return;
++    src->notes++;
++    ripps2Diag("music read %s: %u KB in %u ms (%u KB/s), piece %d%s", src->path, (unsigned int)(got / 1024), ms, kbs,
++               src->pieces, src->paced ? ", paced" : "");
++}
++
+ static int bgmSourceReopen(bgm_source_t *src)
+ {
+     int tries;
+ 
+     for (tries = 0; tries < BGM_REOPEN_TRIES; tries++) {
+-        FILE *f = fopen(src->path, "rb");
++        FILE *f = bgmOpenFile(src->path);
+         if (f != NULL) {
+             if (fseek(f, src->pos, SEEK_SET) == 0) {
+                 // Only now close the dead handle: the open above left the card's descriptor state
+@@ -2542,6 +2604,10 @@ static int bgmSourceReopen(bgm_source_t *src)
+                 fclose(src->f);
+                 src->f = f;
+                 LOG("BGM: reopened %s at %ld\n", src->path, src->pos);
++                if (src->notes < BGM_READ_NOTES) {
++                    src->notes++;
++                    ripps2Diag("music reopened %s at %ld", src->path, src->pos); // build 156
++                }
+                 return 1;
+             }
+             fclose(f);
+@@ -2655,9 +2721,11 @@ static int bgmCacheFill(bgm_source_t *src, long at)
+     }
+     for (;;) {
+         size_t got = 0;
++        clock_t t0 = clock(); // build 156
+         if (fseek(src->f, start, SEEK_SET) == 0)
+-            got = fread(src->cache, 1, (size_t)want, src->f);
++            got = bgmSourceGet(src, src->cache, (size_t)want);
+         if (got > 0) {
++            bgmReadNote(src, got, clock() - t0);
+             src->cacheBase = start;
+             src->cacheLen = (long)got;
+             return 1;
+@@ -2695,7 +2763,7 @@ static size_t bgmCacheRead(bgm_source_t *src, long off, unsigned char *buf, size
+         src->noCache = 1; // no memory for it: straight from the drive, as before
+         size_t got = 0;
+         if (fseek(src->f, at, SEEK_SET) == 0)
+-            got = fread(buf + done, 1, n - done, src->f);
++            got = bgmSourceGet(src, buf + done, n - done); // build 156: in pieces, as the cache
+         if (got > 0) {
+             done += got;
+             continue;
+@@ -2795,7 +2863,7 @@ static int bgmSourceClose(void *datasource)
+ static void *audSrcOpen(const char *path)
+ {
+     bgm_source_t *src;
+-    FILE *f = fopen(path, "rb");
++    FILE *f = bgmOpenFile(path); // build 156: unbuffered
+ 
+     if (f == NULL)
+         return NULL;
+@@ -2806,6 +2874,7 @@ static void *audSrcOpen(const char *path)
+     memset(src, 0, sizeof(*src));
+     src->f = f;
+     snprintf(src->path, sizeof(src->path), "%s", path);
++    src->paced = !strncasecmp(path, "mmce", 4); // build 156
+     src->size = -1;
+     if (fseek(f, 0, SEEK_END) == 0)
+         src->size = ftell(f);
+@@ -2876,7 +2945,7 @@ int bgmHoldsPath(const char *path)
+ static int bgmTryLoadPath(const char *bgmPath, const char *source)
+ {
+     bgm_source_t *src;
+-    FILE *bgmFile = fopen(bgmPath, "rb");
++    FILE *bgmFile = bgmOpenFile(bgmPath); // build 156: unbuffered
+ 
+     if (bgmFile == NULL) {
+         LOG("BGM: %s BGM not found: %s\n", source, bgmPath);
+@@ -2892,6 +2961,7 @@ static int bgmTryLoadPath(const char *bgmPath, const char *source)
+     src->f = bgmFile;
+     src->pos = 0;
+     snprintf(src->path, sizeof(src->path), "%s", bgmPath);
++    src->paced = !strncasecmp(bgmPath, "mmce", 4); // build 156
+     src->size = -1;
+     if (fseek(bgmFile, 0, SEEK_END) == 0)
+         src->size = ftell(bgmFile);

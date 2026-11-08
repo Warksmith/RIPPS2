@@ -1,0 +1,36 @@
+diff --git a/Makefile b/Makefile
+index ef05477..49a2fd7 100644
+--- a/Makefile
++++ b/Makefile
+@@ -330,8 +330,9 @@ endif
+ 
+ # RIPPS2: a test build whose CD player takes a disc image's tracks for audio (PCSX2 reports every
+ # track of an image as data, so its audio CD path cannot be reached otherwise). Never for a release.
+-# RIPPS2 build 144: the install puts everything BIBLE keeps on a card in its one folder, for a BIBLE that reads it there
+-ifneq ($(RIPPS2_BIBLE_ONE_FOLDER),)
++# RIPPS2 build 144: the install puts everything BIBLE keeps on a card in its one folder, for a BIBLE that reads it there.
++# Build 155: on in every build, now that RIPPS2 carries BIBLE a060790, which reads it there (RIPPS2_BIBLE_ONE_FOLDER=0 turns it off)
++ifneq ($(RIPPS2_BIBLE_ONE_FOLDER),0)
+   EE_CFLAGS += -DRIPPS2_BIBLE_ONE_FOLDER=1
+ endif
+ # RIPPS2 build 144: a lab build whose bind always takes (the lab's cards refuse one), to run the steps after it
+diff --git a/src/ripps2boot.c b/src/ripps2boot.c
+index f3fbab3..82166ef 100644
+--- a/src/ripps2boot.c
++++ b/src/ripps2boot.c
+@@ -355,6 +355,7 @@ static const struct
+     unsigned int crc;
+     const char *name;
+ } blBibleOlder[] = {
++    {169576, 0xA690AAE8u, "MMCE"}, {166840, 0x7CF44EA7u, "MX4SIO"}, {116584, 0x5AAC1709u, "memory card"}, // f5705eb (builds 143 to 154)
+     {179176, 0xEB932B45u, "MMCE"}, {176456, 0xA2BF1298u, "MX4SIO"}, {117160, 0x7B820870u, "memory card"}, // 3282396 (RIPPS2 1.3.9 to 1.4.2)
+     {169016, 0x0EEFE882u, "MMCE"}, {166264, 0xE42D0CA8u, "MX4SIO"},                                       // a1ffb0b (RIPPS2 1.3.8)
+     {166456, 0xA27798DDu, "MMCE"}, {163704, 0xB2845BEDu, "MX4SIO"}, {116136, 0x8E1FC367u, "memory card"}, // f31c8d5 (1.3.4 to 1.3.6)
+@@ -406,6 +407,7 @@ static const struct
+     unsigned int crc;
+     const char *name;
+ } blBiblePlain[] = {
++    {169572, 0xFB4EA6A7u, "MMCE"}, {166804, 0x0366135Fu, "MX4SIO"}, {116596, 0x9A125C91u, "memory card"}, {160180, 0xB0D7C11Au, "HDD"}, // a060790
+     {169428, 0xFA50666Cu, "MMCE"}, {166692, 0x79D0611Cu, "MX4SIO"}, {116436, 0x6930956Au, "memory card"}, {160036, 0x9510BFF7u, "HDD"}, // f5705eb
+     {179060, 0x3ABBDFB0u, "MMCE"}, {176404, 0x7B0DCE86u, "MX4SIO"}, {117028, 0x93D37D70u, "memory card"},                               // 301de13, the first test
+ };

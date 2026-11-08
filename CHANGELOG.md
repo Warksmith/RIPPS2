@@ -1,5 +1,43 @@
 # RIPPS2 changelog
 
+## Build 156 (not released)
+
+From the user's console run on 11/08: a ripped CD track on the SD2PSX, and the page it left behind.
+
+- **A ripped CD track plays from an MMCE card.** A `.wav` from RIPDISC is CD audio, 176 KB every second, nine times what an Ogg
+  track needs. The music's file reached the card as one run of requests after another, and each request holds the bus the pads
+  share for the card's own SD time. The sound chip's driver keeps only about a tenth of a second queued, so the sound skipped
+  every time a run went long. RIPPS2 now asks for the music in 32 KB pieces, and on an MMCE card in 16 KB pieces with a short
+  gap after each. That is the pacing the covers have had on MMCE since build 115. Not yet tried on the console.
+- **The music's reads are in DIAG.TXT** (STATUS > SAVE DIAGNOSTICS). Each track's first read is logged with its speed in KB/s,
+  then any read slower than CD audio plays, every reopen, and every time the sound ran dry. One run on the SD2PSX says whether
+  a `.wav` keeps up there.
+- **Back from a rip's folder lands on the right page.** RIPDISC opens Memory Files' browser on its MEDIA folder, but the bar
+  stayed on LAUNCH DISC. Backing out of the browser showed Memory Files' page (START BROWSER, the ORBIT formation names) under
+  LAUNCH DISC, with that page's keys. The bar now moves to MEMORY FILES with the browser.
+- **Button glyphs, not words:** Download Covers said "Circle: stop" in words, and a sound's preview said "Cross play again
+  Circle close". Both draw the buttons now, as every other page does.
+
+## Build 155 (not released)
+
+- **BIBLE `a060790` inside**, signed by akilluminati47 on 11/07 (MMCE, MX4SIO, memory card and HDD). It is `f5705eb` plus one
+  change: BIBLE finds its settings in its system folder, `mc?:/B?EXEC-SYSTEM/PS2BBL.INI`, from any region's folder.
+- **The one-folder install is on in every build.** Manage puts BIBLE's settings and boot sound in that one folder, and every
+  region's copy holds only its boot file and BIBLE's icon (build 144's "ready but off" item).
+- Manage knows `f5705eb` (builds 143 to 154) as an older BIBLE and offers the update. The plain ELF of `a060790` is recognised too.
+- BIBLE still only tells RIPPS2 the boot sound's folder; the RAM hand-off went in `f5705eb`. RIPPS2 still takes an older BIBLE's
+  RAM copy.
+
+## Builds 145 to 154 (not released): Wark's network and in-game return work
+
+Merged from Warksmith's branch on 11/08 after the series built and the host tests passed. Wark tested these on a console.
+
+- **UDPFS:** mixed OPL and plain libraries on one share; disc IDs checked once and kept across scans; the catalogue listing
+  reused for art, so it is read once; an explicit refresh probes the disc IDs again.
+- **Launch hand-off:** a vsync semaphore of its own, so the hand-off no longer waits on the menu's.
+- **In-game return (IGR) to RIPPS2:** a packed Neutrino is detected, the pad hook recovers, shutdown has a deadline, and MMCE cards
+  are put back on the way out. The direct return to the memory card is kept; the optional boot-loader bridge was taken out.
+
 ## Build 144 (not released)
 
 From the user's first console run of 143 (11/05). 143's bind and AUTO fix passed on the real SCPH-39001 and SD2PSX.
