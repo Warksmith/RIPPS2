@@ -1,6 +1,6 @@
 psx-place bump for BIBLE's own thread (threads/bible.51524). BIBLE itself is unchanged (3282396); this is what RIPPS2 v1.4.0 beta adds around it. Post it once the release is published. Paste from the [CENTER] line.
 
-[CENTER][URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b140/bible-menu.mp4'][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b140/bible-menu.jpg[/IMG][/URL]
+[CENTER][SPOILER="bible menu"][URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b140/bible-menu.mp4'][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b140/bible-menu.jpg[/IMG][/URL][/SPOILER]
 
 [SIZE=5][B]BIBLE: Stop Disc at Launch, right in Manage's menu[/B][/SIZE]
 [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2 v1.4.0 beta[/URL] carries the same signed BIBLE 3282396  |  [URL='https://github.com/akilluminati47/BIBLE/releases/latest']BIBLE's release[/URL][/CENTER]

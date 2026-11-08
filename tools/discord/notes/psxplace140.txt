@@ -1,6 +1,6 @@
 psx-place bump for v1.4.0 beta (build 140) in RIPPS2's thread. Post it once the release is published. It covers 1.3.9 too, so if the 1.3.9 bump never went up, post only this one and keep its BIBLE line. Paste from the [CENTER] line. The first post (psxplace-post.bbcode) has the new release line, size and wording.
 
-[CENTER][URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b140/set-metadata.mp4'][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b140/set-metadata.jpg[/IMG][/URL]
+[CENTER][SPOILER="set metadata"][URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b140/set-metadata.mp4'][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b140/set-metadata.jpg[/IMG][/URL][/SPOILER]
 
 [SIZE=5][B]RIPPS2 v1.4.0 beta: the sounds sorted out, Set Metadata (Rename), a timeline for your videos[/B][/SIZE]
 [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2.elf[/URL] (2,768 KB)  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/latest']What's new, with videos[/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/blob/main/CHANGELOG.md']Changelog[/URL][/CENTER]

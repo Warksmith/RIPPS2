@@ -117,7 +117,7 @@ Build 115 is the first one shaped on a real SD2PSX, so most of it is about MMCE 
 [*][B]POPSTARTER[/B]: both file sets known (POPS_IOX.PAK with POPS.PAK, or with POPS.ELF and IOPRP252.IMG).
 [/LIST]
 
-[IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-01-cd-player.jpg[/IMG] [IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-02-fast-boot.jpg[/IMG]
-[IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-03-rip-places.jpg[/IMG] [IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-04-set-metadata.jpg[/IMG]
+[SPOILER="new 01 cd player"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-01-cd-player.jpg[/IMG][/SPOILER] [SPOILER="new 02 fast boot"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-02-fast-boot.jpg[/IMG][/SPOILER]
+[SPOILER="new 03 rip places"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-03-rip-places.jpg[/IMG][/SPOILER] [SPOILER="new 04 set metadata"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-04-set-metadata.jpg[/IMG][/SPOILER]
 
 Testers on an SD2PSX: please try a boot with Fast Boot on and off, scroll while MMCE loads covers, and send your DIAG.TXT (STATUS > SAVE DIAGNOSTICS) with anything odd. Thanks to ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60 and lukeatmynose for the reports that got us here. Special thanks to all the YouTube love as well: glad to help however you reach me.

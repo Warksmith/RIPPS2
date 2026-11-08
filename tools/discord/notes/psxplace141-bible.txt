@@ -1,6 +1,6 @@
 psx-place bump for BIBLE's own thread (threads/bible.51524). BIBLE itself is unchanged (3282396); this is what RIPPS2 v1.4.0 and v1.4.1 add around it. Paste from the [CENTER] line.
 
-[CENTER][URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b141/bible-page.mp4'][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b141/bible-page.gif[/IMG][/URL]
+[CENTER][SPOILER="bible page"][URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b141/bible-page.mp4'][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b141/bible-page.gif[/IMG][/URL][/SPOILER]
 
 [SIZE=5][B]BIBLE: its settings on one page, launch keys chosen from your drives[/B][/SIZE]
 [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2 v1.4.1 beta[/URL] carries the same signed BIBLE 3282396  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/tag/v1.4.1-beta']What's new, with videos[/URL]  |  [URL='https://github.com/akilluminati47/BIBLE/releases/latest']BIBLE's release[/URL][/CENTER]
@@ -16,7 +16,7 @@ Nothing to bind again: this is RIPPS2's page, writing your settings file. It has
 [*][B]A safer save[/B]: a temporary copy, read back whole, then it takes the real name. Your notes and every other line stay.
 [/LIST]
 
-[CENTER][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b141/sky-splash.gif[/IMG][/CENTER]
+[CENTER][SPOILER="sky splash"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b141/sky-splash.gif[/IMG][/SPOILER][/CENTER]
 
 [B]The boot sound, plainly:[/B] with Boot Sound On (fast), boot.adp sits beside BIBLE's settings on the card and RIPPS2 reads it before any drive starts: 0.26 s after the towers on a SCPH-39001 with an SD2PSX. BIBLE handing it over in memory has only passed in the lab so far, and does not happen on that console.
 

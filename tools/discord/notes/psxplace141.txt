@@ -1,6 +1,6 @@
 psx-place bump for v1.4.1 beta (build 141) in RIPPS2's thread. It covers 1.4.0 too, so post only this one. Paste from the [CENTER] line. The first post (psxplace-post.bbcode) has the new release line, size and BIBLE lines.
 
-[CENTER][URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b141/launch-keys.mp4'][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b141/launch-keys.gif[/IMG][/URL]
+[CENTER][SPOILER="launch keys"][URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b141/launch-keys.mp4'][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b141/launch-keys.gif[/IMG][/URL][/SPOILER]
 
 [SIZE=5][B]RIPPS2 v1.4.1 beta: BIBLE's settings on one page, launch keys from your drives, the sounds sorted out, a timeline for your videos[/B][/SIZE]
 [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2.elf[/URL] (2,775 KB)  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/tag/v1.4.1-beta']What's new in 1.4.1[/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/tag/v1.4.0-beta']and in 1.4.0[/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/blob/main/CHANGELOG.md']Changelog[/URL][/CENTER]
@@ -13,7 +13,7 @@ The new pages below have only run in the PCSX2 lab, not on a real PS2 yet, so yo
 
 [B]Known:[/B] BIBLE 3282396, the one RIPPS2 carries, can stay on its splash for good when an AUTO path names a file that is not there on a drive it has to load a driver for (USB, MMCE, MX4SIO, HDD). It never reaches the next path. The lab saw this with mmce?:/APPS/RIPPS2.ELF and no device; the other cases come from reading the code. Going by the code, a button held at power on is not affected, so a button with a good path should get you past it. The lab cannot hold a button from power on, so that part has not been run. For now, give AUTO only paths that are really there on those drives. The fix is written and comes with the next BIBLE, after a re-sign.
 
-[CENTER][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b141/sky-splash.gif[/IMG]
+[CENTER][SPOILER="sky splash"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b141/sky-splash.gif[/IMG][/SPOILER]
 [SIZE=2]Sky Color: BIBLE itself, booted once for each, reading the file RIPPS2 wrote[/SIZE][/CENTER]
 
 [B]Sound fixes[/B] (from 1.4.0; timings and the stray sound report are from a SCPH-39001 with an SD2PSX)
@@ -24,7 +24,7 @@ The new pages below have only run in the PCSX2 lab, not on a real PS2 yet, so yo
 [*]Drives coming up during the boot stay quiet, and a music start over another start goes no further.
 [/LIST]
 
-[CENTER][URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b140/set-metadata.mp4'][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b140/set-metadata.gif[/IMG][/URL][/CENTER]
+[CENTER][SPOILER="set metadata"][URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b140/set-metadata.mp4'][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b140/set-metadata.gif[/IMG][/URL][/SPOILER][/CENTER]
 [B]Set Metadata (Rename)[/B] (from 1.4.0), one name on every row, on a page like Settings, the file name first as it appears in your games list. A tip says what a rename does there. PS2 games find their art and settings by game ID, so nothing changes. PS1 games and Ember titles find theirs by name, so RIPPS2 renames those with the game ([URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b140/rename-ps1.mp4']watch[/URL]). Art inside an ART Pack needs the pack built again.
 
 [B]A timeline for L1 and R1 in the video player[/B] (from 1.4.0, [URL='https://github.com/akilluminati47/RIPPS2/blob/main/media/b140/scrub.mp4']watch[/URL]). A tap moves 10 s, a hold runs up to 10 minutes a second, and the player jumps once when you let go. Spamming R1 no longer stops and restarts it on every press.

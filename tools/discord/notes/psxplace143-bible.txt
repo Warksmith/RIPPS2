@@ -1,6 +1,6 @@
 psx-place bump for BIBLE's own thread (threads/bible.51524), for BIBLE f5705eb. Paste from the [CENTER] line. BIBLE's first post (psxplace-bible-post.bbcode) needs its Current line and download names first.
 
-[CENTER][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b143/update-bible.jpg[/IMG]
+[CENTER][SPOILER="update bible"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b143/update-bible.jpg[/IMG][/SPOILER]
 
 [SIZE=5][B]BIBLE f5705eb: no more hang on a missing AUTO path, and it no longer reads the boot sound[/B][/SIZE]
 [URL='https://github.com/akilluminati47/BIBLE/releases/tag/signed-f5705eb']BIBLE's release[/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2 v1.4.3 beta[/URL] carries it[/CENTER]

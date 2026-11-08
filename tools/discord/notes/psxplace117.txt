@@ -115,9 +115,9 @@ The download, the theme pack (edition 117) and the languages are in the first po
 [*][B]POPSTARTER[/B]: both file sets known (POPS_IOX.PAK with POPS.PAK, or with POPS.ELF and IOPRP252.IMG).
 [/LIST]
 
-[IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b117/new-01-boot-lock.jpg[/IMG] [IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b117/new-04-ripdisc-flush.jpg[/IMG]
-[IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b117/new-03-ripgrid-drawer.jpg[/IMG] [IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b117/new-02-ripflow-tilt.jpg[/IMG]
-[IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-01-cd-player.jpg[/IMG] [IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-02-fast-boot.jpg[/IMG]
+[SPOILER="new 01 boot lock"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b117/new-01-boot-lock.jpg[/IMG][/SPOILER] [SPOILER="new 04 ripdisc flush"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b117/new-04-ripdisc-flush.jpg[/IMG][/SPOILER]
+[SPOILER="new 03 ripgrid drawer"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b117/new-03-ripgrid-drawer.jpg[/IMG][/SPOILER] [SPOILER="new 02 ripflow tilt"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b117/new-02-ripflow-tilt.jpg[/IMG][/SPOILER]
+[SPOILER="new 01 cd player"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-01-cd-player.jpg[/IMG][/SPOILER] [SPOILER="new 02 fast boot"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b115/new-02-fast-boot.jpg[/IMG][/SPOILER]
 
 [B]Reports: please [URL='https://github.com/akilluminati47/RIPPS2/issues']open an issue on GitHub[/URL].[/B] It is the best way to get RIPPS2 updated: each one is tracked until it is fixed. Add your console model, your drives, your boot loader and your DIAG.TXT (STATUS > SAVE DIAGNOSTICS). FreeMcBoot and OSDMenu users: please try BOOT LOCK and a game's EXIT. SD2PSX users: the menu music after a few message boxes, and a boot with Fast Boot on and off.
 

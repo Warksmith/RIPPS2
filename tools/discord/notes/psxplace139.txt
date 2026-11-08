@@ -2,7 +2,7 @@ psx-place bump for v1.3.9 beta (build 139) in RIPPS2's thread. The user posts it
 (psxplace-bible-post.bbcode), which went up 11/03 at threads/bible.51524. Paste from
 the [CENTER] line. The first post (psxplace-post.bbcode) has the new release line, size and BIBLE section.
 
-[CENTER][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/new-01-bible-menu.jpg[/IMG]
+[CENTER][SPOILER="new 01 bible menu"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/new-01-bible-menu.jpg[/IMG][/SPOILER]
 
 [SIZE=5][B]RIPPS2 v1.3.9 beta: BIBLE, set up from RIPPS2[/B][/SIZE]
 [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2.elf[/URL] (2,764 KB)  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/latest']What's new[/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/blob/main/CHANGELOG.md']Changelog[/URL][/CENTER]
