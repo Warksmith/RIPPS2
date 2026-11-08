@@ -1,20 +1,20 @@
 [CENTER][MEDIA=youtube]sTjjmDd6r1g[/MEDIA]
 [SIZE=2]The reel (2:28, chapters in its description)[/SIZE]
 
-[IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/7b2ac3102582fcabe0046c03df32ef5b0c5e9a48/media/b138/bible-1080i-signed.gif[/IMG]
+[SPOILER="BIBLE's splash in 1080i"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/7b2ac3102582fcabe0046c03df32ef5b0c5e9a48/media/b138/bible-1080i-signed.gif[/IMG][/SPOILER]
 [SIZE=2]BIBLE's splash in 1080i, all sixteen buttons, signed by akilluminati47[/SIZE]
 
 
 [SIZE=7][B]BIBLE[/B][/SIZE]
 [I]The boot loader RIPPS2 sets up. Signed, bound, and starting real PS2s.[/I]
 
-[URL='https://github.com/akilluminati47/BIBLE/releases/latest'][B]Signed builds and SD2PSX BOOT card[/B][/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2.elf (installs it for you)[/URL]  |  [URL='https://github.com/akilluminati47/BIBLE#readme']Every setting[/URL]  |  [URL='https://github.com/akilluminati47/BIBLE']Source (GPL-3)[/URL]  |  [URL='https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/']RIPPS2's thread[/URL]
+[URL='https://github.com/akilluminati47/BIBLE/releases/latest'][B]Signed builds and plain ELFs[/B][/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2.elf (installs it for you)[/URL]  |  [URL='https://github.com/akilluminati47/BIBLE#readme']Every setting[/URL]  |  [URL='https://github.com/akilluminati47/BIBLE']Source (GPL-3)[/URL]  |  [URL='https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/']RIPPS2's thread[/URL]
 [SIZE=2]Current: BIBLE 3282396, carried by RIPPS2 v1.4.1 beta[/SIZE][/CENTER]
 
 [SIZE=3]BIBLE is akilluminati47's boot loader: a fork of saildot4k's [URL='https://github.com/saildot4k/PlayStation2-Basic-BootLoader-Extended']PS2BBL Extended[/URL], itself built on El Isra's [URL='https://github.com/israpps/PlayStation2-Basic-BootLoader']PS2BBL[/URL]. It sits on your memory card as the console's system update (or in the internal HDD's boot area) and, at power on, starts what you chose, RIPPS2 first. [B]Every build is signed by akilluminati47[/B], with kelftool on their own PC: nobody else's keys, nobody else's signing.[/SIZE]
 
 [SIZE=5][B]Black, and fast[/B][/SIZE]
-[CENTER][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/bible-race-6000-vs-0.gif[/IMG]
+[CENTER][SPOILER="Both on Background"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/bible-race-6000-vs-0.gif[/IMG][/SPOILER]
 [SIZE=2]Both on Background: Black, no buttons, video mode AUTO, from BIBLE's first frame. Left, the 6000 ms countdown with the info line. Right, 0 ms.[/SIZE][/CENTER]
 
 BIBLE can get out of your way. [B]Power-on Wait: 0 ms[/B] drops the countdown (PS2BBL Extended holds it at 500 ms or more), and [B]Background: Black[/B] with [B]Button Glyphs: None[/B] leaves the logo alone on black, so the hand-off into RIPPS2 reads as one piece. All four are a menu pick in RIPPS2's Manage. For the last few seconds, turn [B]Stop Disc at Launch[/B] Off (DISC_STOP = 0): BIBLE then leaves the disc drive alone at launch instead of waiting for it to answer, which took 3.3 s off this run.
@@ -26,14 +26,14 @@ DISC_STOP = 0[/CODE]
 
 [SIZE=5][B]0 ms locks nothing away[/B][/SIZE]
 With no countdown, a button held from power on still picks its entry. And when you can't remember what's on which button, hold [B]L2 + R2[/B] at power on: BIBLE stops before anything starts and shows what every button launches, whatever your splash settings, even with nothing on screen at all.
-[CENTER][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/bible-keys-page-1080i.jpg[/IMG]
+[CENTER][SPOILER="The launch keys page in 1080i"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/bible-keys-page-1080i.jpg[/IMG][/SPOILER]
 [SIZE=2]The launch keys page in 1080i: what each button starts, and START to go back[/SIZE][/CENTER]
 
 Hold [B]TRIANGLE + CROSS[/B] at power on for the video mode page. It always opens in the console's own interlaced mode, so it is the way back from 720p or 1080i on a composite cable.
-[CENTER][IMG]https://raw.githubusercontent.com/akilluminati47/BIBLE/main/assets/readme/bible-video-mode.png[/IMG][/CENTER]
+[CENTER][SPOILER="Video mode"][IMG]https://raw.githubusercontent.com/akilluminati47/BIBLE/main/assets/readme/bible-video-mode.png[/IMG][/SPOILER][/CENTER]
 
 [SIZE=5][B]Or your own sky[/B][/SIZE]
-[CENTER][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/bible-sky-red-green.jpg[/IMG]
+[CENTER][SPOILER="Blood and Ectoplasm themes"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/bible-sky-red-green.jpg[/IMG][/SPOILER]
 [SIZE=2]Blood and Ectoplasm, two of RIPPS2's Color Themes, in 1080i[/SIZE][/CENTER]
 
 [B]Background: Auto[/B] (the default) puts your RIPPS2 Color Theme's sky behind the logo when BIBLE starts RIPPS2, and goes black, like a plain boot loader, when it starts anything else. [B]Sky[/B] keeps it on for everything, and BIBLE_COLOR sets any sky you like. The same look in every video mode. At a launch the logo and buttons fade away and the sky stays until the console loads the next program, which blanks the screen (about 7 s in the lab with RIPPS2 on a memory card). RIPPS2 then comes up in the same video mode and colours.
@@ -44,7 +44,7 @@ Hold [B]TRIANGLE + CROSS[/B] at power on for the video mode page. It always open
 [*][LEFT][B]Splash[/B]: off, the logo, or the logo with a sheet of every button you named.[/LEFT]
 [*][LEFT][B]Info Line[/B]: the console's model, ROM, clock and countdown, off by default.[/LEFT]
 [/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/bible-button-names-1080i.jpg[/IMG]
+[CENTER][SPOILER="Splash"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/bible-button-names-1080i.jpg[/IMG][/SPOILER]
 [SIZE=2]Splash: Logo and Names[/SIZE][/CENTER]
 
 [SIZE=5][B]Made to start RIPPS2[/B][/SIZE]
@@ -59,11 +59,11 @@ Hold [B]TRIANGLE + CROSS[/B] at power on for the video mode page. It always open
 [*][LEFT][B]With RIPPS2 (nothing to download)[/B]: RIPPS2.elf carries all four signed builds. Settings > General > Boot Loader > [B]Manage[/B] picks the one that reaches where RIPPS2 lives, has the console bind it to your card, moves whatever was there into a backup folder (nothing is deleted) and writes BIBLE's settings file, starting RIPPS2 first.[/LEFT]
 [*][LEFT][B]Already have BIBLE?[/B] Manage opens a BIBLE menu. [B]UPDATE BIBLE[/B] binds the newest over an older one in place, and every setting is on one page with a tip on each row.[/LEFT]
 [/LIST]
-[CENTER][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/new-01-bible-menu.jpg[/IMG]
+[CENTER][SPOILER="Manage's BIBLE menu"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/new-01-bible-menu.jpg[/IMG][/SPOILER]
 [SIZE=2]Manage's BIBLE menu[/SIZE][/CENTER]
 [LIST]
-[*][LEFT][B]SD2PSX owners[/B]: [URL='https://github.com/akilluminati47/BIBLE/releases/latest/download/BIBLE-SD2PSX-BootCard-3282396.zip']BIBLE-SD2PSX-BootCard-3282396.zip[/URL] is a ready BOOT card with BIBLE already bound. Keep a copy of your own BootCard-1.mcd, copy this one over it, put RIPPS2.ELF in the SD card's APPS folder, power on.[/LEFT]
-[*][LEFT][B]With KELFBinder[/B]: [URL='https://github.com/akilluminati47/BIBLE/releases/latest/download/BIBLE-signed-3282396.zip']BIBLE-signed-3282396.zip[/URL] has SYSTEM.XLF (memory card), MMCE/SYSTEM.XLF, MX4SIO/SYSTEM.XLF and HSYSTEM.XLF (HDD), with their SHA-256s.[/LEFT]
+[*][LEFT][B]No system update on your console[/B] (many from ROM 2.30 on): [URL='https://github.com/akilluminati47/BIBLE/releases/latest/download/BIBLE-ELF.zip']BIBLE-ELF.zip[/URL] is the same build as plain ELFs, for OpenTuna or FunTuna to start from mc?:/BOOT/BOOT.ELF. Its README walks through it.[/LEFT]
+[*][LEFT][B]With KELFBinder[/B]: [URL='https://github.com/akilluminati47/BIBLE/releases/latest/download/BIBLE-signed.zip']BIBLE-signed.zip[/URL] has SYSTEM.XLF (memory card), MMCE/SYSTEM.XLF, MX4SIO/SYSTEM.XLF and HSYSTEM.XLF (HDD), with their SHA-256s.[/LEFT]
 [/LIST]
 [SIZE=2]A memory card KELF only starts once a console has bound it to that card: Manage and KELFBinder do this as they install it. Copying the file onto a card by hand does not make it boot. The binding is the console's own MechaCon at work; RIPPS2 boots KELFBinder's IOPRP image for that step and holds no keys.[/SIZE]
 
@@ -109,7 +109,7 @@ One text file on the card, [B]mc?:/SYS-CONF/PS2BBL.INI[/B] (read first; else PS2
 [/SPOILER]
 
 [SIZE=5][B]Thanks[/B][/SIZE]
-[CENTER][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/bible-credits-1080i.jpg[/IMG]
+[CENTER][SPOILER="Credits"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/bible-credits-1080i.jpg[/IMG][/SPOILER]
 [SIZE=2]Set a button to $CREDITS and BIBLE thanks them itself[/SIZE][/CENTER]
 
 El Isra for PS2BBL and KELFBinder, saildot4k for PS2BBL Extended, SP193 for the OSD samples it all grew from, the ps2dev team for ps2sdk, and everyone testing on Discord and GitHub. BIBLE is GPL-3.0, like the loaders it comes from: [URL='https://github.com/akilluminati47/BIBLE']source[/URL]. It is part of [URL='https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/']RIPPS2[/URL].
