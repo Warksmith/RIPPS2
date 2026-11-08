@@ -1,3 +1,70 @@
+diff --git a/.github/scripts/test_bgm_source.py b/.github/scripts/test_bgm_source.py
+index a0524f6..88db63c 100644
+--- a/.github/scripts/test_bgm_source.py
++++ b/.github/scripts/test_bgm_source.py
+@@ -63,7 +63,7 @@ for name in names:
+ 
+ reopen = functions[0]
+ if reopen is not None:
+-    opened = reopen.find('fopen(')
++    opened = max(reopen.find('fopen('), reopen.find('bgmOpenFile('))  # RIPPS2 build 156: opened unbuffered
+     closed = reopen.find('fclose(src->f)')
+     if opened < 0 or closed < 0 or closed < opened:
+         failures.append('bgmSourceReopen: must open the new handle BEFORE closing the dead one '
+@@ -72,7 +72,10 @@ if reopen is not None:
+ source_type = re.search(r'^typedef struct\n\{\n[ \t]*FILE \*f;.*?^\} bgm_source_t;\n', sound, re.M | re.S)
+ if source_type is None:
+     failures.append('src/sound.c: bgm_source_t not found')
+-defines = '\n'.join(re.findall(r'^#define BGM_REOPEN_[A-Z_]+\b.*$', sound, re.M))
++defines = '\n'.join(re.findall(r'^#define BGM_(?:REOPEN|READ|MMCE)_[A-Z_]+\b.*$', sound, re.M))  # build 156: + the read pieces
++# RIPPS2 build 156: the file opened unbuffered and read in pieces (paced on MMCE), and each piece's speed noted for DIAG.TXT
++helpers = [h for h in (function_text(sound, n) for n in ('static FILE *bgmOpenFile(', 'static size_t bgmSourceGet(',
++                                                         'static void bgmReadNote(')) if h]
+ 
+ HARNESS = r'''
+ #include <stdio.h>
+@@ -188,6 +191,24 @@ static int DelayThread(int us)
+     return 0;
+ }
+ 
++/* RIPPS2 build 156: the music's file is unbuffered and its reads go into DIAG.TXT */
++#include <time.h>
++static int fake_setvbuf(FAKEFILE *f, char *buf, int mode, size_t size)
++{
++    (void)f;
++    (void)buf;
++    (void)mode;
++    (void)size;
++    return 0;
++}
++#define setvbuf fake_setvbuf
++static int diags;
++static void ripps2Diag(const char *fmt, ...)
++{
++    (void)fmt;
++    diags++;
++}
++
+ #define FILE   FAKEFILE
+ #define fopen  fake_fopen
+ #define fread  fake_fread
+@@ -197,6 +218,7 @@ static int DelayThread(int us)
+ @DEFINES@
+ @TYPE@
+ @FUNCTIONS@
++#undef setvbuf /* RIPPS2 build 156: the reader's file is fake; the harness's own stdout is a real FILE */
+ 
+ static int fails;
+ 
+@@ -397,7 +419,7 @@ def run_source_harness():
+     if '#define OGG_HDR_MAX' in sound:
+         fix = sound[sound.index('#define OGG_HDR_MAX'):sound.index('static size_t bgmSourceRead(')]
+     program = (HARNESS.replace('@DEFINES@', defines).replace('@TYPE@', source_type.group(0))
+-               .replace('@FUNCTIONS@', '\n'.join([fix] + functions)))
++               .replace('@FUNCTIONS@', '\n'.join(helpers + [fix] + functions)))
+     # RIPPS2 build 99: a track held whole in RAM, then one streamed through it piece by piece
+     for size in ('(300 * 1024 + 123)', '(1100 * 1024 + 123)'):
+         with tempfile.TemporaryDirectory() as tmp:
 diff --git a/include/ripps2.h b/include/ripps2.h
 index d3aa754..c5cbb63 100644
 --- a/include/ripps2.h

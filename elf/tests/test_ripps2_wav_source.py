@@ -120,6 +120,11 @@ static int fake_fclose(FAKEFILE *f)
 }
 
 static int DelayThread(int us) { (void)us; return 0; }
+/* build 156: the music's file is unbuffered and its reads go into DIAG.TXT */
+#include <time.h>
+static int fake_setvbuf(FAKEFILE *f, char *buf, int mode, size_t size) { (void)f; (void)buf; (void)mode; (void)size; return 0; }
+#define setvbuf fake_setvbuf
+static void ripps2Diag(const char *fmt, ...) { (void)fmt; }
 
 #define FILE   FAKEFILE
 #define fopen  fake_fopen

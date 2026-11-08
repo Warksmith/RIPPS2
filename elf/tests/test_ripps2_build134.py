@@ -35,9 +35,9 @@ for p, s in (('ripps2boot.c', boot), ('ripps2status.c', rd('src/ripps2status.c')
         if ('BBL 1.20' in line or 'PS2BBL 1.2.0' in line) and '_t("' in line:
             fail.append('%s still says the old loader on screen: %s' % (p, line.strip()[:80]))
 
-sums = {'SYSTEM.XLF': '0b251edcf67cf1ff7c9dd4bc7c420e5a33aa7415ecc69d5a9e4da9b13a7e4f52',
-        'MX4SIO/SYSTEM.XLF': 'bb927d630e27c4ab00080471bba9d0cce8691dbc3c768ca9209a2d5ef861fef8',
-        'HSYSTEM.XLF': '304f78ce6b772a70820d6f0c1c89116b469db5345e79c53136e3c0cc8d339e9c'}
+sums = {'SYSTEM.XLF': '7e1c919e7dca2e8629d183959afbda90ee5161df149b339fe9b5793b11679f43',
+        'MX4SIO/SYSTEM.XLF': '245a63b9705f2fc95107820412ed2c35ec35e3a9d067c03097b55f16a6495831',
+        'HSYSTEM.XLF': 'adfff5c3a96564afa64032c205cf39d039a910f0bd981630f3658ae6bb19a9de'}
 for name, want in sums.items():
     data = (elf / 'bible' / name).read_bytes()
     if hashlib.sha256(data).hexdigest() != want:

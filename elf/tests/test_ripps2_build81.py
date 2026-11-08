@@ -32,6 +32,9 @@ if 'srcToastArmed' not in st or 'strncmp(shown, text' not in st:
     fail.append('the toast must play once per source, and again when armed')
 sc = ui[ui.index('void ripps2SetCategory(int cat)'):]
 sc = sc[:sc.index('\n}\n')]
+if 'catTake(cat);' in sc:  # build 156: the bar's half of a switch is catTake, shared with ripps2CategoryFollow
+    tk = ui[ui.index('static void catTake(int cat)'):]
+    sc += tk[:tk.index('\n}\n')]
 if 'if (cat == RIPPS2_CAT_STORAGE)\n        srcToastArmed = 1;' not in sc:
     fail.append('coming back to Storage must name the source again')
 if 'static int srcToastArmed = 1;' not in ui:

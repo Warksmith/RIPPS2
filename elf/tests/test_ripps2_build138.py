@@ -44,8 +44,8 @@ bound = boot[j:boot.find('SecrInit();', j)]
 if 'l1 = blCardInfo(port, NULL), l2 = blCardInfo(port, NULL)' not in bound or 'card login after the restart' not in bound:
     fail.append('the card logs in twice before the bind, and DIAG.TXT says how')
 
-sums = {'MMCE/SYSTEM.XLF': '6a0e8364cec382c8cdd6da580de1f82a21edebc0ba1738a13b800c83b9d6e216',
-        'MX4SIO/SYSTEM.XLF': 'bb927d630e27c4ab00080471bba9d0cce8691dbc3c768ca9209a2d5ef861fef8'}
+sums = {'MMCE/SYSTEM.XLF': 'f5fe7e982ed34631de21e94ed0b37d7b89a2aba3d3c1ab93541d19812aea5009',
+        'MX4SIO/SYSTEM.XLF': '245a63b9705f2fc95107820412ed2c35ec35e3a9d067c03097b55f16a6495831'}
 readme = (elf / 'bible' / 'README.md').read_text(encoding='utf-8')
 for name, want in sums.items():
     if hashlib.sha256((elf / 'bible' / name).read_bytes()).hexdigest() != want:

@@ -1079,9 +1079,6 @@ strings:
 - en: COVER ART
   in:
   - ripps2art.c
-- en: 'Circle: stop'
-  in:
-  - ripps2art.c
 - en: Connecting to GitHub...
   in:
   - ripps2art.c
@@ -1089,9 +1086,6 @@ strings:
   in:
   - ripps2art.c
 - en: Could not connect to %s (last tried %s).
-  in:
-  - ripps2art.c
-- en: 'Cross: stop'
   in:
   - ripps2art.c
 - en: 'Download the covers in HD (280 x 400)? Sharper on an HD screen, about 70 KB each. START: Standard (140 x 200, as Open PS2 Loader''s), about 20 KB each. A game that already has a cover keeps it.'
@@ -1124,6 +1118,13 @@ strings:
 - en: STANDARD
   in:
   - ripps2art.c
+- en: STOP
+  in:
+  - ripps2art.c
+  - ripps2cd.c
+  - ripps2files.c
+  - ripps2media.c
+  - ripps2seance.c
 - en: Starting the network...
   in:
   - ripps2art.c
@@ -2270,12 +2271,6 @@ strings:
 - en: SEEK
   in:
   - ripps2cd.c
-- en: STOP
-  in:
-  - ripps2cd.c
-  - ripps2files.c
-  - ripps2media.c
-  - ripps2seance.c
 - en: STOPPED
   in:
   - ripps2cd.c
@@ -3595,12 +3590,6 @@ strings:
   in:
   - ripps2media.c
 - en: '%s   %d TRIANGLES   %d %s%s'
-  in:
-  - ripps2media.c
-- en: Circle play again   Cross close
-  in:
-  - ripps2media.c
-- en: Cross play again   Circle close
   in:
   - ripps2media.c
 - en: FIT

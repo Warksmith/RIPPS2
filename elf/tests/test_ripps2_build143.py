@@ -23,18 +23,18 @@ def body(text, name):
     return text[a:text.find('\n}\n', a)] if a >= 0 else ''
 
 
-# ---- the four signed files, and what they were signed from
-sums = {'SYSTEM.XLF': ('0b251edcf67cf1ff7c9dd4bc7c420e5a33aa7415ecc69d5a9e4da9b13a7e4f52', 116584),
-        'MMCE/SYSTEM.XLF': ('6a0e8364cec382c8cdd6da580de1f82a21edebc0ba1738a13b800c83b9d6e216', 169576),
-        'MX4SIO/SYSTEM.XLF': ('bb927d630e27c4ab00080471bba9d0cce8691dbc3c768ca9209a2d5ef861fef8', 166840),
-        'HSYSTEM.XLF': ('304f78ce6b772a70820d6f0c1c89116b469db5345e79c53136e3c0cc8d339e9c', 160184)}
+# ---- the four signed files, and what they were signed from (build 155: BIBLE a060790, signed 11/07, in f5705eb's place)
+sums = {'SYSTEM.XLF': ('7e1c919e7dca2e8629d183959afbda90ee5161df149b339fe9b5793b11679f43', 116744),
+        'MMCE/SYSTEM.XLF': ('f5fe7e982ed34631de21e94ed0b37d7b89a2aba3d3c1ab93541d19812aea5009', 169720),
+        'MX4SIO/SYSTEM.XLF': ('245a63b9705f2fc95107820412ed2c35ec35e3a9d067c03097b55f16a6495831', 166952),
+        'HSYSTEM.XLF': ('adfff5c3a96564afa64032c205cf39d039a910f0bd981630f3658ae6bb19a9de', 160328)}
 for name, (want, size) in sums.items():
     d = (here / 'bible' / name).read_bytes()
     if hashlib.sha256(d).hexdigest() != want or len(d) != size:
         fail.append('elf/bible/%s is BIBLE f5705eb, signed 11/04' % name)
     if want not in readme:
         fail.append('elf/bible/README.md names %s' % name)
-if 'f5705eb' not in readme:
+if 'a060790' not in readme:
     fail.append('elf/bible/README.md names the commit')
 
 # ---- BIBLE's icon
@@ -73,7 +73,7 @@ for size, crc, name in ((169428, 0xFA50666C, 'MMCE'), (166692, 0x79D0611C, 'MX4S
         fail.append('blBiblePlain has %s %d' % (name, size))
 for name, f in (('MMCE', 'MMCE/SYSTEM.XLF'), ('MX4SIO', 'MX4SIO/SYSTEM.XLF'), ('memory card', 'SYSTEM.XLF')):
     d = (here / 'bible' / f).read_bytes()
-    if len(d) - 148 not in (169428, 166692, 116436):
+    if len(d) - 148 not in (169572, 166804, 116596):  # build 155: a060790's plain ELFs (f5705eb's are 169428, 166692, 116436)
         fail.append('%s: the signed file is its plain ELF plus 148 bytes' % name)
 fn = body(boot, 'static const char *blPlainBibleOf(int port)')
 if 'mc%d:/BOOT/BOOT.ELF' not in fn or 'crc32(0L, buf, size)' not in fn:

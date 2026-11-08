@@ -38,7 +38,7 @@ if 'stop answering after a refused bind' not in boot:
 
 # BIBLE's MMCE build, carried and picked for an MMCE start
 mmce = (elf / 'bible' / 'MMCE' / 'SYSTEM.XLF')
-want = '6a0e8364cec382c8cdd6da580de1f82a21edebc0ba1738a13b800c83b9d6e216'  # build 139: BIBLE 3282396 (build 138: a1ffb0b)
+want = 'f5fe7e982ed34631de21e94ed0b37d7b89a2aba3d3c1ab93541d19812aea5009'  # build 139: BIBLE 3282396 (build 138: a1ffb0b)
 if not mmce.exists() or hashlib.sha256(mmce.read_bytes()).hexdigest() != want:
     fail.append('elf/bible/MMCE/SYSTEM.XLF is the signed BIBLE MMCE build')
 elif mmce.read_bytes()[16 + 6:16 + 8] != b'\x00\x01':
