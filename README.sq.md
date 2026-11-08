@@ -61,6 +61,8 @@ RIPPS2 është një front end për PS2 në një `.elf` të vetëm: një çmontim
 
 Është **beta** që nga ndërtimi 100: njëqind ndërtime alfa, të testuara në konsola dhe në PCSX2 nga ripto, nuno6573, zackcage6, eliminator1403, FifthFox dhe Mr.sus.60, dhe në beta edhe nga lukeatmynose dhe ahavasi, dhe nga të gjithë ata që testojnë në Discord, me falënderime të veçanta edhe për gjithë dashurinë në YouTube. Mbaje ngarkuesin tënd të zakonshëm pranë dhe na trego çfarë prishet: komentet janë ato që e bëjnë RIPPS2. **Mënyra më e mirë për ta përditësuar RIPPS2 është [një issue në GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny ka hapur tre, dhe rregullimi për FreeMcBoot në v1.1.7 erdhi nga njëri prej tyre. Bëhu si DarkNerdShawny.
 
+Warksmith ndërtoi bashkë me ne bibliotekat e lojërave UDPFS të RIPPS2 dhe kthimin nga loja (build-et 145 deri 154), dhe Berion kontrolloi kodin e diskut të ngurtë APA.
+
 <a id="videos"></a>
 
 ## Video
@@ -254,6 +256,8 @@ Shto `?t=12` për të kapërcyer hyrjen me shtylla, ose `?f=3#memory-files` për
 ## Falënderime
 
 RIPPS2 projektohet dhe drejtohet nga akilluminati47 dhe ndërtohet me Claude (Anthropic). Testuesit: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi dhe të gjithë ata që testojnë në Discord. Issues në GitHub: DarkNerdShawny dhe kushdo që hap një (një issue është mënyra më e mirë për ta përditësuar RIPPS2: bëhu si ata dhe [hap një](https://github.com/akilluminati47/RIPPS2/issues)). Falënderime të veçanta edhe për gjithë dashurinë në YouTube: me kënaqësi ndihmoj sido që të më gjesh.
+
+Warksmith ndërtoi bashkë me ne bibliotekat e lojërave UDPFS të RIPPS2 dhe kthimin nga loja (build-et 145 deri 154), dhe Berion kontrolloi kodin e diskut të ngurtë APA.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) nga NathanNeurotic dhe ekipi i [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), mbi të cilët është ndërtuar RIPPS2. Falënderimet e tyre të plota janë në faqen About të RIPPS2.
 - [Neutrino](https://github.com/rickgaiser/neutrino) nga [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), emuluesi i pajisjeve i vogël, i shpejtë dhe modular që është bërthama e dytë e lojërave e RIPPS2: RIPPS2 gjen dhe përdor tëndin, të çdo versioni; RIPPS2.elf mbarti ndërtimin e tij deri te ndërtimi 134 ([`elf/neutrino`](elf/neutrino/README.md)). Zgjidhe si Default Loader Core te Settings > Game Launching.

@@ -61,6 +61,8 @@ RIPPS2 este un front end pentru PS2 într-un singur `.elf`: o demontare și reco
 
 Este **beta** din build-ul 100: o sută de build-uri alpha, testate pe console și în PCSX2 de ripto, nuno6573, zackcage6, eliminator1403, FifthFox și Mr.sus.60, iar în beta și de lukeatmynose și ahavasi, și de toți cei care testează pe Discord, cu mulțumiri speciale și pentru toată dragostea de pe YouTube. Ține-ți loaderul obișnuit la îndemână și spune-ne ce se strică: feedbackul face RIPPS2. **Cel mai bun mod de a primi actualizări la RIPPS2 este [un issue pe GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny a deschis trei, iar remedierea pentru FreeMcBoot din v1.1.7 a pornit de la unul dintre ele. Fii ca DarkNerdShawny.
 
+Warksmith a construit împreună cu noi bibliotecile de jocuri UDPFS ale RIPPS2 și întoarcerea din joc (build-urile 145 până la 154), iar Berion a verificat codul pentru hard diskul APA.
+
 <a id="videos"></a>
 
 ## Videoclipuri
@@ -254,6 +256,8 @@ Adaugă `?t=12` ca să sari peste introducerea cu stâlpii, sau `?f=3#memory-fil
 ## Mulțumiri
 
 RIPPS2 e conceput și condus de akilluminati47 și construit cu Claude (Anthropic). Testeri: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi și toți cei care testează pe Discord. Issues pe GitHub: DarkNerdShawny și toți cei care deschid unul (un issue e cel mai bun mod de a primi actualizări la RIPPS2: fii ca ei și [deschide unul](https://github.com/akilluminati47/RIPPS2/issues)). Mulțumiri speciale și pentru toată dragostea de pe YouTube: mă bucur să ajut, oricum m-ai găsi.
+
+Warksmith a construit împreună cu noi bibliotecile de jocuri UDPFS ale RIPPS2 și întoarcerea din joc (build-urile 145 până la 154), iar Berion a verificat codul pentru hard diskul APA.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) de la NathanNeurotic și echipa [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), pe care e construit RIPPS2. Mulțumirile lor complete sunt pe pagina About a RIPPS2.
 - [Neutrino](https://github.com/rickgaiser/neutrino) de la [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), emulatorul de dispozitive mic, rapid și modular care e al doilea nucleu de jocuri al RIPPS2: RIPPS2 îl găsește și îl folosește pe al tău, de orice versiune; RIPPS2.elf i-a adus build-ul până la build-ul 134 ([`elf/neutrino`](elf/neutrino/README.md)). Alege-l ca Default Loader Core în Settings > Game Launching.

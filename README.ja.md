@@ -61,6 +61,8 @@ RIPPS2 は単一の `.elf` に収まった PS2 フロントエンドです: [Rip
 
 ビルド 100 から**ベータ**です: 100 のアルファビルドを、ripto、nuno6573、zackcage6、eliminator1403、FifthFox、Mr.sus.60 が実機と PCSX2 でテストし、ベータでは lukeatmynose と ahavasi、そして Discord でテストしてくれる皆さんも加わりました。YouTube での応援にも特に感謝します。いつものローダーも手元に置いて、何が壊れたか教えてください: RIPPS2 を作るのはフィードバックです。**RIPPS2 を更新させる一番の方法は [GitHub の issue](https://github.com/akilluminati47/RIPPS2/issues) です**: DarkNerdShawny は 3 つ立て、v1.1.7 の FreeMcBoot 修正はそのうちの 1 つから生まれました。DarkNerdShawny のようになりましょう。
 
+Warksmith は RIPPS2 の UDPFS ゲームライブラリとゲーム中からの復帰を私たちと一緒に作り (ビルド 145 から 154)、Berion は APA ハードディスクのコードを確認しました。
+
 <a id="videos"></a>
 
 ## 動画
@@ -254,6 +256,8 @@ python -m http.server 8000
 ## クレジット
 
 RIPPS2 は akilluminati47 が設計と指揮をし、Claude (Anthropic) とともに作っています。テスター: ripto、nuno6573、zackcage6、eliminator1403、FifthFox、Mr.sus.60、lukeatmynose、ahavasi、そして Discord でテストしてくれる皆さん。GitHub の issue: DarkNerdShawny と、issue を立ててくれるすべての人 (issue は RIPPS2 を更新させる一番の方法です: 彼らのように [1 つ立てましょう](https://github.com/akilluminati47/RIPPS2/issues))。YouTube での応援にも特に感謝します: どこから連絡をもらっても、喜んで手伝います。
+
+Warksmith は RIPPS2 の UDPFS ゲームライブラリとゲーム中からの復帰を私たちと一緒に作り (ビルド 145 から 154)、Berion は APA ハードディスクのコードを確認しました。
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) by NathanNeurotic と [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) チーム (AFL-3.0)。RIPPS2 はその上に作られています。彼らの完全なクレジットは RIPPS2 の About ページにあります。
 - [Neutrino](https://github.com/rickgaiser/neutrino) by [rickgaiser](https://github.com/rickgaiser) (AFL-3.0)。小さく速いモジュール式のデバイスエミュレーターで、RIPPS2 の 2 つ目のゲームコアです: RIPPS2 はどのバージョンでも自分の Neutrino を見つけて使います。RIPPS2.elf はビルド 134 まで同梱していました ([`elf/neutrino`](elf/neutrino/README.md))。Settings > Game Launching の Default Loader Core で選びます。

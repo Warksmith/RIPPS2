@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Od buildu 118 **Settings > Game Sources > Cache > ART Pack** pakuje folder `ART` każdego uruchomionego napędu w jeden `art.tar` w folderze `ART` napędu, który wybierzesz. RIPPS2 mierzy, jak szybko każdy napęd czyta własne grafiki, i stawia najszybszy na początku listy, żeby X go wybrał (na przykład kartę SD w SD2PSX). Obrazy trafiają do środka bez zmian (PNG i JPG są już skompresowane: tar tylko je łączy, a PC otwiera go jak każdy tar), a foldery `ART` zostają nietknięte. Od tej pory okładki ładują się z tego jednego pliku przez jeden indeks (zapisany razem z paczką, więc pierwszy start nie musi jej przeszukiwać), a folder `ART` gry, dla której zbudowano paczkę, nigdy nie jest odpytywany obraz po obrazie, łącznie z brakującymi: mniej czytania na napędzie, z którego leci muzyka, i grafiki nadążające za kursorem. Grafiki, które RIPPS2 pobierze lub zrobi później, pojawiają się od razu; te, które skopiujesz na PC, pojawią się po ponownym zbudowaniu paczki. Możesz skopiować `art.tar` do folderu `ART` innego napędu za pomocą Memory Files, ale zbuduj go na napędzie, z którego przeglądasz. Ten sam przycisk usuwa paczkę."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith zbudował z nami biblioteki gier UDPFS w RIPPS2 i powrót z gry (buildy 145 do 154), a Berion sprawdził kod dysku twardego APA."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Gra PS2** staje się ISO w folderze DVD lub CD napędu, na twojej liście gier. Gra większa niż 4 GB trafiająca na napęd FAT32 jest zapisywana zamiast tego jako części po 1 GB w stylu Open PS2 Loadera z ul.cfg; na napędzie exFAT (pendrive, MX4SIO, iLink albo wewnętrzny HDD) zostaje jednym ISO. Miejsce na napędzie jest sprawdzane przed rozpoczęciem zgrywania."

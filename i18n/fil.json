@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Mula build 118, iniimpake ng **Settings > Game Sources > Cache > ART Pack** ang `ART` folder ng bawat nasimulang drive sa iisang `art.tar` sa `ART` folder ng drive na pipiliin mo. Sinusukat ng RIPPS2 kung gaano kabilis binabasa ng bawat drive ang sarili nitong mga larawan at inililista muna ang pinakamabilis para makuha ito ng X (halimbawa ang SD card sa SD2PSX). Pumapasok ang mga larawan nang ganoon (naka-compress na ang PNG at JPG: pinagtatabi lang sila ng tar, at binubuksan ito ng PC gaya ng anumang tar), at hindi ginagalaw ang mga `ART` folder. Mula noon nilo-load ang mga cover mula sa iisang file na iyon sa pamamagitan ng index (isinusulat kasama ng pack, kaya hindi na kailangang i-scan sa unang boot), at hindi kailanman tinatanong nang larawan por larawan ang `ART` folder ng larong ginawan ng pack, kahit ang nawawalang larawan: mas kaunting pagbasa sa drive na nagpapatugtog ng musika, at nakakasabay ang mga cover sa cursor. Agad lumalabas ang mga larawang dina-download o kinukuha ng RIPPS2 pagkatapos; ang kinopya mo sa PC ay lumalabas pagkatapos gawin muli ang pack. Maaari mong kopyahin ang `art.tar` sa `ART` folder ng ibang drive gamit ang Memory Files, pero gawin ito sa drive na ginagamit mo sa pagba-browse. Binubura ng parehong button ang pack."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Binuo ni Warksmith kasama namin ang mga UDPFS game library at ang pagbalik mula sa laro ng RIPPS2 (mga build 145 hanggang 154), at sinuri ni Berion ang code nito para sa APA hard drive."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Ang PS2 game** ay nagiging ISO sa DVD o CD folder ng isang drive, sa listahan ng mga laro mo. Ang larong mas malaki sa 4 GB na pupunta sa FAT32 drive ay iniimbak bilang mga 1 GB na bahagi sa istilong Open PS2 Loader na may ul.cfg; sa exFAT drive (USB stick, MX4SIO, iLink, o internal HDD) nananatili itong iisang ISO. Sinusuri ang espasyo ng drive bago magsimula ang rip."

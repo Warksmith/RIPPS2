@@ -61,6 +61,8 @@ Ang RIPPS2 ay isang PS2 front end sa iisang `.elf`: ang [RiptOPL](https://github
 
 Nasa **beta** mula build 100: isandaang alpha build, sinubukan sa console at sa PCSX2 nina ripto, nuno6573, zackcage6, eliminator1403, FifthFox, at Mr.sus.60, at sa beta pati nina lukeatmynose at ahavasi, at ng lahat ng sumusubok sa Discord, na may espesyal na pasasalamat sa lahat ng pagmamahal sa YouTube. Itabi ang karaniwan mong loader at sabihin sa amin kung ano ang nasisira: ang feedback ang bumubuo sa RIPPS2. **Ang pinakamagandang paraan para ma-update ang RIPPS2 ay [isang issue sa GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: tatlo ang binuksan ni DarkNerdShawny, at galing sa isa sa mga iyon ang ayos sa FreeMcBoot sa v1.1.7. Maging tulad ni DarkNerdShawny.
 
+Binuo ni Warksmith kasama namin ang mga UDPFS game library at ang pagbalik mula sa laro ng RIPPS2 (mga build 145 hanggang 154), at sinuri ni Berion ang code nito para sa APA hard drive.
+
 <a id="videos"></a>
 
 ## Mga video
@@ -254,6 +256,8 @@ Idagdag ang `?t=12` para laktawan ang intro ng mga haligi, o `?f=3#memory-files`
 ## Mga kredito
 
 Ang RIPPS2 ay dinisenyo at pinamumunuan ni akilluminati47 at binubuo kasama si Claude (Anthropic). Mga tester: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi, at lahat ng sumusubok sa Discord. Mga issue sa GitHub: si DarkNerdShawny at ang lahat ng nagbubukas nito (ang issue ang pinakamagandang paraan para ma-update ang RIPPS2: maging tulad nila at [magbukas ng isa](https://github.com/akilluminati47/RIPPS2/issues)). Espesyal na pasasalamat din sa lahat ng pagmamahal sa YouTube: masaya akong tumulong, saan mo man ako abutin.
+
+Binuo ni Warksmith kasama namin ang mga UDPFS game library at ang pagbalik mula sa laro ng RIPPS2 (mga build 145 hanggang 154), at sinuri ni Berion ang code nito para sa APA hard drive.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) nina NathanNeurotic at ng koponan ng [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), na pinagbatayan ng RIPPS2. Nasa About page ng RIPPS2 ang kumpleto nilang kredito.
 - [Neutrino](https://github.com/rickgaiser/neutrino) ni [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), ang maliit, mabilis, at modular na device emulator na pangalawang game core ng RIPPS2: hinahanap at ginagamit ng RIPPS2 ang sarili mong Neutrino, anumang bersyon; dala ng RIPPS2.elf ang build nito hanggang build 134 ([`elf/neutrino`](elf/neutrino/README.md)). Piliin ito bilang Default Loader Core sa Settings > Game Launching.

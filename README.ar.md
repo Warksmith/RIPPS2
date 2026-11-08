@@ -63,6 +63,8 @@ RIPPS2 واجهة لجهاز PS2 في ملف `.elf` واحد: تفكيك وإع�
 
 إنه **بيتا** منذ الإصدار 100: مئة إصدار ألفا، اختبرها على الأجهزة وفي PCSX2 كل من ripto وnuno6573 وzackcage6 وeliminator1403 وFifthFox وMr.sus.60، وفي البيتا أيضًا lukeatmynose وahavasi، وكل من يختبر على Discord، مع شكر خاص لكل المحبة على YouTube أيضًا. أبقِ محمّلك المعتاد قريبًا، وأخبرنا بما يتعطل: الملاحظات هي ما يصنع RIPPS2. **أفضل طريقة لتحديث RIPPS2 هي [issue على GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: فتح DarkNerdShawny ثلاثة، وجاء إصلاح FreeMcBoot في v1.1.7 من أحدها. كن مثل DarkNerdShawny.
 
+بنى Warksmith معنا مكتبات ألعاب UDPFS في RIPPS2 والعودة من داخل اللعبة (الإصدارات من 145 إلى 154)، وراجع Berion شيفرة القرص الصلب APA.
+
 <a id="videos"></a>
 
 ## الفيديوهات
@@ -256,6 +258,8 @@ python -m http.server 8000
 ## الشكر
 
 صمّم RIPPS2 ويقوده akilluminati47، ويُبنى بمساعدة Claude (Anthropic). المختبرون: ripto وnuno6573 وzackcage6 وeliminator1403 وFifthFox وMr.sus.60 وlukeatmynose وahavasi، وكل من يختبر على Discord. والـ issues على GitHub: DarkNerdShawny وكل من يفتح واحدًا (الـ issue أفضل طريقة لتحديث RIPPS2: كن مثلهم و[افتح واحدًا](https://github.com/akilluminati47/RIPPS2/issues)). وشكر خاص أيضًا لكل المحبة على YouTube: يسعدني أن أساعد أيًّا كانت الطريقة التي تصلني بها.
+
+بنى Warksmith معنا مكتبات ألعاب UDPFS في RIPPS2 والعودة من داخل اللعبة (الإصدارات من 145 إلى 154)، وراجع Berion شيفرة القرص الصلب APA.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) من NathanNeurotic وفريق [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0)، اللذان بُني عليهما RIPPS2. شكرهم الكامل موجود في صفحة About في RIPPS2.
 - [Neutrino](https://github.com/rickgaiser/neutrino) من [rickgaiser](https://github.com/rickgaiser) (AFL-3.0)، محاكي الأجهزة الصغير السريع النمطي الذي يمثل النواة الثانية للألعاب في RIPPS2: يعثر RIPPS2 على نسختك ويستخدمها أيًّا كان إصدارها؛ وقد حمل RIPPS2.elf إصدارًا منه حتى الإصدار 134 ([`elf/neutrino`](elf/neutrino/README.md)). اختره بصفته Default Loader Core في Settings > Game Launching.

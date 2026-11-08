@@ -61,6 +61,8 @@ RIPPS2 to front end dla PS2 w jednym pliku `.elf`: rozbiórka i odbudowa [RiptOP
 
 Od buildu 100 to **beta**: sto buildów alfa, testowanych na konsolach i w PCSX2 przez ripto, nuno6573, zackcage6, eliminator1403, FifthFox i Mr.sus.60, a w becie także przez lukeatmynose i ahavasi, oraz przez wszystkich, którzy testują na Discordzie, ze szczególnymi podziękowaniami za całą miłość z YouTube. Trzymaj swój zwykły loader pod ręką i mów nam, co się psuje: to opinie tworzą RIPPS2. **Najlepszy sposób, by RIPPS2 dostał aktualizację, to [issue na GitHubie](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny otworzył trzy, a poprawka FreeMcBoot w v1.1.7 wzięła się z jednego z nich. Bądź jak DarkNerdShawny.
 
+Warksmith zbudował z nami biblioteki gier UDPFS w RIPPS2 i powrót z gry (buildy 145 do 154), a Berion sprawdził kod dysku twardego APA.
+
 <a id="videos"></a>
 
 ## Filmy
@@ -254,6 +256,8 @@ Dodaj `?t=12`, by pominąć intro z filarami, albo `?f=3#memory-files`, by otwor
 ## Podziękowania
 
 RIPPS2 jest projektowany i prowadzony przez akilluminati47 i budowany z Claude (Anthropic). Testerzy: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi i wszyscy testujący na Discordzie. Issues na GitHubie: DarkNerdShawny i każdy, kto otwiera issue (issue to najlepszy sposób, by RIPPS2 dostał aktualizację: bądź jak oni i [otwórz jedno](https://github.com/akilluminati47/RIPPS2/issues)). Szczególne podziękowania także za całą miłość z YouTube: chętnie pomogę, jakkolwiek się ze mną skontaktujesz.
+
+Warksmith zbudował z nami biblioteki gier UDPFS w RIPPS2 i powrót z gry (buildy 145 do 154), a Berion sprawdził kod dysku twardego APA.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) od NathanNeurotic i zespół [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), na których zbudowano RIPPS2. Ich pełne podziękowania są na stronie About w RIPPS2.
 - [Neutrino](https://github.com/rickgaiser/neutrino) od [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), mały, szybki i modułowy emulator urządzeń, który jest drugim rdzeniem gier RIPPS2: RIPPS2 znajduje i używa twojego, w dowolnej wersji; RIPPS2.elf miał jego build na pokładzie do buildu 134 ([`elf/neutrino`](elf/neutrino/README.md)). Wybierz go jako Default Loader Core w Settings > Game Launching.

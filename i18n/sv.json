@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Från build 118 packar **Settings > Game Sources > Cache > ART Pack** `ART`-mappen från varje startad enhet till en enda `art.tar` i `ART`-mappen på den enhet du väljer. RIPPS2 mäter hur snabbt varje enhet läser sina egna bilder och listar den snabbaste först, så att X tar den (en SD2PSX:s SD, till exempel). Bilderna läggs in som de är (PNG och JPG är redan komprimerade: tar-filen samlar bara ihop dem, och en dator öppnar den som vilken tar som helst), och `ART`-mapparna lämnas orörda. Därefter laddas omslagen från den enda filen via ett index (skrivet med paketet, så första starten behöver inte söka igenom den), och `ART`-mappen för ett spel som paketet byggdes för tillfrågas aldrig en bild i taget, saknade bilder inräknade: mindre läsning på enheten som musiken strömmar från, och bilder som hänger med markören. Bilder som RIPPS2 hämtar eller tar senare visas direkt; bilder du kopierar in på en dator visas när du har byggt paketet igen. Du kan kopiera `art.tar` till en annan enhets `ART`-mapp med Memory Files, men bygg den på enheten du bläddrar från. Samma knapp tar bort paketet."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith byggde RIPPS2:s UDPFS-spelbibliotek och återgången från spelet tillsammans med oss (build 145 till 154), och Berion granskade koden för APA-hårddiskar."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Ett PS2-spel** blir en ISO i en enhets DVD- eller CD-mapp, i din spellista. Ett spel över 4 GB som ska till en FAT32-enhet sparas i stället som Open PS2 Loaders delar på 1 GB med ul.cfg; på en exFAT-enhet (ett USB-minne, MX4SIO, iLink eller den interna HDD:n) blir det en enda ISO. Utrymmet på enheten kontrolleras innan rippningen börjar."

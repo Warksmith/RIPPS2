@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Od builda 118 **Settings > Game Sources > Cache > ART Pack** pakuje fasciklu `ART` svakog pokrenutog uređaja u jedan `art.tar` u fascikli `ART` uređaja koji izabereš. RIPPS2 meri koliko brzo svaki uređaj čita sopstvene slike i stavlja najbrži na vrh, tako da ga X izabere (na primer SD karticu SD2PSX-a). Slike ulaze kakve jesu (PNG i JPG su već kompresovani: tar ih samo skuplja, a računar ga otvara kao bilo koji tar), a fascikle `ART` ostaju netaknute. Od tada se omoti učitavaju iz te jedne datoteke kroz jedan indeks (zapisan sa paketom, pa prvo pokretanje ne mora da ga pretražuje), a fascikla `ART` igre za koju je paket napravljen nikad se ne pita sliku po sliku, uključujući one koje nedostaju: manje čitanja na uređaju sa kog ide muzika i slike koje prate kursor. Slike koje RIPPS2 kasnije preuzme ili snimi pojavljuju se odmah; one koje kopiraš na računaru pojave se kada ponovo napraviš paket. `art.tar` možeš kopirati u fasciklu `ART` drugog uređaja uz Memory Files, ali ga napravi na uređaju sa kog pregledaš. Isto dugme uklanja paket."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith je sa nama izgradio RIPPS2 biblioteke igara preko UDPFS-a i povratak iz igre (buildovi 145 do 154), a Berion je proverio kod za APA hard disk."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **PS2 igra** postaje ISO u fascikli DVD ili CD na uređaju, na tvojoj listi igara. Igra veća od 4 GB koja ide na FAT32 uređaj čuva se umesto toga kao delovi od 1 GB za Open PS2 Loader sa ul.cfg; na exFAT uređaju (USB fleš, MX4SIO, iLink ili unutrašnji HDD) ostaje jedan ISO. Prostor na uređaju proverava se pre početka ripovanja."

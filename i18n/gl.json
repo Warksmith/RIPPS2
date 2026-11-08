@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Desde a build 118, **Settings > Game Sources > Cache > ART Pack** empaqueta o cartafol `ART` de cada unidade iniciada nun único `art.tar` no cartafol `ART` da unidade que escollas. RIPPS2 mide o rápido que cada unidade le a súa propia arte e lista primeiro a máis rápida, para que X a escolla (a SD dun SD2PSX, por exemplo). As imaxes entran tal cal (PNG e JPG xa están comprimidos: o tar só as agrupa, e un PC ábreo como calquera tar), e os cartafoles `ART` quedan como están. A partir de entón as portadas cárganse desde ese ficheiro a través dun índice (escrito co paquete, así o primeiro arranque non precisa percorrelo), e ao cartafol `ART` dun xogo para o que se fixo o paquete nunca se lle pide imaxe por imaxe, incluídas as que faltan: menos lectura na unidade desde a que soa a música, e arte que segue o ritmo do cursor. A arte que RIPPS2 descarga ou captura despois aparece ao momento; a que copias desde un PC aparece cando volves crear o paquete. Podes copiar `art.tar` ao cartafol `ART` doutra unidade con Memory Files, pero créao na unidade desde a que navegas. O mesmo botón quita o paquete."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith construíu connosco as bibliotecas de xogos por UDPFS de RIPPS2 e o regreso desde o xogo (builds 145 a 154), e Berion revisou o seu código do disco duro APA."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Un xogo de PS2** convértese nunha ISO no cartafol DVD ou CD dunha unidade, na túa lista de xogos. Un xogo de máis de 4 GB que vai a unha unidade FAT32 gárdase no canto diso como as partes de 1 GB de Open PS2 Loader con ul.cfg; nunha unidade exFAT (un USB, MX4SIO, iLink ou o HDD interno) queda como unha soa ISO. O espazo da unidade compróbase antes de empezar."

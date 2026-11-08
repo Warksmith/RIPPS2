@@ -63,6 +63,8 @@ RIPPS2 یک فرانت‌اند PS2 در یک `.elf` تنهاست: باز کرد
 
 از بیلد 100 در **بتا** است: صد بیلد آلفا، آزموده روی کنسول‌ها و در PCSX2 به دست ripto، nuno6573، zackcage6، eliminator1403، FifthFox و Mr.sus.60، و در بتا همچنین lukeatmynose و ahavasi، و همهٔ کسانی که در Discord آزمایش می‌کنند، با سپاس ویژه برای همهٔ محبت در YouTube. بارگذار همیشگی‌ات را دم دست نگه دار و به ما بگو چه چیزی خراب می‌شود: بازخورد است که RIPPS2 را می‌سازد. **بهترین راه برای به‌روز شدن RIPPS2 [یک issue در GitHub](https://github.com/akilluminati47/RIPPS2/issues) است**: DarkNerdShawny سه تا باز کرده، و اصلاح FreeMcBoot در v1.1.7 از یکی از آن‌ها آمد. مثل DarkNerdShawny باش.
 
+Warksmith کتابخانه‌های بازی UDPFS و بازگشت از درون بازی را در RIPPS2 با ما ساخت (بیلدهای 145 تا 154)، و Berion کد هارد دیسک APA را بررسی کرد.
+
 <a id="videos"></a>
 
 ## ویدئوها
@@ -256,6 +258,8 @@ python -m http.server 8000
 ## سپاس‌گزاری
 
 RIPPS2 را akilluminati47 طراحی و هدایت می‌کند و با Claude (Anthropic) ساخته می‌شود. آزمایندگان: ripto، nuno6573، zackcage6، eliminator1403، FifthFox، Mr.sus.60، lukeatmynose، ahavasi و همهٔ کسانی که در Discord آزمایش می‌کنند. issueها در GitHub: DarkNerdShawny و هر کسی که یکی باز می‌کند (یک issue بهترین راه برای به‌روز شدن RIPPS2 است: مثل آن‌ها باش و [یکی باز کن](https://github.com/akilluminati47/RIPPS2/issues)). سپاس ویژه همچنین برای همهٔ محبت در YouTube: خوشحال می‌شوم کمک کنم، از هر راهی که به من برسی.
+
+Warksmith کتابخانه‌های بازی UDPFS و بازگشت از درون بازی را در RIPPS2 با ما ساخت (بیلدهای 145 تا 154)، و Berion کد هارد دیسک APA را بررسی کرد.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) ساختهٔ NathanNeurotic و تیم [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0)، که RIPPS2 بر پایهٔ آن‌ها ساخته شده. سپاس‌نامهٔ کامل آن‌ها در صفحهٔ About در RIPPS2 است.
 - [Neutrino](https://github.com/rickgaiser/neutrino) ساختهٔ [rickgaiser](https://github.com/rickgaiser) (AFL-3.0)، شبیه‌ساز دستگاه کوچک، سریع و ماژولار که هستهٔ دوم بازی RIPPS2 است: RIPPS2 نسخهٔ خودت را از هر نسخه‌ای پیدا و استفاده می‌کند؛ RIPPS2.elf تا بیلد 134 بیلدی از آن را همراه داشت ([`elf/neutrino`](elf/neutrino/README.md)). آن را به‌عنوان Default Loader Core در Settings > Game Launching انتخاب کن.

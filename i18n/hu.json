@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "A 118-as buildtől a **Settings > Game Sources > Cache > ART Pack** minden elindított meghajtó `ART` mappáját egyetlen `art.tar` fájlba csomagolja az általad választott meghajtó `ART` mappájában. A RIPPS2 megméri, milyen gyorsan olvassa az egyes meghajtók a saját képeiket, és a leggyorsabbat teszi az első helyre, hogy az X azt válassza (például egy SD2PSX SD-kártyáját). A képek úgy kerülnek bele, ahogy vannak (a PNG és a JPG már tömörített: a tar csak összefogja őket, és egy gép bármilyen tarként megnyitja), az `ART` mappák pedig érintetlenek maradnak. Onnantól a borítók ebből az egy fájlból töltődnek be egyetlen indexen keresztül (amelyet a csomaggal együtt ír, így az első indításnak nem kell átvizsgálnia), és annak a játéknak az `ART` mappáját, amelyhez a csomag készült, sosem kérdezi képenként, a hiányzó képeket sem: kevesebb olvasás azon a meghajtón, ahonnan a zene szól, és borítók, amelyek lépést tartanak a kurzorral. Azok a képek, amelyeket a RIPPS2 később tölt le vagy készít, azonnal megjelennek; amiket gépen másolsz be, azok a csomag újraépítése után jelennek meg. Az `art.tar` fájlt a Memory Filesszal egy másik meghajtó `ART` mappájába is átmásolhatod, de azon a meghajtón építsd, amelyről böngészel. Ugyanez a gomb el is távolítja a csomagot."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith velünk együtt építette meg a RIPPS2 UDPFS-es játékkönyvtárait és a játékból való visszatérést (145.-től 154.-ig build), Berion pedig átnézte az APA merevlemez kódját."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- Egy **PS2-es játék** ISO lesz egy meghajtó DVD vagy CD mappájában, a játéklistádban. Egy 4 GB-nál nagyobb játék, amely FAT32-es meghajtóra kerül, ehelyett az Open PS2 Loader 1 GB-os részeiként mentődik ul.cfg-vel; exFAT-meghajtón (USB-kulcs, MX4SIO, iLink vagy a belső HDD) egyetlen ISO marad. A meghajtó szabad helyét a rippelés előtt ellenőrzi."

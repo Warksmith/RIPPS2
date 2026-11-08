@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Që nga ndërtimi 118, **Settings > Game Sources > Cache > ART Pack** paketon dosjen `ART` të çdo pajisjeje të nisur në një `art.tar` të vetëm në dosjen `ART` të pajisjes që zgjedh. RIPPS2 mat sa shpejt lexon çdo pajisje figurat e veta dhe rendit të parën më të shpejtën, që X ta zgjedhë (SD-në e një SD2PSX, për shembull). Figurat hyjnë siç janë (PNG dhe JPG janë të ngjeshura tashmë: tar-i vetëm i grumbullon, dhe një kompjuter e hap si çdo tar), dhe dosjet `ART` mbeten të paprekura. Që atëherë kopertinat ngarkohen nga ai skedar i vetëm përmes një indeksi (të shkruar bashkë me paketën, kështu që nisja e parë nuk ka nevojë ta skanojë), dhe dosjes `ART` të një loje për të cilën u ndërtua paketa nuk i kërkohet kurrë figurë pas figure, përfshirë ato që mungojnë: më pak lexim në pajisjen nga e cila luan muzika, dhe figura që i mbajnë hapin kursorit. Figurat që RIPPS2 shkarkon ose bën më vonë shfaqen menjëherë; ato që kopjon në një kompjuter shfaqen pasi ta ndërtosh paketën sërish. Mund ta kopjosh `art.tar` në dosjen `ART` të një pajisjeje tjetër me Memory Files, por ndërtoje në pajisjen nga e cila shfleton. I njëjti buton e heq paketën."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith ndërtoi bashkë me ne bibliotekat e lojërave UDPFS të RIPPS2 dhe kthimin nga loja (build-et 145 deri 154), dhe Berion kontrolloi kodin e diskut të ngurtë APA."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Një lojë PS2** bëhet një ISO në dosjen DVD ose CD të një pajisjeje, në listën tënde të lojërave. Një lojë mbi 4 GB që shkon në një pajisje FAT32 ruhet në vend të kësaj si pjesët 1 GB të Open PS2 Loader me ul.cfg; në një pajisje exFAT (një USB, MX4SIO, iLink ose HDD e brendshme) mbetet një ISO e vetme. Hapësira në pajisje kontrollohet para se të nisë rip-i."

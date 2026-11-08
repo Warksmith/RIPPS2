@@ -61,6 +61,8 @@ RIPPS2 è un front end per PS2 in un solo `.elf`: uno smontaggio e una ricostruz
 
 È in **beta** dalla build 100: cento build di alpha, testate su console e in PCSX2 da ripto, nuno6573, zackcage6, eliminator1403, FifthFox e Mr.sus.60, e nella beta anche da lukeatmynose e ahavasi, e da tutti quelli che testano su Discord, con un grazie speciale anche a tutto l'affetto di YouTube. Tieni a portata di mano il tuo loader di sempre e dicci cosa si rompe: è il feedback a fare RIPPS2. **Il modo migliore per far aggiornare RIPPS2 è [una issue su GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny ne ha aperte tre, e la correzione per FreeMcBoot della v1.1.7 è nata da una di queste. Fai come DarkNerdShawny.
 
+Warksmith ha costruito con noi le librerie di giochi UDPFS di RIPPS2 e il ritorno dal gioco (build da 145 a 154), e Berion ha controllato il codice dell'hard disk APA.
+
 <a id="videos"></a>
 
 ## Video
@@ -254,6 +256,8 @@ Aggiungi `?t=12` per saltare l'intro dei pilastri, o `?f=3#memory-files` per apr
 ## Riconoscimenti
 
 RIPPS2 è progettato e diretto da akilluminati47 e costruito con Claude (Anthropic). Tester: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi e tutti quelli che testano su Discord. Issue su GitHub: DarkNerdShawny e chiunque ne apra una (una issue è il modo migliore per far aggiornare RIPPS2: fai come loro e [aprine una](https://github.com/akilluminati47/RIPPS2/issues)). Un grazie speciale anche a tutto l'affetto di YouTube: felice di aiutare in qualunque modo tu mi contatti.
+
+Warksmith ha costruito con noi le librerie di giochi UDPFS di RIPPS2 e il ritorno dal gioco (build da 145 a 154), e Berion ha controllato il codice dell'hard disk APA.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) di NathanNeurotic e il team di [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), su cui è costruito RIPPS2. I loro riconoscimenti completi sono nella pagina About di RIPPS2.
 - [Neutrino](https://github.com/rickgaiser/neutrino) di [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), l'emulatore di dispositivi piccolo, veloce e modulare che è il secondo motore di gioco di RIPPS2: RIPPS2 trova e usa il tuo, di qualsiasi versione; RIPPS2.elf ha portato la sua build fino alla build 134 ([`elf/neutrino`](elf/neutrino/README.md)). Sceglilo come Default Loader Core in Settings > Game Launching.

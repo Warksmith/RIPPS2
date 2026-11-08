@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Sejak build 118, **Settings > Game Sources > Cache > ART Pack** mengemas folder `ART` setiap drive yang sudah dimulai menjadi satu `art.tar` di folder `ART` drive yang Anda pilih. RIPPS2 mengukur seberapa cepat setiap drive membaca gambarnya sendiri dan mendaftar yang tercepat lebih dulu agar X mengambilnya (misalnya kartu SD di SD2PSX). Gambar masuk apa adanya (PNG dan JPG sudah terkompresi: tar hanya menaruhnya berdampingan, dan PC membukanya seperti tar lain), dan folder `ART` tidak disentuh. Sejak itu sampul dimuat dari satu berkas tersebut melalui indeks (ditulis bersama paket, jadi boot pertama tidak perlu memindainya), dan folder `ART` game yang dibuatkan paket tidak pernah ditanyai gambar demi gambar, bahkan gambar yang hilang: lebih sedikit pembacaan di drive yang memutar musik, dan sampul mengikuti kursor. Gambar yang diunduh atau diambil RIPPS2 kemudian langsung tampil; yang Anda salin di PC tampil setelah paket dibuat ulang. Anda bisa menyalin `art.tar` ke folder `ART` drive lain dengan Memory Files, tetapi buatlah di drive yang Anda pakai untuk menjelajah. Tombol yang sama menghapus paketnya."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith membangun pustaka game UDPFS RIPPS2 dan fitur kembali dari dalam game bersama kami (build 145 sampai 154), dan Berion memeriksa kode hard disk APA-nya."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Game PS2** menjadi ISO di folder DVD atau CD sebuah drive, di daftar game Anda. Game lebih besar dari 4 GB yang menuju drive FAT32 disimpan sebagai potongan 1 GB gaya Open PS2 Loader dengan ul.cfg; di drive exFAT (flashdisk USB, MX4SIO, iLink, atau HDD internal) tetap satu ISO. Ruang drive diperiksa sebelum rip dimulai."

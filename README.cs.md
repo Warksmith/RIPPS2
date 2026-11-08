@@ -61,6 +61,8 @@ RIPPS2 je front end pro PS2 v jediném `.elf`: rozebrání a přestavba [RiptOPL
 
 Od buildu 100 je to **beta**: sto alfa buildů, testovaných na konzolích a v PCSX2 lidmi ripto, nuno6573, zackcage6, eliminator1403, FifthFox a Mr.sus.60, v betě také lukeatmynose a ahavasi, a všemi, kdo testují na Discordu, se zvláštním poděkováním i za všechnu lásku na YouTube. Měj svůj obvyklý loader po ruce a řekni nám, co se rozbije: zpětná vazba dělá RIPPS2. **Nejlepší cesta k aktualizaci RIPPS2 je [issue na GitHubu](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny jich otevřel tři a oprava FreeMcBoot ve v1.1.7 vzešla z jednoho z nich. Buď jako DarkNerdShawny.
 
+Warksmith s námi postavil knihovny her přes UDPFS v RIPPS2 a návrat ze hry (buildy 145 až 154) a Berion zkontroloval kód pevného disku APA.
+
 <a id="videos"></a>
 
 ## Videa
@@ -254,6 +256,8 @@ Přidej `?t=12`, abys přeskočil úvod se sloupy, nebo `?f=3#memory-files` pro 
 ## Poděkování
 
 RIPPS2 navrhuje a vede akilluminati47 a staví ho s Claude (Anthropic). Testeři: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi a všichni, kdo testují na Discordu. Issues na GitHubu: DarkNerdShawny a každý, kdo nějaké otevře (issue je nejlepší cesta k aktualizaci RIPPS2: buď jako oni a [nějaké otevři](https://github.com/akilluminati47/RIPPS2/issues)). Zvláštní poděkování také za všechnu lásku na YouTube: rád pomůžu, ať mě kontaktuješ jakkoli.
+
+Warksmith s námi postavil knihovny her přes UDPFS v RIPPS2 a návrat ze hry (buildy 145 až 154) a Berion zkontroloval kód pevného disku APA.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) od NathanNeurotic a tým [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), na kterých je RIPPS2 postavený. Jejich úplné poděkování je na stránce About v RIPPS2.
 - [Neutrino](https://github.com/rickgaiser/neutrino) od [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), malý, rychlý a modulární emulátor zařízení, který je druhým herním jádrem RIPPS2: RIPPS2 najde a použije tvoje, jakékoli verze; RIPPS2.elf neslo jeho build do buildu 134 ([`elf/neutrino`](elf/neutrino/README.md)). Vyber ho jako Default Loader Core v Settings > Game Launching.

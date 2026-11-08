@@ -61,6 +61,8 @@ RIPPS2 ແມ່ນໜ້າຈໍຫຼັກ PS2 ໃນ `.elf` ດຽວ: [Rip
 
 ເປັນ **ເບຕ້າ** ຕັ້ງແຕ່ບິວ 100: ຮ້ອຍບິວອັລຟ້າ, ທົດສອບເທິງເຄື່ອງແທ້ ແລະ ໃນ PCSX2 ໂດຍ ripto, nuno6573, zackcage6, eliminator1403, FifthFox ແລະ Mr.sus.60, ແລະ ໃນເບຕ້າຍັງມີ lukeatmynose ແລະ ahavasi, ພ້ອມທຸກຄົນທີ່ທົດສອບໃນ Discord, ຂອບໃຈເປັນພິເສດສຳລັບຄວາມຮັກທັງໝົດໃນ YouTube. ເກັບຕົວໂຫຼດປະຈຳຂອງເຈົ້າໄວ້ໃກ້ມື ແລະ ບອກພວກເຮົາວ່າຫຍັງເສຍ: ຄຳຕິຊົມຄືສິ່ງທີ່ສ້າງ RIPPS2. **ວິທີທີ່ດີທີ່ສຸດໃຫ້ RIPPS2 ອັບເດດແມ່ນ [issue ໃນ GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny ເປີດໄປສາມອັນ, ແລະ ການແກ້ FreeMcBoot ໃນ v1.1.7 ມາຈາກອັນໜຶ່ງໃນນັ້ນ. ຈົ່ງເປັນຄື DarkNerdShawny.
 
+Warksmith ໄດ້ສ້າງຄັງເກມ UDPFS ແລະ ການກັບຄືນຈາກໃນເກມຂອງ RIPPS2 ຮ່ວມກັບພວກເຮົາ (ບິວ 145 ຫາ 154), ແລະ Berion ໄດ້ກວດສອບລະຫັດຮາດດິດ APA.
+
 <a id="videos"></a>
 
 ## ວິດີໂອ
@@ -254,6 +256,8 @@ python -m http.server 8000
 ## ເຄຣດິດ
 
 RIPPS2 ອອກແບບ ແລະ ກຳກັບໂດຍ akilluminati47, ແລະ ສ້າງຮ່ວມກັບ Claude (Anthropic). ຜູ້ທົດສອບ: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi ແລະ ທຸກຄົນທີ່ທົດສອບໃນ Discord. Issue ໃນ GitHub: DarkNerdShawny ແລະ ທຸກຄົນທີ່ເປີດ issue (issue ແມ່ນວິທີທີ່ດີທີ່ສຸດໃຫ້ RIPPS2 ອັບເດດ: ຈົ່ງເປັນຄືພວກເຂົາ ແລະ [ເປີດອັນໜຶ່ງ](https://github.com/akilluminati47/RIPPS2/issues)). ຂອບໃຈເປັນພິເສດສຳລັບຄວາມຮັກທັງໝົດໃນ YouTube: ຂ້ອຍຍິນດີຊ່ວຍ, ບໍ່ວ່າເຈົ້າຈະຕິດຕໍ່ມາທາງໃດ.
+
+Warksmith ໄດ້ສ້າງຄັງເກມ UDPFS ແລະ ການກັບຄືນຈາກໃນເກມຂອງ RIPPS2 ຮ່ວມກັບພວກເຮົາ (ບິວ 145 ຫາ 154), ແລະ Berion ໄດ້ກວດສອບລະຫັດຮາດດິດ APA.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) ໂດຍ NathanNeurotic ແລະ ທີມ [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), ທີ່ RIPPS2 ສ້າງຢູ່ເທິງ. ເຄຣດິດເຕັມຂອງພວກເຂົາຢູ່ໃນໜ້າ About ຂອງ RIPPS2.
 - [Neutrino](https://github.com/rickgaiser/neutrino) ໂດຍ [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), ອີມູເລເຕີອຸປະກອນທີ່ນ້ອຍ, ໄວ ແລະ ເປັນໂມດູນ, ແກນເກມທີສອງຂອງ RIPPS2: RIPPS2 ຊອກຫາ ແລະ ໃຊ້ Neutrino ຂອງເຈົ້າເອງລຸ້ນໃດກໍໄດ້; RIPPS2.elf ມາພ້ອມບິວຂອງມັນຈົນຮອດບິວ 134 ([`elf/neutrino`](elf/neutrino/README.md)). ເລືອກມັນເປັນ Default Loader Core ໃນ Settings > Game Launching.

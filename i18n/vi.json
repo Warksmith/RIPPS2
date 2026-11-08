@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Từ bản dựng 118, **Settings > Game Sources > Cache > ART Pack** gói thư mục `ART` của mọi ổ đã khởi động vào một `art.tar` duy nhất trong thư mục `ART` của ổ bạn chọn. RIPPS2 đo tốc độ mỗi ổ đọc ảnh của chính nó và liệt kê ổ nhanh nhất đầu tiên để X chọn nó (ví dụ thẻ SD trong SD2PSX). Ảnh được đưa vào nguyên như vậy (PNG và JPG đã nén sẵn: tar chỉ đặt chúng cạnh nhau, và máy tính mở nó như mọi tar khác), và các thư mục `ART` không bị động tới. Từ đó bìa được nạp từ một tệp đó qua một chỉ mục (ghi cùng gói, nên lần khởi động đầu không cần quét), và thư mục `ART` của một game mà gói được làm cho sẽ không bao giờ bị hỏi từng ảnh, kể cả ảnh bị thiếu: ít lần đọc hơn trên ổ đang phát nhạc, và bìa theo kịp con trỏ. Ảnh RIPPS2 tải hoặc chụp sau đó hiện ngay; ảnh bạn chép trên máy tính hiện sau khi làm lại gói. Bạn có thể chép `art.tar` vào thư mục `ART` của ổ khác bằng Memory Files, nhưng hãy làm nó trên ổ bạn dùng để duyệt. Cùng nút đó xóa gói."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith đã cùng chúng tôi xây dựng thư viện game UDPFS và tính năng quay về từ trong game của RIPPS2 (bản dựng 145 đến 154), và Berion đã kiểm tra mã ổ cứng APA."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Game PS2** trở thành một ISO trong thư mục DVD hoặc CD của một ổ, trong danh sách game của bạn. Game lớn hơn 4 GB đi vào ổ FAT32 sẽ được lưu thành các phần 1 GB kiểu Open PS2 Loader cùng ul.cfg; trên ổ exFAT (USB, MX4SIO, iLink hoặc HDD trong) nó vẫn là một ISO duy nhất. Dung lượng ổ được kiểm tra trước khi bắt đầu rip."

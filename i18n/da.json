@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Fra build 118 pakker **Settings > Game Sources > Cache > ART Pack** `ART`-mappen fra hvert startet drev i én `art.tar` i `ART`-mappen på det drev, du vælger. RIPPS2 måler, hvor hurtigt hvert drev læser sine egne billeder, og viser det hurtigste først, så X tager det (en SD2PSX's SD, for eksempel). Billederne kommer ind, som de er (PNG og JPG er allerede komprimeret: tar'en samler dem bare, og en pc åbner den som enhver tar), og `ART`-mapperne røres ikke. Fra da af indlæses covers fra den ene fil gennem ét indeks (skrevet med pakken, så første opstart ikke skal scanne den), og `ART`-mappen for et spil, pakken blev bygget til, bliver aldrig spurgt ét billede ad gangen, manglende billeder medregnet: mindre læsning på det drev, musikken streamer fra, og billeder der følger med markøren. Billeder RIPPS2 henter eller tager senere, vises med det samme; billeder du kopierer ind på en pc, vises, når du bygger pakken igen. Du kan kopiere `art.tar` ind i et andet drevs `ART`-mappe med Memory Files, men byg den på det drev, du browser fra. Samme knap fjerner pakken."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith byggede RIPPS2's UDPFS-spilbiblioteker og returen fra spillet sammen med os (build 145 til 154), og Berion tjekkede koden til APA-harddiske."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Et PS2-spil** bliver til en ISO i et drevs DVD- eller CD-mappe, i din spilliste. Et spil over 4 GB, der skal på et FAT32-drev, gemmes i stedet som Open PS2 Loaders dele på 1 GB med ul.cfg; på et exFAT-drev (en USB-nøgle, MX4SIO, iLink eller den interne HDD) forbliver det én ISO. Pladsen på drevet tjekkes, før rippet begynder."

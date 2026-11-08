@@ -61,6 +61,8 @@ RIPPS2 je PS2 front end u jednoj `.elf` datoteci: rastavljanje i ponovna izgradn
 
 Od builda 100 je u **beti**: sto alfa buildova, testiranih na konzolama i u PCSX2 od strane ripto, nuno6573, zackcage6, eliminator1403, FifthFox i Mr.sus.60, a u beti i lukeatmynose i ahavasi, te svih koji testiraju na Discordu, uz posebnu zahvalu i za svu ljubav na YouTubeu. Drži svoj uobičajeni loader pri ruci i reci nam što se kvari: povratne informacije čine RIPPS2. **Najbolji način da RIPPS2 dobije ažuriranje je [issue na GitHubu](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny je otvorio tri, a popravak za FreeMcBoot u v1.1.7 proizašao je iz jednog od njih. Budi kao DarkNerdShawny.
 
+Warksmith je s nama izgradio RIPPS2 knjižnice igara preko UDPFS-a i povratak iz igre (buildovi 145 do 154), a Berion je provjerio kod za APA tvrdi disk.
+
 <a id="videos"></a>
 
 ## Videozapisi
@@ -254,6 +256,8 @@ Dodaj `?t=12` da preskočiš uvod sa stupovima, ili `?f=3#memory-files` da otvor
 ## Zasluge
 
 RIPPS2 dizajnira i vodi akilluminati47, a gradi se s Claudeom (Anthropic). Testeri: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi i svi koji testiraju na Discordu. Issues na GitHubu: DarkNerdShawny i svi koji otvore jedan (issue je najbolji način da RIPPS2 dobije ažuriranje: budi kao oni i [otvori jedan](https://github.com/akilluminati47/RIPPS2/issues)). Posebna zahvala i za svu ljubav na YouTubeu: rado pomažem kako god me kontaktirao.
+
+Warksmith je s nama izgradio RIPPS2 knjižnice igara preko UDPFS-a i povratak iz igre (buildovi 145 do 154), a Berion je provjerio kod za APA tvrdi disk.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) od NathanNeurotica i tim [Open PS2 Loadera](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), na kojima je RIPPS2 izgrađen. Njihove pune zasluge nalaze se na stranici About u RIPPS2.
 - [Neutrino](https://github.com/rickgaiser/neutrino) od [rickgaisera](https://github.com/rickgaiser) (AFL-3.0), mali, brzi i modularni emulator uređaja koji je druga jezgra za igre u RIPPS2: RIPPS2 pronalazi i koristi tvoj, bilo koje verzije; RIPPS2.elf nosio je njegov build do builda 134 ([`elf/neutrino`](elf/neutrino/README.md)). Odaberi ga kao Default Loader Core u Settings > Game Launching.

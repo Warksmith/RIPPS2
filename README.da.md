@@ -61,6 +61,8 @@ RIPPS2 er en PS2-frontend i én enkelt `.elf`: en nedrivning og genopbygning af 
 
 Den er **beta** fra build 100: hundrede alpha-builds, testet på konsoller og i PCSX2 af ripto, nuno6573, zackcage6, eliminator1403, FifthFox og Mr.sus.60, og i betaen også af lukeatmynose og ahavasi, og af alle der tester på Discord, med særlig tak for al kærligheden på YouTube. Hav din sædvanlige loader ved hånden, og fortæl os hvad der går i stykker: feedback er det, der gør RIPPS2. **Den bedste måde at få RIPPS2 opdateret på er [et issue på GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny har åbnet tre, og FreeMcBoot-rettelsen i v1.1.7 kom fra et af dem. Vær som DarkNerdShawny.
 
+Warksmith byggede RIPPS2's UDPFS-spilbiblioteker og returen fra spillet sammen med os (build 145 til 154), og Berion tjekkede koden til APA-harddiske.
+
 <a id="videos"></a>
 
 ## Videoer
@@ -254,6 +256,8 @@ Tilføj `?t=12` for at springe søjleintroen over, eller `?f=3#memory-files` for
 ## Krediteringer
 
 RIPPS2 er designet og instrueret af akilluminati47 og bygget med Claude (Anthropic). Testere: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi og alle der tester på Discord. Issues på GitHub: DarkNerdShawny og alle der åbner et (et issue er den bedste måde at få RIPPS2 opdateret på: vær som dem og [åbn et](https://github.com/akilluminati47/RIPPS2/issues)). Særlig tak også for al kærligheden på YouTube: jeg hjælper gerne, uanset hvordan du når mig.
+
+Warksmith byggede RIPPS2's UDPFS-spilbiblioteker og returen fra spillet sammen med os (build 145 til 154), og Berion tjekkede koden til APA-harddiske.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) af NathanNeurotic og [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader)-holdet (AFL-3.0), som RIPPS2 er bygget på. Deres fulde krediteringer står på RIPPS2's About-side.
 - [Neutrino](https://github.com/rickgaiser/neutrino) af [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), den lille, hurtige og modulære enhedsemulator, der er RIPPS2's anden spilkerne: RIPPS2 finder og bruger din, i enhver version; RIPPS2.elf havde dens build med til og med build 134 ([`elf/neutrino`](elf/neutrino/README.md)). Vælg den som Default Loader Core i Settings > Game Launching.

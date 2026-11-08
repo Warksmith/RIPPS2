@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Od buildu 118 **Settings > Game Sources > Cache > ART Pack** zabalí složku `ART` každého spuštěného disku do jediného `art.tar` ve složce `ART` disku, který vybereš. RIPPS2 změří, jak rychle každý disk čte své vlastní obrázky, a nejrychlejší dá na první místo, aby ho X vzal (třeba SD kartu v SD2PSX). Obrázky do něj jdou tak, jak jsou (PNG a JPG jsou už komprimované: tar je jen spojí a PC ho otevře jako jakýkoli tar), a složky `ART` zůstanou nedotčené. Od té doby se obaly načítají z toho jediného souboru přes jeden index (zapsaný s balíčkem, takže první start ho nemusí procházet) a složka `ART` hry, pro kterou byl balíček vytvořen, se nikdy neptá obrázek po obrázku, ani na chybějící: méně čtení na disku, ze kterého hraje hudba, a obrázky, které stíhají kurzor. Obrázky, které RIPPS2 stáhne nebo vyfotí později, se ukážou hned; ty, které nakopíruješ na PC, se ukážou po novém sestavení balíčku. `art.tar` můžeš zkopírovat do složky `ART` jiného disku pomocí Memory Files, ale sestav ho na disku, ze kterého procházíš. Stejné tlačítko balíček odebere."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith s námi postavil knihovny her přes UDPFS v RIPPS2 a návrat ze hry (buildy 145 až 154) a Berion zkontroloval kód pevného disku APA."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Hra pro PS2** se stane ISO ve složce DVD nebo CD na disku, ve tvém seznamu her. Hra větší než 4 GB, která jde na disk FAT32, se místo toho uloží jako díly po 1 GB pro Open PS2 Loader s ul.cfg; na disku exFAT (flash disk, MX4SIO, iLink nebo interní HDD) zůstane jedním ISO. Místo na disku se zkontroluje před začátkem ripu."

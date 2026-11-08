@@ -61,6 +61,8 @@ RIPPS2 是装在单个 `.elf` 中的 PS2 前端：把 [RiptOPL](https://github.c
 
 从构建 100 起进入**测试版**：一百个 alpha 构建，由 ripto、nuno6573、zackcage6、eliminator1403、FifthFox 和 Mr.sus.60 在主机和 PCSX2 上测试，测试版阶段还有 lukeatmynose 和 ahavasi，以及所有在 Discord 上测试的人，特别感谢 YouTube 上的所有支持。把你常用的加载器留在手边，告诉我们哪里坏了：是反馈造就了 RIPPS2。**让 RIPPS2 更新的最好方式是 [GitHub 上的 issue](https://github.com/akilluminati47/RIPPS2/issues)**：DarkNerdShawny 提了三个，v1.1.7 的 FreeMcBoot 修复就来自其中之一。向 DarkNerdShawny 学习。
 
+Warksmith 与我们一起打造了 RIPPS2 的 UDPFS 游戏库和游戏内返回（构建 145 至 154），Berion 检查了它的 APA 硬盘代码。
+
 <a id="videos"></a>
 
 ## 视频
@@ -254,6 +256,8 @@ python -m http.server 8000
 ## 鸣谢
 
 RIPPS2 由 akilluminati47 设计和主导，与 Claude (Anthropic) 一起打造。测试者：ripto、nuno6573、zackcage6、eliminator1403、FifthFox、Mr.sus.60、lukeatmynose、ahavasi，以及所有在 Discord 上测试的人。GitHub 上的 issue：DarkNerdShawny 和每一个提 issue 的人（issue 是让 RIPPS2 更新的最好方式：向他们学习，[提一个](https://github.com/akilluminati47/RIPPS2/issues)）。也特别感谢 YouTube 上的所有支持：无论你通过哪种方式联系我，我都乐意帮忙。
+
+Warksmith 与我们一起打造了 RIPPS2 的 UDPFS 游戏库和游戏内返回（构建 145 至 154），Berion 检查了它的 APA 硬盘代码。
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader)，由 NathanNeurotic 和 [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) 团队开发（AFL-3.0），RIPPS2 建立在它们之上。他们的完整鸣谢在 RIPPS2 的 About 页面中。
 - [Neutrino](https://github.com/rickgaiser/neutrino)，由 [rickgaiser](https://github.com/rickgaiser) 开发（AFL-3.0），小巧、快速、模块化的设备模拟器，是 RIPPS2 的第二个游戏核心：RIPPS2 会找到并使用你自己的任何版本的 Neutrino；RIPPS2.elf 在构建 134 之前附带过它的构建（[`elf/neutrino`](elf/neutrino/README.md)）。在 Settings > Game Launching 中将其选为 Default Loader Core。

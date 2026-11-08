@@ -61,6 +61,8 @@ RIPPS2는 하나의 `.elf`에 담긴 PS2 프런트엔드입니다: [RiptOPL](htt
 
 빌드 100부터 **베타**입니다: 100개의 알파 빌드를 ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60이 실기와 PCSX2에서 테스트했고, 베타에서는 lukeatmynose와 ahavasi, 그리고 Discord에서 테스트하는 모든 분이 함께했습니다. YouTube에서 보내 준 모든 사랑에도 특별히 감사드립니다. 평소 쓰는 로더도 곁에 두고, 무엇이 망가지는지 알려 주세요: RIPPS2를 만드는 것은 피드백입니다. **RIPPS2를 업데이트하게 하는 가장 좋은 방법은 [GitHub issue](https://github.com/akilluminati47/RIPPS2/issues)입니다**: DarkNerdShawny는 세 개를 열었고, v1.1.7의 FreeMcBoot 수정은 그중 하나에서 나왔습니다. DarkNerdShawny처럼 되세요.
 
+Warksmith는 RIPPS2의 UDPFS 게임 라이브러리와 게임 중 복귀를 우리와 함께 만들었고 (빌드 145부터 154까지), Berion은 APA 하드 드라이브 코드를 검토했습니다.
+
 <a id="videos"></a>
 
 ## 영상
@@ -254,6 +256,8 @@ python -m http.server 8000
 ## 크레딧
 
 RIPPS2는 akilluminati47이 설계하고 이끌며 Claude (Anthropic)와 함께 만듭니다. 테스터: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi, 그리고 Discord에서 테스트하는 모든 분. GitHub issue: DarkNerdShawny와 issue를 여는 모든 분 (issue는 RIPPS2를 업데이트하게 하는 가장 좋은 방법입니다: 그들처럼 [하나 열어 주세요](https://github.com/akilluminati47/RIPPS2/issues)). YouTube에서 보내 준 모든 사랑에도 특별히 감사드립니다: 어디로 연락하든 기꺼이 돕겠습니다.
+
+Warksmith는 RIPPS2의 UDPFS 게임 라이브러리와 게임 중 복귀를 우리와 함께 만들었고 (빌드 145부터 154까지), Berion은 APA 하드 드라이브 코드를 검토했습니다.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader), NathanNeurotic과 [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) 팀 (AFL-3.0). RIPPS2는 그 위에 만들어졌습니다. 그들의 전체 크레딧은 RIPPS2의 About 페이지에 있습니다.
 - [Neutrino](https://github.com/rickgaiser/neutrino), [rickgaiser](https://github.com/rickgaiser) (AFL-3.0). 작고 빠른 모듈식 장치 에뮬레이터로 RIPPS2의 두 번째 게임 코어입니다: RIPPS2는 어떤 버전이든 내 Neutrino를 찾아 씁니다. RIPPS2.elf는 빌드 134까지 그 빌드를 담았습니다 ([`elf/neutrino`](elf/neutrino/README.md)). Settings > Game Launching의 Default Loader Core에서 고르세요.

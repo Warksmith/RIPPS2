@@ -59,6 +59,8 @@ RIPPS2 is a PS2 front end in a single `.elf`: a teardown and rebuild of [RiptOPL
 
 It is **beta** from build 100: a hundred builds of alpha, tested on consoles and in PCSX2 by ripto, nuno6573, zackcage6, eliminator1403, FifthFox and Mr.sus.60, and in the beta by lukeatmynose and ahavasi too, and by everyone testing on Discord, with special thanks to all the YouTube love as well. Keep your usual loader close by, and tell us what breaks: feedback is what makes RIPPS2. **The best way to get RIPPS2 updated is [an issue on GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny has opened three, and v1.1.7's FreeMcBoot fix came from one. Be like DarkNerdShawny.
 
+Warksmith built RIPPS2's UDPFS game libraries and its in-game return with us (builds 145 to 154), and Berion checked its APA hard drive code.
+
 ## Videos
 
 | Video | Length | What it shows |
@@ -226,6 +228,8 @@ Add `?t=12` to skip the pillars intro, or `?f=3#memory-files` to open a specific
 ## Credits
 
 RIPPS2 is designed and directed by akilluminati47 and built with Claude (Anthropic). Testers: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi, and everyone testing on Discord. Issues on GitHub: DarkNerdShawny and everyone who opens one (an issue is the best way to get RIPPS2 updated: be like them and [open one](https://github.com/akilluminati47/RIPPS2/issues)). Special thanks to all the YouTube love as well: glad to help however you reach me.
+
+Warksmith built RIPPS2's UDPFS game libraries and its in-game return with us (builds 145 to 154), and Berion checked its APA hard drive code.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) by NathanNeurotic and the [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) team (AFL-3.0), which RIPPS2 is built on. Their full credits are on RIPPS2's About page.
 - [Neutrino](https://github.com/rickgaiser/neutrino) by [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), the small, fast and modular device emulator that is RIPPS2's second game core: RIPPS2 finds and uses yours, of any version; RIPPS2.elf carried its build up to build 134 ([`elf/neutrino`](elf/neutrino/README.md)). Choose it as the Default Loader Core in Settings > Game Launching.

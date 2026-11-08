@@ -61,6 +61,8 @@ RIPPS2 представляет собой оболочку для PS2 в одн
 
 С 100-й сборки это **бета**: сто альфа-сборок, проверенных на консолях и в PCSX2 ripto, nuno6573, zackcage6, eliminator1403, FifthFox и Mr.sus.60, а в бете ещё lukeatmynose и ahavasi, и всеми, кто тестирует в Discord, с особой благодарностью за всю любовь на YouTube. Держи свой обычный загрузчик под рукой и рассказывай, что ломается: RIPPS2 делают отзывы. **Лучший способ получить обновление RIPPS2: [issue на GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny открыл три, и исправление для FreeMcBoot в v1.1.7 выросло из одного из них. Будь как DarkNerdShawny.
 
+Warksmith вместе с нами сделал библиотеки игр через UDPFS в RIPPS2 и возврат из игры (сборки с 145 по 154), а Berion проверил код для жёсткого диска APA.
+
 <a id="videos"></a>
 
 ## Видео
@@ -254,6 +256,8 @@ python -m http.server 8000
 ## Благодарности
 
 RIPPS2 придумывает и ведёт akilluminati47, а собирается он с Claude (Anthropic). Тестировщики: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi и все, кто тестирует в Discord. Issues на GitHub: DarkNerdShawny и все, кто их открывает (issue остаётся лучшим способом получить обновление RIPPS2: будь как они и [открой его](https://github.com/akilluminati47/RIPPS2/issues)). Отдельное спасибо за всю любовь на YouTube: рад помочь, как бы ты со мной ни связался.
+
+Warksmith вместе с нами сделал библиотеки игр через UDPFS в RIPPS2 и возврат из игры (сборки с 145 по 154), а Berion проверил код для жёсткого диска APA.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) от NathanNeurotic и команды [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), на которых построен RIPPS2. Их полные благодарности находятся на странице About в RIPPS2.
 - [Neutrino](https://github.com/rickgaiser/neutrino) от [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), маленький, быстрый и модульный эмулятор устройств, который служит вторым игровым ядром RIPPS2: RIPPS2 находит и использует твой, любой версии; RIPPS2.elf вёз его сборку до сборки 134 ([`elf/neutrino`](elf/neutrino/README.md)). Выбери его как Default Loader Core в Settings > Game Launching.

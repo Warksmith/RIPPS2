@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Derleme 118'den beri **Settings > Game Sources > Cache > ART Pack**, başlatılmış her sürücünün `ART` klasörünü seçtiğin sürücünün `ART` klasöründe tek bir `art.tar` dosyasına paketler. RIPPS2 her sürücünün kendi resimlerini ne kadar hızlı okuduğunu ölçer ve en hızlısını başa koyar, böylece X onu seçer (örneğin bir SD2PSX'in SD'si). Resimler olduğu gibi girer (PNG ve JPG zaten sıkıştırılmıştır: tar yalnızca onları bir araya getirir, bir bilgisayar da onu her tar gibi açar) ve `ART` klasörlerine dokunulmaz. O andan sonra kapaklar o tek dosyadan bir dizin aracılığıyla yüklenir (paketle birlikte yazılır, böylece ilk açılışın onu taraması gerekmez) ve paketin oluşturulduğu bir oyunun `ART` klasöründen eksik olanlar dahil hiçbir zaman tek tek resim istenmez: müziğin çaldığı sürücüde daha az okuma ve imlece yetişen kapaklar. RIPPS2'nin sonradan indirdiği ya da çektiği resimler hemen görünür; bir bilgisayarda kopyaladıkların paketi yeniden oluşturduktan sonra görünür. `art.tar` dosyasını Memory Files ile başka bir sürücünün `ART` klasörüne kopyalayabilirsin ama onu gezindiğin sürücüde oluştur. Aynı düğme paketi kaldırır."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith, RIPPS2'nin UDPFS oyun kütüphanelerini ve oyundan dönüşü bizimle birlikte yaptı (145 ile 154 arası derlemeler), Berion da APA sabit disk kodunu denetledi."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Bir PS2 oyunu** bir sürücünün DVD ya da CD klasöründe, oyun listende bir ISO olur. FAT32 bir sürücüye giden 4 GB'tan büyük bir oyun bunun yerine Open PS2 Loader'ın ul.cfg'li 1 GB parçaları olarak kaydedilir; exFAT bir sürücüde (USB bellek, MX4SIO, iLink ya da dahili HDD) tek bir ISO olarak kalır. Rip başlamadan önce sürücüdeki yer denetlenir."

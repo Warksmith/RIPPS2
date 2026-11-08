@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Sukad sa build 118, giputos sa **Settings > Game Sources > Cache > ART Pack** ang `ART` folder sa matag nasugdang drive ngadto sa usa ka `art.tar` sa `ART` folder sa drive nga imong pilion. Gisukod sa RIPPS2 kon unsa kapaspas gibasa sa matag drive ang kaugalingong mga hulagway niini ug gilista una ang pinakapaspas aron makuha kini sa X (pananglitan ang SD card sa SD2PSX). Mosulod ang mga hulagway ingon niana (naka-compress na ang PNG ug JPG: gitapad lang sila sa tar, ug giablihan kini sa PC sama sa bisan unsang tar), ug dili hilabtan ang mga `ART` folder. Sukad niadto gi-load ang mga cover gikan nianang usa ka file pinaagi sa index (gisulat uban sa pack, busa dili na kinahanglan i-scan sa unang boot), ug dili gayud pangutan-on matag hulagway ang `ART` folder sa dula nga gihimoan og pack, bisan ang nawala nga hulagway: mas gamay nga pagbasa sa drive nga nagpatugtog og musika, ug makasabay ang mga cover sa cursor. Dayon mogawas ang mga hulagway nga i-download o kuhaon sa RIPPS2 sa ulahi; ang imong gikopya sa PC mogawas human himoa pag-usab ang pack. Makopya nimo ang `art.tar` ngadto sa `ART` folder sa laing drive gamit ang Memory Files, apan himoa kini sa drive nga imong gamiton sa pag-browse. Gipapas sa samang button ang pack."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Gitukod ni Warksmith uban kanamo ang mga UDPFS game library ug ang pagbalik gikan sa dula sa RIPPS2 (mga build 145 hangtod 154), ug gisusi ni Berion ang code niini para sa APA hard drive."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Ang PS2 nga dula** mahimong ISO sa DVD o CD folder sa usa ka drive, sa lista sa imong mga dula. Ang dula nga labaw sa 4 GB nga moadto sa FAT32 drive tipigan isip mga 1 GB nga bahin sa estilo sa Open PS2 Loader nga adunay ul.cfg; sa exFAT drive (USB stick, MX4SIO, iLink, o internal HDD) magpabilin kini nga usa ka ISO. Susihon ang espasyo sa drive sa dili pa magsugod ang rip."

@@ -61,6 +61,8 @@ RIPPS2 är ett PS2-gränssnitt i en enda `.elf`: en nedmontering och ombyggnad a
 
 Den är **beta** från build 100: hundra alfabyggen, testade på konsoler och i PCSX2 av ripto, nuno6573, zackcage6, eliminator1403, FifthFox och Mr.sus.60, och i betan även av lukeatmynose och ahavasi, och av alla som testar på Discord, med särskilt tack för all kärlek på YouTube också. Ha din vanliga laddare nära till hands och berätta vad som går sönder: återkoppling är det som gör RIPPS2. **Det bästa sättet att få RIPPS2 uppdaterad är [ett issue på GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny har öppnat tre, och FreeMcBoot-rättningen i v1.1.7 kom från ett av dem. Var som DarkNerdShawny.
 
+Warksmith byggde RIPPS2:s UDPFS-spelbibliotek och återgången från spelet tillsammans med oss (build 145 till 154), och Berion granskade koden för APA-hårddiskar.
+
 <a id="videos"></a>
 
 ## Videor
@@ -254,6 +256,8 @@ Lägg till `?t=12` för att hoppa över pelarintrot, eller `?f=3#memory-files` f
 ## Medverkande
 
 RIPPS2 är designad och regisserad av akilluminati47 och byggd med Claude (Anthropic). Testare: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi och alla som testar på Discord. Issues på GitHub: DarkNerdShawny och alla som öppnar ett (ett issue är det bästa sättet att få RIPPS2 uppdaterad: var som dem och [öppna ett](https://github.com/akilluminati47/RIPPS2/issues)). Särskilt tack också för all kärlek på YouTube: jag hjälper gärna, hur du än når mig.
+
+Warksmith byggde RIPPS2:s UDPFS-spelbibliotek och återgången från spelet tillsammans med oss (build 145 till 154), och Berion granskade koden för APA-hårddiskar.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) av NathanNeurotic och [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader)-teamet (AFL-3.0), som RIPPS2 är byggd på. Deras fullständiga tack finns på RIPPS2:s About-sida.
 - [Neutrino](https://github.com/rickgaiser/neutrino) av [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), den lilla, snabba och modulära enhetsemulatorn som är RIPPS2:RIPPS2 hittar och använder din, av vilken version som helst; RIPPS2.elf hade med dess bygge till och med build 134 ([`elf/neutrino`](elf/neutrino/README.md)). Välj den som Default Loader Core i Settings > Game Launching.

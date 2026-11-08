@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Od builda 118 **Settings > Game Sources > Cache > ART Pack** pakira mapu `ART` svakog pokrenutog pogona u jedan `art.tar` u mapi `ART` pogona koji odabereš. RIPPS2 mjeri koliko brzo svaki pogon čita vlastite slike i stavlja najbrži na vrh, tako da ga X odabere (na primjer SD karticu SD2PSX-a). Slike ulaze kakve jesu (PNG i JPG su već komprimirani: tar ih samo skuplja, a računalo ga otvara kao bilo koji tar), a mape `ART` ostaju netaknute. Od tada se omoti učitavaju iz te jedne datoteke kroz jedan indeks (zapisan s paketom, pa prvo pokretanje ne mora pretraživati), a mapa `ART` igre za koju je paket napravljen nikad se ne pita sliku po sliku, uključujući one koje nedostaju: manje čitanja na pogonu s kojeg ide glazba i slike koje prate pokazivač. Slike koje RIPPS2 kasnije preuzme ili snimi pojavljuju se odmah; one koje kopiraš na računalu pojave se nakon što ponovno napraviš paket. `art.tar` možeš kopirati u mapu `ART` drugog pogona uz Memory Files, ali ga napravi na pogonu s kojeg pregledavaš. Isti gumb uklanja paket."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith je s nama izgradio RIPPS2 knjižnice igara preko UDPFS-a i povratak iz igre (buildovi 145 do 154), a Berion je provjerio kod za APA tvrdi disk."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **PS2 igra** postaje ISO u mapi DVD ili CD na pogonu, na tvom popisu igara. Igra veća od 4 GB koja ide na FAT32 pogon sprema se umjesto toga kao dijelovi od 1 GB za Open PS2 Loader s ul.cfg; na exFAT pogonu (USB stick, MX4SIO, iLink ili unutarnji HDD) ostaje jedan ISO. Prostor na pogonu provjerava se prije početka ripanja."

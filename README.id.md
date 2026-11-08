@@ -61,6 +61,8 @@ RIPPS2 adalah front end PS2 dalam satu `.elf`: [RiptOPL](https://github.com/Nath
 
 Dalam **beta** sejak build 100: seratus build alpha, diuji di konsol dan di PCSX2 oleh ripto, nuno6573, zackcage6, eliminator1403, FifthFox, dan Mr.sus.60, dan dalam beta juga oleh lukeatmynose dan ahavasi, serta semua orang yang menguji di Discord, dengan terima kasih khusus atas semua dukungan di YouTube. Simpan loader biasa Anda di dekat tangan dan beri tahu kami apa yang rusak: masukanlah yang membangun RIPPS2. **Cara terbaik agar RIPPS2 diperbarui adalah [issue di GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny membuka tiga, dan perbaikan FreeMcBoot di v1.1.7 berasal dari salah satunya. Jadilah seperti DarkNerdShawny.
 
+Warksmith membangun pustaka game UDPFS RIPPS2 dan fitur kembali dari dalam game bersama kami (build 145 sampai 154), dan Berion memeriksa kode hard disk APA-nya.
+
 <a id="videos"></a>
 
 ## Video
@@ -254,6 +256,8 @@ Tambahkan `?t=12` untuk melewati intro pilar, atau `?f=3#memory-files` untuk mem
 ## Kredit
 
 RIPPS2 dirancang dan diarahkan oleh akilluminati47 dan dibangun bersama Claude (Anthropic). Penguji: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi, dan semua orang yang menguji di Discord. Issue di GitHub: DarkNerdShawny dan semua orang yang membukanya (issue adalah cara terbaik agar RIPPS2 diperbarui: jadilah seperti mereka dan [buka satu](https://github.com/akilluminati47/RIPPS2/issues)). Terima kasih khusus juga atas semua dukungan di YouTube: saya senang membantu, lewat jalan apa pun Anda menghubungi saya.
+
+Warksmith membangun pustaka game UDPFS RIPPS2 dan fitur kembali dari dalam game bersama kami (build 145 sampai 154), dan Berion memeriksa kode hard disk APA-nya.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) oleh NathanNeurotic dan tim [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), fondasi RIPPS2. Kredit lengkap mereka ada di halaman About RIPPS2.
 - [Neutrino](https://github.com/rickgaiser/neutrino) oleh [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), emulator perangkat yang kecil, cepat, dan modular, inti game kedua RIPPS2: RIPPS2 menemukan dan memakai milik Anda sendiri, versi apa pun; RIPPS2.elf membawa build-nya sampai build 134 ([`elf/neutrino`](elf/neutrino/README.md)). Pilih sebagai Default Loader Core di Settings > Game Launching.

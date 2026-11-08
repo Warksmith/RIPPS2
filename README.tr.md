@@ -61,6 +61,8 @@ RIPPS2 tek bir `.elf` içinde bir PS2 ön yüzüdür: [RiptOPL](https://github.c
 
 Derleme 100'den beri **beta**: konsollarda ve PCSX2'de ripto, nuno6573, zackcage6, eliminator1403, FifthFox ve Mr.sus.60 tarafından, betada lukeatmynose ve ahavasi tarafından da ve Discord'da test eden herkes tarafından denenmiş yüz alfa derlemesi; YouTube'daki tüm sevgi için de ayrıca teşekkürler. Her zamanki yükleyicini yakında tut ve neyin bozulduğunu bize söyle: RIPPS2'yi geri bildirim yapar. **RIPPS2'nin güncellenmesinin en iyi yolu [GitHub'da bir issue](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny üç tane açtı ve v1.1.7'deki FreeMcBoot düzeltmesi bunlardan birinden geldi. DarkNerdShawny gibi ol.
 
+Warksmith, RIPPS2'nin UDPFS oyun kütüphanelerini ve oyundan dönüşü bizimle birlikte yaptı (145 ile 154 arası derlemeler), Berion da APA sabit disk kodunu denetledi.
+
 <a id="videos"></a>
 
 ## Videolar
@@ -254,6 +256,8 @@ Sütun girişini atlamak için `?t=12`, belirli bir oluşumu açmak için `?f=3#
 ## Emeği geçenler
 
 RIPPS2'yi akilluminati47 tasarlar ve yönetir, Claude (Anthropic) ile yapılır. Test edenler: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi ve Discord'da test eden herkes. GitHub'daki issue'lar: DarkNerdShawny ve bir tane açan herkes (bir issue RIPPS2'nin güncellenmesinin en iyi yoludur: onlar gibi ol ve [bir tane aç](https://github.com/akilluminati47/RIPPS2/issues)). YouTube'daki tüm sevgi için de ayrıca teşekkürler: bana nasıl ulaşırsan ulaş yardım etmekten memnuniyet duyarım.
+
+Warksmith, RIPPS2'nin UDPFS oyun kütüphanelerini ve oyundan dönüşü bizimle birlikte yaptı (145 ile 154 arası derlemeler), Berion da APA sabit disk kodunu denetledi.
 
 - NathanNeurotic'in [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader)'i ve [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) ekibi (AFL-3.0); RIPPS2 bunların üzerine kurulmuştur. Tam emek listeleri RIPPS2'nin About sayfasındadır.
 - [rickgaiser](https://github.com/rickgaiser)'ın [Neutrino](https://github.com/rickgaiser/neutrino)'su (AFL-3.0), RIPPS2'nin ikinci oyun çekirdeği olan küçük, hızlı ve modüler aygıt öykünücüsü: RIPPS2 herhangi bir sürümdeki kendi Neutrino'nu bulur ve kullanır; RIPPS2.elf onun derlemesini 134. derlemeye kadar taşıdı ([`elf/neutrino`](elf/neutrino/README.md)). Onu Settings > Game Launching altında Default Loader Core olarak seç.

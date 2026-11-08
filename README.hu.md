@@ -61,6 +61,8 @@ A RIPPS2 egy PS2-es kezelőfelület egyetlen `.elf` fájlban: a [RiptOPL](https:
 
 A 100-as buildtől **béta**: száz alfa build, amelyet konzolon és PCSX2-ben tesztelt ripto, nuno6573, zackcage6, eliminator1403, FifthFox és Mr.sus.60, a bétában lukeatmynose és ahavasi is, valamint mindenki, aki a Discordon tesztel, külön köszönettel a YouTube-on kapott szeretetért is. Tartsd kéznél a megszokott betöltődet, és mondd el, mi romlik el: a visszajelzés teszi a RIPPS2-t. **A RIPPS2 frissítésének legjobb módja [egy issue a GitHubon](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny hármat nyitott, és a v1.1.7 FreeMcBoot-javítása is az egyikből született. Légy olyan, mint DarkNerdShawny.
 
+Warksmith velünk együtt építette meg a RIPPS2 UDPFS-es játékkönyvtárait és a játékból való visszatérést (145.-től 154.-ig build), Berion pedig átnézte az APA merevlemez kódját.
+
 <a id="videos"></a>
 
 ## Videók
@@ -254,6 +256,8 @@ Add hozzá a `?t=12` paramétert az oszlopos bevezető átugrásához, vagy a `?
 ## Köszönetnyilvánítás
 
 A RIPPS2-t akilluminati47 tervezi és irányítja, és a Claude-dal (Anthropic) készül. Tesztelők: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi, és mindenki, aki a Discordon tesztel. Issue-k a GitHubon: DarkNerdShawny és mindenki, aki nyit egyet (egy issue a legjobb módja a RIPPS2 frissítésének: légy olyan, mint ők, és [nyiss egyet](https://github.com/akilluminati47/RIPPS2/issues)). Külön köszönet a YouTube-on kapott szeretetért is: szívesen segítek, bárhogy is érsz el.
+
+Warksmith velünk együtt építette meg a RIPPS2 UDPFS-es játékkönyvtárait és a játékból való visszatérést (145.-től 154.-ig build), Berion pedig átnézte az APA merevlemez kódját.
 
 - NathanNeurotic [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) projektje és az [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) csapata (AFL-3.0), amelyekre a RIPPS2 épül. A teljes köszönetnyilvánításuk a RIPPS2 About oldalán olvasható.
 - A [Neutrino](https://github.com/rickgaiser/neutrino), [rickgaiser](https://github.com/rickgaiser) munkája (AFL-3.0), a kicsi, gyors és moduláris eszközemulátor, amely a RIPPS2 második játékmagja: a RIPPS2 megtalálja és használja a sajátodat, bármilyen verziót; a RIPPS2.elf a 134-es buildig hozta magával a buildjét ([`elf/neutrino`](elf/neutrino/README.md)). Válaszd Default Loader Core-ként a Settings > Game Launching alatt.

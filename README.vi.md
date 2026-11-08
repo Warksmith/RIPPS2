@@ -61,6 +61,8 @@ RIPPS2 là một giao diện PS2 trong một tệp `.elf` duy nhất: [RiptOPL](
 
 Đang ở **beta** từ bản dựng 100: một trăm bản dựng alpha, được ripto, nuno6573, zackcage6, eliminator1403, FifthFox và Mr.sus.60 thử trên máy thật và trong PCSX2, và trong beta còn có lukeatmynose và ahavasi, cùng mọi người thử nghiệm trên Discord, đặc biệt cảm ơn mọi tình cảm trên YouTube. Hãy giữ trình nạp quen thuộc của bạn bên cạnh và cho chúng tôi biết cái gì hỏng: chính phản hồi tạo nên RIPPS2. **Cách tốt nhất để RIPPS2 được cập nhật là [một issue trên GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: DarkNerdShawny đã mở ba cái, và bản sửa FreeMcBoot trong v1.1.7 đến từ một trong số đó. Hãy như DarkNerdShawny.
 
+Warksmith đã cùng chúng tôi xây dựng thư viện game UDPFS và tính năng quay về từ trong game của RIPPS2 (bản dựng 145 đến 154), và Berion đã kiểm tra mã ổ cứng APA.
+
 <a id="videos"></a>
 
 ## Video
@@ -254,6 +256,8 @@ Thêm `?t=12` để bỏ qua phần mở đầu của các cột trụ, hoặc `
 ## Ghi công
 
 RIPPS2 được akilluminati47 thiết kế và chỉ đạo, và được xây dựng cùng Claude (Anthropic). Người thử nghiệm: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi và mọi người thử nghiệm trên Discord. Issue trên GitHub: DarkNerdShawny và mọi người mở issue (một issue là cách tốt nhất để RIPPS2 được cập nhật: hãy như họ và [mở một cái](https://github.com/akilluminati47/RIPPS2/issues)). Đặc biệt cảm ơn mọi tình cảm trên YouTube: tôi rất vui được giúp, dù bạn liên lạc bằng cách nào.
+
+Warksmith đã cùng chúng tôi xây dựng thư viện game UDPFS và tính năng quay về từ trong game của RIPPS2 (bản dựng 145 đến 154), và Berion đã kiểm tra mã ổ cứng APA.
 
 - [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) của NathanNeurotic và đội [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), nền tảng của RIPPS2. Phần ghi công đầy đủ của họ nằm trong trang About của RIPPS2.
 - [Neutrino](https://github.com/rickgaiser/neutrino) của [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), trình giả lập thiết bị nhỏ, nhanh và mô-đun, lõi game thứ hai của RIPPS2: RIPPS2 tìm và dùng Neutrino của bạn, bất kỳ phiên bản nào; RIPPS2.elf đã kèm bản dựng của nó đến bản dựng 134 ([`elf/neutrino`](elf/neutrino/README.md)). Chọn nó làm Default Loader Core trong Settings > Game Launching.

@@ -61,6 +61,8 @@
 
 Είναι **beta** από το build 100: εκατό builds alpha, δοκιμασμένα σε κονσόλες και στο PCSX2 από τους ripto, nuno6573, zackcage6, eliminator1403, FifthFox και Mr.sus.60, και στη beta επίσης από τους lukeatmynose και ahavasi, και από όλους όσοι δοκιμάζουν στο Discord, με ιδιαίτερες ευχαριστίες και για όλη την αγάπη στο YouTube. Κράτα τον συνηθισμένο σου loader κοντά και πες μας τι χαλάει: τα σχόλια φτιάχνουν το RIPPS2. **Ο καλύτερος τρόπος να ενημερωθεί το RIPPS2 είναι [ένα issue στο GitHub](https://github.com/akilluminati47/RIPPS2/issues)**: ο DarkNerdShawny έχει ανοίξει τρία, και η διόρθωση για το FreeMcBoot στη v1.1.7 προήλθε από ένα από αυτά. Γίνε σαν τον DarkNerdShawny.
 
+Ο Warksmith έφτιαξε μαζί μας τις βιβλιοθήκες παιχνιδιών UDPFS του RIPPS2 και την επιστροφή από το παιχνίδι (builds 145 έως 154), και ο Berion έλεγξε τον κώδικα του σκληρού δίσκου APA.
+
 <a id="videos"></a>
 
 ## Βίντεο
@@ -254,6 +256,8 @@ python -m http.server 8000
 ## Ευχαριστίες
 
 Το RIPPS2 σχεδιάζεται και καθοδηγείται από τον akilluminati47 και χτίζεται με το Claude (Anthropic). Δοκιμαστές: ripto, nuno6573, zackcage6, eliminator1403, FifthFox, Mr.sus.60, lukeatmynose, ahavasi, και όλοι όσοι δοκιμάζουν στο Discord. Issues στο GitHub: ο DarkNerdShawny και όλοι όσοι ανοίγουν ένα (ένα issue είναι ο καλύτερος τρόπος να ενημερωθεί το RIPPS2: γίνε σαν αυτούς και [άνοιξε ένα](https://github.com/akilluminati47/RIPPS2/issues)). Ιδιαίτερες ευχαριστίες και για όλη την αγάπη στο YouTube: χαίρομαι να βοηθήσω όπως κι αν με βρεις.
+
+Ο Warksmith έφτιαξε μαζί μας τις βιβλιοθήκες παιχνιδιών UDPFS του RIPPS2 και την επιστροφή από το παιχνίδι (builds 145 έως 154), και ο Berion έλεγξε τον κώδικα του σκληρού δίσκου APA.
 
 - Το [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) του NathanNeurotic και η ομάδα του [Open PS2 Loader](https://github.com/ps2homebrew/Open-PS2-Loader) (AFL-3.0), πάνω στα οποία είναι χτισμένο το RIPPS2. Οι πλήρεις ευχαριστίες τους βρίσκονται στη σελίδα About του RIPPS2.
 - Το [Neutrino](https://github.com/rickgaiser/neutrino) του [rickgaiser](https://github.com/rickgaiser) (AFL-3.0), ο μικρός, γρήγορος και αρθρωτός εξομοιωτής συσκευών που είναι ο δεύτερος πυρήνας παιχνιδιών του RIPPS2: το RIPPS2 βρίσκει και χρησιμοποιεί το δικό σου, οποιασδήποτε έκδοσης· το RIPPS2.elf κουβαλούσε build του μέχρι το build 134 ([`elf/neutrino`](elf/neutrino/README.md)). Διάλεξέ το ως Default Loader Core στο Settings > Game Launching.

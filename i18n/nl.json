@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Sinds build 118 pakt **Settings > Game Sources > Cache > ART Pack** de `ART`-map van elke gestarte schijf in één `art.tar` in de `ART`-map van de schijf die je kiest. RIPPS2 meet hoe snel elke schijf zijn eigen artwork leest en zet de snelste bovenaan, zodat X die kiest (de SD van een SD2PSX, bijvoorbeeld). De afbeeldingen gaan erin zoals ze zijn (PNG en JPG zijn al gecomprimeerd: de tar bundelt ze alleen, en een pc opent hem als elke tar), en de `ART`-mappen blijven ongemoeid. Vanaf dan laden covers uit dat ene bestand via één index (geschreven met het pakket, zodat de eerste start het niet hoeft te scannen), en de `ART`-map van een game waarvoor het pakket gemaakt is, wordt nooit afbeelding voor afbeelding bevraagd, ontbrekende afbeeldingen inbegrepen: minder lezen op de schijf waar de muziek vandaan komt, en artwork die de cursor bijhoudt. Artwork die RIPPS2 later ophaalt of schiet, verschijnt meteen; artwork die je op een pc erin kopieert, verschijnt nadat je het pakket opnieuw bouwt. Je kunt `art.tar` met Memory Files naar de `ART`-map van een andere schijf kopiëren, maar bouw hem op de schijf waarop je bladert. Dezelfde knop verwijdert het pakket."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith bouwde met ons de UDPFS-gamebibliotheken van RIPPS2 en de terugkeer uit de game (builds 145 tot 154), en Berion controleerde de code voor APA-harde schijven."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Een PS2-game** wordt een ISO in de DVD- of CD-map van een schijf, in je gamelijst. Een game van meer dan 4 GB die naar een FAT32-schijf gaat, wordt in plaats daarvan opgeslagen als de 1 GB-delen van Open PS2 Loader met ul.cfg; op een exFAT-schijf (een USB-stick, MX4SIO, iLink of de interne HDD) blijft het één ISO. De ruimte op de schijf wordt gecontroleerd voordat het rippen begint."

@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Seit Build 118 packt **Settings > Game Sources > Cache > ART Pack** den `ART`-Ordner jedes gestarteten Laufwerks in eine einzige `art.tar` im `ART`-Ordner des Laufwerks, das du wählst. RIPPS2 misst, wie schnell jedes Laufwerk sein eigenes Artwork liest, und listet das schnellste zuerst, sodass X es nimmt (etwa die SD eines SD2PSX). Die Bilder kommen so hinein, wie sie sind (PNG und JPG sind bereits komprimiert: die tar bündelt sie nur, und ein PC öffnet sie wie jede tar), und die `ART`-Ordner bleiben unangetastet. Von da an laden Cover aus dieser einen Datei über einen Index (mit dem Paket geschrieben, so braucht der erste Start keinen Scan), und der `ART`-Ordner eines Spiels, für das das Paket gebaut wurde, wird nie Bild für Bild gefragt, fehlende Bilder eingeschlossen: weniger Lesen auf dem Laufwerk, von dem die Musik läuft, und Artwork, das mit dem Cursor mithält. Artwork, das RIPPS2 später holt oder aufnimmt, erscheint sofort; Artwork, das du am PC hineinkopierst, erscheint, nachdem du das Paket neu baust. Du kannst `art.tar` mit Memory Files in den `ART`-Ordner eines anderen Laufwerks kopieren, aber bau es auf dem Laufwerk, auf dem du stöberst. Derselbe Knopf entfernt das Paket."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith hat mit uns die UDPFS-Spielebibliotheken von RIPPS2 und die Rückkehr aus dem Spiel gebaut (Builds 145 bis 154), und Berion hat den Code für APA-Festplatten geprüft."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Ein PS2-Spiel** wird zu einer ISO im DVD- oder CD-Ordner eines Laufwerks, in deiner Spieleliste. Ein Spiel über 4 GB, das auf ein FAT32-Laufwerk geht, wird stattdessen als 1-GB-Teile von Open PS2 Loader mit ul.cfg gespeichert; auf einem exFAT-Laufwerk (einem USB-Stick, MX4SIO, iLink oder der internen HDD) bleibt es eine ISO. Der Platz auf dem Laufwerk wird vor dem Rippen geprüft."

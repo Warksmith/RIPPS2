@@ -139,6 +139,10 @@
   "en": "4b3d5484bd60",
   "t": "Depuis la build 118, **Settings > Game Sources > Cache > ART Pack** regroupe le dossier `ART` de chaque lecteur démarré en un seul `art.tar` dans le dossier `ART` du lecteur que vous choisissez. RIPPS2 mesure la vitesse à laquelle chaque lecteur lit ses propres images et place le plus rapide en premier, pour que X le prenne (la carte SD d'un SD2PSX, par exemple). Les images y entrent telles quelles (PNG et JPG sont déjà compressés : le tar ne fait que les regrouper, et un PC l'ouvre comme n'importe quel tar), et les dossiers `ART` ne sont pas touchés. Dès lors, les jaquettes se chargent depuis ce seul fichier via un index (écrit avec le pack, donc le premier démarrage n'a pas besoin de le parcourir), et le dossier `ART` d'un jeu pour lequel le pack a été fait n'est jamais interrogé image par image, images manquantes comprises : moins de lecture sur le lecteur d'où joue la musique, et des images qui suivent le curseur. Les images que RIPPS2 télécharge ou capture ensuite s'affichent tout de suite ; celles que vous copiez depuis un PC s'affichent après avoir refait le pack. Vous pouvez copier `art.tar` dans le dossier `ART` d'un autre lecteur avec Memory Files, mais construisez-le sur le lecteur depuis lequel vous naviguez. Le même bouton supprime le pack."
  },
+ "4fde8a0bd8f7": {
+  "en": "4fde8a0bd8f7",
+  "t": "Warksmith a construit avec nous les bibliothèques de jeux UDPFS de RIPPS2 et son retour en jeu (builds 145 à 154), et Berion a vérifié son code du disque dur APA."
+ },
  "505102f81904": {
   "en": "505102f81904",
   "t": "- **Un jeu PS2** devient une ISO dans le dossier DVD ou CD d'un lecteur, dans votre liste de jeux. Un jeu de plus de 4 Go destiné à un lecteur FAT32 est enregistré à la place en parties de 1 Go façon Open PS2 Loader avec ul.cfg ; sur un lecteur exFAT (une clé USB, un MX4SIO, un iLink ou le HDD interne), il reste une seule ISO. La place sur le lecteur est vérifiée avant le début du rip."
