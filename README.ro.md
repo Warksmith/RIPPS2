@@ -38,7 +38,7 @@
 
 <p align="center"><sub>Traducerea README-ului în engleză; dacă diferă, este valabilă engleza. <a href="README.md">English</a></sub></p>
 
-<p align="center"><sub><b>RIPPS2</b> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">Descarcă</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/BIBLE">BIBLE</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">Teme</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPCSX2">RIPPCSX2</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-fonts">Fonturi</a> &nbsp;&middot;&nbsp; <a href="https://akilluminati47.github.io/RIPPS2/">Site</a> &nbsp;&middot;&nbsp; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
+<p align="center"><sub><b>RIPPS2</b> <a href="https://akilluminati47.github.io/RIPPS2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2">repo</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">download</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>BIBLE</b> <a href="https://akilluminati47.github.io/BIBLE/">site</a> &middot; <a href="https://github.com/akilluminati47/BIBLE">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>RIPPCSX2</b> <a href="https://akilluminati47.github.io/RIPPCSX2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPCSX2">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">Themes</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2-fonts">Fonts</a> &middot; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &middot; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
 
 <p align="center"><img src="media/ripps2-test-me.png" alt="RIPPS2: Rip it, the beta, the dead elf in its blue hat over the towers"></p>
 
@@ -193,6 +193,14 @@ Din build-ul 118, **Settings > Game Sources > Cache > ART Pack** împachetează 
 
 **Îmbină un `.tar` în altul** (build 123). Împachetează o dată o unitate mare ca principală, apoi împachetează doar imaginile jocurilor noi și îmbină acel `.tar` mic în ea, în loc să reîmpachetezi fiecare folder ART. În Memory Files, Triunghi pe un `.tar` > **MERGE A .TAR INTO THIS**: acel `.tar` e cel păstrat, iar RIPPS2 le listează pe celelalte de îmbinat (în acel folder, în folderul ART al fiecărei unități pornite și în rădăcina ei). Cache > ART Pack oferă același lucru pentru pachetul folosit, și imediat după ce se face un pachet. O imagine care e în ambele vine din `.tar`-ul adăugat, iar cele două liste de jocuri devin una. Îmbinarea e scrisă lângă `.tar`-ul păstrat și îi ia numele doar când fiecare octet e pe unitate, așa că o oprire, o unitate plină sau un card scos îl lasă pe cel păstrat cum era. La final, o casetă numește ambele fișiere și întreabă dacă să-l șteargă pe cel adăugat (START îl șterge, Back îl păstrează); cel păstrat nu e oferit niciodată.
 
+## UDPFS game libraries
+
+UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+
+**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+
+The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+
 <a id="your-hardware"></a>
 
 ## Hardware-ul tău
@@ -268,5 +276,5 @@ Proiect neoficial al fanilor. PlayStation, PS1, PS2, logoul PlayStation și logo
 
 <p align="center"><img src="media/deadelf/ripps2-deadelf-top.png" width="140" alt="The dead elf, from above"></p>
 
-<p align="center"><sub><b>RIPPS2</b> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">Descarcă</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/BIBLE">BIBLE</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">Teme</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPCSX2">RIPPCSX2</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-fonts">Fonturi</a> &nbsp;&middot;&nbsp; <a href="https://akilluminati47.github.io/RIPPS2/">Site</a> &nbsp;&middot;&nbsp; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
+<p align="center"><sub><b>RIPPS2</b> <a href="https://akilluminati47.github.io/RIPPS2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2">repo</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">download</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>BIBLE</b> <a href="https://akilluminati47.github.io/BIBLE/">site</a> &middot; <a href="https://github.com/akilluminati47/BIBLE">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>RIPPCSX2</b> <a href="https://akilluminati47.github.io/RIPPCSX2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPCSX2">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">Themes</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2-fonts">Fonts</a> &middot; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &middot; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
 

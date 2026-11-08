@@ -38,7 +38,7 @@
 
 <p align="center"><sub>Traduzione del README inglese; se differiscono, vale l’inglese. <a href="README.md">English</a></sub></p>
 
-<p align="center"><sub><b>RIPPS2</b> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">Scarica</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/BIBLE">BIBLE</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">Temi</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPCSX2">RIPPCSX2</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-fonts">Font</a> &nbsp;&middot;&nbsp; <a href="https://akilluminati47.github.io/RIPPS2/">Sito</a> &nbsp;&middot;&nbsp; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
+<p align="center"><sub><b>RIPPS2</b> <a href="https://akilluminati47.github.io/RIPPS2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2">repo</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">download</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>BIBLE</b> <a href="https://akilluminati47.github.io/BIBLE/">site</a> &middot; <a href="https://github.com/akilluminati47/BIBLE">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>RIPPCSX2</b> <a href="https://akilluminati47.github.io/RIPPCSX2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPCSX2">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">Themes</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2-fonts">Fonts</a> &middot; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &middot; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
 
 <p align="center"><img src="media/ripps2-test-me.png" alt="RIPPS2: Rip it, the beta, the dead elf in its blue hat over the towers"></p>
 
@@ -193,6 +193,14 @@ Dalla build 118, **Settings > Game Sources > Cache > ART Pack** impacchetta la c
 
 **Unisci un `.tar` a un altro** (build 123). Impacchetta una grande unità una volta come master, poi più avanti impacchetta solo le immagini dei giochi nuovi e unisci quel piccolo `.tar` al master, invece di reimpacchettare tutte le cartelle ART. In Memory Files, Triangolo su un `.tar` > **MERGE A .TAR INTO THIS**: quel `.tar` è quello che resta, e RIPPS2 elenca gli altri da unire (in quella cartella, nella cartella ART di ogni unità avviata e nella sua radice). Cache > ART Pack offre lo stesso per il pacchetto in uso, e subito dopo aver creato un pacchetto. Un'immagine presente in entrambi viene dal `.tar` unito, e le due liste di giochi diventano una. L'unione viene scritta accanto al `.tar` che resta e ne prende il nome solo quando ogni byte è sull'unità, così un'interruzione, un'unità piena o una card estratta lasciano quello che resta com'era. Alla fine una finestra nomina entrambi i file e chiede se eliminare quello unito (START lo elimina, Back lo tiene); quello che resta non viene mai proposto.
 
+## UDPFS game libraries
+
+UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+
+**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+
+The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+
 <a id="your-hardware"></a>
 
 ## Il tuo hardware
@@ -268,5 +276,5 @@ Progetto amatoriale non ufficiale. PlayStation, PS1, PS2, il logo PlayStation e 
 
 <p align="center"><img src="media/deadelf/ripps2-deadelf-top.png" width="140" alt="The dead elf, from above"></p>
 
-<p align="center"><sub><b>RIPPS2</b> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">Scarica</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/BIBLE">BIBLE</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">Temi</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPCSX2">RIPPCSX2</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-fonts">Font</a> &nbsp;&middot;&nbsp; <a href="https://akilluminati47.github.io/RIPPS2/">Sito</a> &nbsp;&middot;&nbsp; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
+<p align="center"><sub><b>RIPPS2</b> <a href="https://akilluminati47.github.io/RIPPS2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2">repo</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">download</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>BIBLE</b> <a href="https://akilluminati47.github.io/BIBLE/">site</a> &middot; <a href="https://github.com/akilluminati47/BIBLE">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>RIPPCSX2</b> <a href="https://akilluminati47.github.io/RIPPCSX2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPCSX2">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">Themes</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2-fonts">Fonts</a> &middot; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &middot; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
 

@@ -38,7 +38,7 @@
 
 <p align="center"><sub>ການແປ README ພາສາອັງກິດ; ຖ້າແຕກຕ່າງກັນ ໃຫ້ຖືພາສາອັງກິດ. <a href="README.md">English</a></sub></p>
 
-<p align="center"><sub><b>RIPPS2</b> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">ດາວໂຫຼດ</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/BIBLE">BIBLE</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">ທີມ</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPCSX2">RIPPCSX2</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-fonts">ຟອນ</a> &nbsp;&middot;&nbsp; <a href="https://akilluminati47.github.io/RIPPS2/">ເວັບໄຊ</a> &nbsp;&middot;&nbsp; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
+<p align="center"><sub><b>RIPPS2</b> <a href="https://akilluminati47.github.io/RIPPS2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2">repo</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">download</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>BIBLE</b> <a href="https://akilluminati47.github.io/BIBLE/">site</a> &middot; <a href="https://github.com/akilluminati47/BIBLE">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>RIPPCSX2</b> <a href="https://akilluminati47.github.io/RIPPCSX2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPCSX2">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">Themes</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2-fonts">Fonts</a> &middot; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &middot; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
 
 <p align="center"><img src="media/ripps2-test-me.png" alt="RIPPS2: Rip it, the beta, the dead elf in its blue hat over the towers"></p>
 
@@ -193,6 +193,14 @@ RIPPS2 ມີສຽງຂອງ PS2 ທີ່ບໍ່ເຄີຍອອກຈ�
 
 **ລວມ `.tar` ເຂົ້າກັບອີກອັນ** (ບິວ 123). ຫໍ່ໄດຣຟ໌ໃຫຍ່ເທື່ອດຽວເປັນຕົ້ນສະບັບ, ແລ້ວພາຍຫຼັງຫໍ່ພຽງຮູບຂອງເກມໃໝ່ ແລະ ລວມ `.tar` ນ້ອຍນັ້ນເຂົ້າໄປ, ແທນທີ່ຈະຫໍ່ທຸກໂຟນເດີ ART ໃໝ່. ໃນ Memory Files, ສາມຫຼ່ຽມເທິງ `.tar` > **MERGE A .TAR INTO THIS**: `.tar` ນັ້ນແມ່ນອັນທີ່ເກັບໄວ້, ແລະ RIPPS2 ລາຍຊື່ອັນອື່ນເພື່ອລວມເຂົ້າ (ໃນໂຟນເດີດຽວກັນ, ໃນໂຟນເດີ ART ຂອງແຕ່ລະໄດຣຟ໌ທີ່ເລີ່ມແລ້ວ ແລະ ທີ່ຮາກຂອງມັນ). Cache > ART Pack ສະເໜີແບບດຽວກັນສຳລັບຊຸດທີ່ກຳລັງໃຊ້, ແລະ ທັນທີຫຼັງສ້າງຊຸດ. ຮູບທີ່ມີໃນທັງສອງມາຈາກ `.tar` ທີ່ເພີ່ມ, ແລະ ລາຍການເກມສອງອັນກາຍເປັນອັນດຽວ. ການລວມຖືກຂຽນຂ້າງ `.tar` ທີ່ເກັບໄວ້ ແລະ ໄດ້ຊື່ຂອງມັນພຽງເມື່ອທຸກໄບຢູ່ເທິງໄດຣຟ໌, ດັ່ງນັ້ນການຢຸດ, ໄດຣຟ໌ເຕັມ ຫຼື ບັດທີ່ຖືກດຶງອອກ ຈະປ່ອຍອັນທີ່ເກັບໄວ້ຕາມເດີມ. ໃນທີ່ສຸດກ່ອງໂຕ້ຕອບບອກຊື່ທັງສອງໄຟລ໌ ແລະ ຖາມວ່າຈະລຶບອັນທີ່ເພີ່ມບໍ (START ລຶບ, Back ເກັບ); ອັນທີ່ເກັບໄວ້ບໍ່ເຄີຍຖືກສະເໜີໃຫ້ລຶບ.
 
+## UDPFS game libraries
+
+UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+
+**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+
+The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+
 <a id="your-hardware"></a>
 
 ## ຮາດແວຂອງເຈົ້າ
@@ -268,5 +276,5 @@ RIPPS2 ອອກແບບ ແລະ ກຳກັບໂດຍ akilluminati47, ແ
 
 <p align="center"><img src="media/deadelf/ripps2-deadelf-top.png" width="140" alt="The dead elf, from above"></p>
 
-<p align="center"><sub><b>RIPPS2</b> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">ດາວໂຫຼດ</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/BIBLE">BIBLE</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">ທີມ</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPCSX2">RIPPCSX2</a> &nbsp;&middot;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-fonts">ຟອນ</a> &nbsp;&middot;&nbsp; <a href="https://akilluminati47.github.io/RIPPS2/">ເວັບໄຊ</a> &nbsp;&middot;&nbsp; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
+<p align="center"><sub><b>RIPPS2</b> <a href="https://akilluminati47.github.io/RIPPS2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2">repo</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf">download</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>BIBLE</b> <a href="https://akilluminati47.github.io/BIBLE/">site</a> &middot; <a href="https://github.com/akilluminati47/BIBLE">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <b>RIPPCSX2</b> <a href="https://akilluminati47.github.io/RIPPCSX2/">site</a> &middot; <a href="https://github.com/akilluminati47/RIPPCSX2">repo</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="https://github.com/akilluminati47/RIPPS2-themes">Themes</a> &middot; <a href="https://github.com/akilluminati47/RIPPS2-fonts">Fonts</a> &middot; <a href="https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/">psx-place</a> &middot; <a href="https://discord.gg/Z7m9u5kby">Discord</a></sub></p>
 
