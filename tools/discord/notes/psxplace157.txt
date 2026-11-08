@@ -1,11 +1,11 @@
-psx-place bump for v1.5.7 beta (builds 142 to 157) in RIPPS2's thread: everything new since 1.4.1, with pictures of the menus as they look now. Paste from the [CENTER] line (it can also replace an older bump's text). The first post (psxplace-post.bbcode) is updated for 157 in the same commit.
+psx-place bump for v1.5.7 beta (builds 142 to 157) in RIPPS2's thread: everything new since 1.4.1, Paste from the [CENTER] line (it can also replace an older bump's text). The first post (psxplace-post.bbcode) is updated for 157 in the same commit.
 
-[CENTER][SPOILER="BIBLE's Settings in Manage"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/bible-settings.jpg[/IMG][/SPOILER]
+[CENTER][SPOILER="Rip it, build 157"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/a4c577a/media/ripps2-test-me.png[/IMG][/SPOILER]
 
 [SIZE=5][B]RIPPS2 v1.5.7 beta: BIBLE a060790 inside, a ripped CD track from an SD2PSX, Warksmith's and RiptOPL's fixes[/B][/SIZE]
 [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2.elf[/URL] (2,780 KB)  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/tag/v1.5.7-beta']What's new[/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/blob/main/CHANGELOG.md']Changelog[/URL][/CENTER]
 
-Everything since 1.4.1: builds 142 to 157. In the PCSX2 lab it boots, starts a game from an exFAT HDD on the built-in core, and walks Manage, Memory Files and a game's Controllers page; the new parts below have not been on a real PS2 yet, so your reports count. The pictures are build 157 in the lab.
+Everything since 1.4.1: builds 142 to 157. In the PCSX2 lab it boots, starts a game from an exFAT HDD on the built-in core, and walks Manage, Memory Files and a game's Controllers page; the new parts below have not been on a real PS2 yet, so your reports count.
 
 [SIZE=4][B]BIBLE a060790 inside, and Manage's page as it is now[/B][/SIZE]
 [LIST]
@@ -17,10 +17,8 @@ Everything since 1.4.1: builds 142 to 157. In the PCSX2 lab it boots, starts a g
 [*]ROM 2.30 and up: Manage warns that a bound BIBLE may not start at power on there, and still lets you try. A plain BIBLE started by OpenTuna or FunTuna is recognised.
 [/LIST]
 
-[CENTER][SPOILER="The colour picker"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/sky-color-picker.jpg[/IMG][/SPOILER][/CENTER]
 [B]A colour picker[/B] for BIBLE's Sky Color (its top, horizon and floor) and every colour row, the theme's own colour included: saturation and brightness on a field, hue on a bar, the value in hex and numbers, and the Color Themes one press away.
 
-[CENTER][SPOILER="Controllers and Button Map"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/controllers.jpg[/IMG] [IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/button-map.jpg[/IMG][/SPOILER][/CENTER]
 [B]A game's Controller Settings is one page[/B]: Controller Emulation, Controller Macros, My Pads, Set Up A USB Pad, and a new [B]Button Map[/B]: what each button does in that game on a USB pad through the Pad Emulator, kept in PADS/GAMES/<ID>.pad.
 
 [B]A ripped CD track plays from an SD2PSX.[/B] The music was read in long runs that held the card's bus while the sound driver had only a tenth of a second queued, so a .wav (nine times an Ogg's data) skipped. RIPPS2 now reads it in small pieces with a short gap after each on MMCE. Keep .wav for your rips; for music kept on MMCE, .ogg at 44.1 kHz stereo is the safe choice. DIAG.TXT now logs each track's read speed and every time the sound ran dry.

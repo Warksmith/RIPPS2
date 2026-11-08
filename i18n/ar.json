@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **بطاقات MMCE**: برنامج [sd2psXtd](https://sd2psxtd.github.io/) الثابت على SD2PSX، مثل بطاقة [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware)، يُقرأ عبر [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): الألعاب وVMC والإعدادات على بطاقة SD. **حدّث البرنامج الثابت باستمرار** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). ضغط لعبة على البطاقة يحتاج sd2psXtd 1.4.0 أو أحدث (يعيد تسمية الصورة المكتملة إلى مكانها)؛ يسأل RIPPS2 البطاقة أولًا، فتعرف مع البرنامج الأقدم قبل أن يبدأ أي شيء، ولا يمكن الضغط هناك. لا تستطيع البطاقة الإبلاغ عن مساحتها الحرة، لذا حتى مع 1.4.0 لا يوجد فحص للمساحة قبل الضغط: اترك مكانًا للعبة وملف ZSO الخاص بها جنبًا إلى جنب (إن امتلأت البطاقة، يتوقف العمل ويزيل ما كتبه)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 واجهة لجهاز PS2 في ملف `.elf` واحد: تفكيك وإعادة بناء لـ [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (فرع Open PS2 Loader)، ومعه [Neutrino](https://github.com/rickgaiser/neutrino) من rickgaiser نواةً ثانية للألعاب، مع مظهره الخاص ومشغّلاته ومتصفح ملفاته وأدوات الحفظ الخاصة به. أبراج زجاجية تقف خلف ألعابك وتشكيلات مدارية خلف ملفاتك، وكل ذلك يرسمه PS2 حيًّا."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [مقطع Short للعجلات في v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([أو على GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | العجلات التي تضغط مطولًا على SELECT لأجلها |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | اللحظة | ملف في `AUDIO` | صوت Sony من جهازك PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 واجهة لجهاز PS2 في ملف `.elf` واحد: تفكيك وإعادة بناء لـ [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (فرع Open PS2 Loader)، مع مظهره الخاص ومشغّلاته ومتصفح ملفاته وأدوات الحفظ الخاصة به. ولأوسع توافق يدعم [Neutrino](https://github.com/rickgaiser/neutrino/releases) من rickgaiser نواةً ثانية للألعاب، و[POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) من krHACKen و[Ember](https://github.com/Gageformer/Ember/releases) من Gageformer لألعاب PS1: نزّلها من تلك الروابط وضعها على قرصك وسيجدها RIPPS2. لا يأتي داخل `.elf` سوى BIBLE، محمّل الإقلاع. أبراج زجاجية تقف خلف ألعابك وتشكيلات مدارية خلف ملفاتك، وكل ذلك يرسمه PS2 حيًّا."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **Κάρτες MMCE**: το firmware [sd2psXtd](https://sd2psxtd.github.io/) σε ένα SD2PSX, όπως η κάρτα [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware), που διαβάζεται μέσω του [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): παιχνίδια, VMC και ρυθμίσεις στην κάρτα SD. **Κράτα το firmware ενημερωμένο** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Η συμπίεση ενός παιχνιδιού στην κάρτα χρειάζεται sd2psXtd 1.4.0 ή νεότερο (μετονομάζει το έτοιμο image στη θέση του)· το RIPPS2 ρωτά πρώτα την κάρτα, οπότε με παλιότερο firmware το μαθαίνεις πριν ξεκινήσει οτιδήποτε και δεν γίνεται συμπίεση εκεί. Η κάρτα δεν μπορεί να αναφέρει τον ελεύθερο χώρο της, οπότε ούτε στην 1.4.0 γίνεται έλεγχος χώρου πριν τη συμπίεση: άφησε χώρο για το παιχνίδι και το ZSO του δίπλα δίπλα (αν η κάρτα γεμίσει, η εργασία σταματά και αφαιρεί ό,τι έγραψε)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "Το RIPPS2 είναι ένα front end για το PS2 σε ένα μόνο `.elf`: ένα ξήλωμα και ξαναχτίσιμο του [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (του fork του Open PS2 Loader), με το [Neutrino](https://github.com/rickgaiser/neutrino) του rickgaiser ως δεύτερο πυρήνα παιχνιδιών, και με δική του εμφάνιση, εκκινητές, εξερευνητή αρχείων και εργαλεία αποθηκεύσεων. Γυάλινοι πύργοι στέκονται πίσω από τα παιχνίδια σου και τροχιακοί σχηματισμοί πίσω από τα αρχεία σου, όλα σχεδιασμένα ζωντανά από το PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Το Short με τους τροχούς της v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([ή στο GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Οι τροχοί για τους οποίους κρατάς το SELECT |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Στιγμή | Αρχείο στο `AUDIO` | Ο ήχος της Sony, από το δικό σου PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "Το RIPPS2 είναι ένα front end για το PS2 σε ένα μόνο `.elf`: ένα ξήλωμα και ξαναχτίσιμο του [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (του fork του Open PS2 Loader), με δική του εμφάνιση, εκκινητές, εξερευνητή αρχείων και εργαλεία αποθηκεύσεων. Για την ευρύτερη συμβατότητα υποστηρίζει το [Neutrino](https://github.com/rickgaiser/neutrino/releases) του rickgaiser ως δεύτερο πυρήνα παιχνιδιών, και το [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) του krHACKen και το [Ember](https://github.com/Gageformer/Ember/releases) του Gageformer για παιχνίδια PS1: κατέβασέ τα από αυτούς τους συνδέσμους, βάλε τα στον δίσκο σου και το RIPPS2 τα βρίσκει. Μέσα στο `.elf` υπάρχει μόνο το BIBLE, ο boot loader. Γυάλινοι πύργοι στέκονται πίσω από τα παιχνίδια σου και τροχιακοί σχηματισμοί πίσω από τα αρχεία σου, όλα σχεδιασμένα ζωντανά από το PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

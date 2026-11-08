@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **Kartu MMCE**: firmware [sd2psXtd](https://sd2psxtd.github.io/) di SD2PSX, seperti kartu [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware), dibaca melalui [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): game, VMC, dan pengaturan di SD kartu. **Selalu perbarui firmware** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Mengompres game di kartu memerlukan sd2psXtd 1.4.0 atau lebih baru (ia menaruh image yang selesai di tempatnya dengan mengganti nama); RIPPS2 bertanya ke kartu dulu, jadi dengan firmware lama Anda tahu sebelum apa pun dimulai, dan tidak bisa mengompres di sana. Kartu tidak bisa melaporkan ruang kosongnya, jadi bahkan di 1.4.0 tidak ada pemeriksaan ruang sebelum kompresi: sisakan ruang agar game dan ZSO-nya muat berdampingan (bila kartu penuh, pekerjaan berhenti dan menghapus apa yang sudah ditulis)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 adalah front end PS2 dalam satu `.elf`: [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (fork Open PS2 Loader) yang dibongkar dan disusun ulang, dengan [Neutrino](https://github.com/rickgaiser/neutrino) karya rickgaiser sebagai inti game kedua, serta tampilan, peluncur, penjelajah berkas, dan alat penyimpanan miliknya sendiri. Menara kaca berdiri di belakang game Anda, formasi orbit berbaris di belakang berkas Anda, dan semuanya digambar langsung oleh PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Short roda v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([atau di GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Roda yang muncul saat Anda menahan SELECT |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Momen | Berkas `AUDIO` | Suara Sony, dari PS2 Anda sendiri (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 adalah front end PS2 dalam satu `.elf`: [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (fork Open PS2 Loader) yang dibongkar dan disusun ulang, dengan tampilan, peluncur, penjelajah berkas, dan alat penyimpanan miliknya sendiri. Demi kompatibilitas seluas mungkin, ia mendukung [Neutrino](https://github.com/rickgaiser/neutrino/releases) karya rickgaiser sebagai inti game kedua, serta [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) karya krHACKen dan [Ember](https://github.com/Gageformer/Ember/releases) karya Gageformer untuk game PS1: ambil dari tautan itu, taruh di drive Anda, dan RIPPS2 menemukannya. Hanya BIBLE, boot loader, yang ikut di dalam `.elf`. Menara kaca berdiri di belakang game Anda, formasi orbit berbaris di belakang berkas Anda, dan semuanya digambar langsung oleh PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

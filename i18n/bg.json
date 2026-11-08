@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **MMCE карти**: фърмуер [sd2psXtd](https://sd2psxtd.github.io/) на SD2PSX, като картата [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware), четени чрез [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): игри, VMC и настройки на SD картата. **Поддържай фърмуера обновен** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Компресирането на игра върху картата изисква sd2psXtd 1.4.0 или по-нов (той преименува готовия образ на мястото му); RIPPS2 първо пита картата, така при по-стар фърмуер разбираш, преди нещо да е започнало, и там не може да се компресира. Картата не може да съобщи свободното си място, затова дори на 1.4.0 няма проверка на мястото преди компресиране: остави място за играта и нейния ZSO един до друг (ако картата се напълни, работата спира и премахва каквото е записала)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 е PS2 интерфейс в един `.elf`: разглобяване и сглобяване наново на [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (форка на Open PS2 Loader), с [Neutrino](https://github.com/rickgaiser/neutrino) на rickgaiser като второ ядро за игри, със собствен облик, стартери, файлов браузър и инструменти за записи. Стъклени кули стоят зад игрите ти, а орбитални формации зад файловете ти, всичко рисувано на живо от PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Short с колелата за v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([или в GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Колелата, за които задържаш SELECT |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Момент | Файл в `AUDIO` | Звукът на Sony, от собствения ти PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 е PS2 интерфейс в един `.elf`: разглобяване и сглобяване наново на [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (форка на Open PS2 Loader), със собствен облик, стартери, файлов браузър и инструменти за записи. За най-широка съвместимост поддържа [Neutrino](https://github.com/rickgaiser/neutrino/releases) на rickgaiser като второ ядро за игри, както и [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) на krHACKen и [Ember](https://github.com/Gageformer/Ember/releases) на Gageformer за PS1 игри: изтегли ги от тези връзки, сложи ги на диска си и RIPPS2 ги намира. В `.elf` е вграден само BIBLE, зареждачът. Стъклени кули стоят зад игрите ти, а орбитални формации зад файловете ти, всичко рисувано на живо от PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **Thẻ MMCE**: firmware [sd2psXtd](https://sd2psxtd.github.io/) trên SD2PSX, như thẻ [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware), đọc qua [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): game, VMC và cài đặt trên thẻ SD của thẻ. **Hãy giữ firmware luôn mới** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Nén một game trên thẻ cần sd2psXtd 1.4.0 trở lên (nó đặt ảnh đã xong vào chỗ bằng cách đổi tên); RIPPS2 hỏi thẻ trước, nên với firmware cũ hơn bạn biết trước khi bắt đầu bất cứ gì, và không nén được ở đó. Thẻ không báo được dung lượng trống, nên ngay cả trên 1.4.0 cũng không có kiểm tra dung lượng trước khi nén: hãy chừa chỗ cho game và ZSO của nó nằm cạnh nhau (nếu thẻ đầy, việc dừng lại và xóa những gì đã ghi)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 là một giao diện PS2 trong một tệp `.elf` duy nhất: [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (một bản fork của Open PS2 Loader) được mở ra và dựng lại, với [Neutrino](https://github.com/rickgaiser/neutrino) của rickgaiser làm lõi game thứ hai, cùng giao diện, trình khởi chạy, trình duyệt tệp và công cụ lưu trữ riêng. Những tòa tháp kính đứng sau các game của bạn, những đội hình quỹ đạo xếp sau các tệp của bạn, và tất cả do PS2 vẽ trực tiếp."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Short vòng chọn v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([hoặc trên GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Các vòng chọn hiện ra khi bạn giữ SELECT |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Khoảnh khắc | Tệp `AUDIO` | Âm thanh Sony, từ chính PS2 của bạn (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 là một giao diện PS2 trong một tệp `.elf` duy nhất: [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (một bản fork của Open PS2 Loader) được mở ra và dựng lại, cùng giao diện, trình khởi chạy, trình duyệt tệp và công cụ lưu trữ riêng. Để tương thích rộng nhất, nó hỗ trợ [Neutrino](https://github.com/rickgaiser/neutrino/releases) của rickgaiser làm lõi game thứ hai, cùng [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) của krHACKen và [Ember](https://github.com/Gageformer/Ember/releases) của Gageformer cho game PS1: tải chúng từ các liên kết đó, đặt lên ổ của bạn và RIPPS2 sẽ tìm thấy. Bên trong `.elf` chỉ có BIBLE, trình nạp khởi động. Những tòa tháp kính đứng sau các game của bạn, những đội hình quỹ đạo xếp sau các tệp của bạn, và tất cả do PS2 vẽ trực tiếp."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

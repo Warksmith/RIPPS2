@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **Carduri MMCE**: firmware-ul [sd2psXtd](https://sd2psxtd.github.io/) pe un SD2PSX, precum cardul [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware), citit prin [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): jocuri, VMC-uri și setări pe cardul SD. **Ține firmware-ul la zi** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Comprimarea unui joc pe card necesită sd2psXtd 1.4.0 sau mai nou (redenumește imaginea terminată la locul ei); RIPPS2 întreabă mai întâi cardul, așa că cu un firmware mai vechi afli înainte să înceapă ceva și nu se poate comprima acolo. Cardul nu-și poate raporta spațiul liber, deci nici pe 1.4.0 nu există verificare de spațiu înainte de comprimare: lasă loc pentru joc și ZSO-ul lui unul lângă altul (dacă cardul se umple, lucrul se oprește și elimină ce a scris)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 este un front end pentru PS2 într-un singur `.elf`: o demontare și reconstruire a [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (fork-ul Open PS2 Loader), cu [Neutrino](https://github.com/rickgaiser/neutrino) de la rickgaiser ca al doilea nucleu de jocuri, și cu propriul aspect, lansatoare, explorator de fișiere și unelte pentru salvări. Turnuri de sticlă stau în spatele jocurilor tale și formații orbitale în spatele fișierelor tale, totul desenat live de PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Short-ul cu roțile pentru v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([sau pe GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Roțile pentru care ții apăsat SELECT |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Moment | Fișier în `AUDIO` | Sunetul Sony, din propriul PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 este un front end pentru PS2 într-un singur `.elf`: o demontare și reconstruire a [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (fork-ul Open PS2 Loader), cu propriul aspect, lansatoare, explorator de fișiere și unelte pentru salvări. Pentru cea mai largă compatibilitate suportă [Neutrino](https://github.com/rickgaiser/neutrino/releases) de la rickgaiser ca al doilea nucleu de jocuri, precum și [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) de la krHACKen și [Ember](https://github.com/Gageformer/Ember/releases) de la Gageformer pentru jocuri PS1: descarcă-le de la acele linkuri, pune-le pe unitatea ta și RIPPS2 le găsește. Doar BIBLE, boot loaderul, vine în interiorul `.elf`. Turnuri de sticlă stau în spatele jocurilor tale și formații orbitale în spatele fișierelor tale, totul desenat live de PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

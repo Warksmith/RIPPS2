@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **MMCE-kort**: [sd2psXtd](https://sd2psxtd.github.io/)-firmware på en SD2PSX, som [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware)-kortet, læst gennem [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): spil, VMC'er og indstillinger på kortets SD. **Hold firmwaren opdateret** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). At komprimere et spil på kortet kræver sd2psXtd 1.4.0 eller nyere (den omdøber det færdige image på plads); RIPPS2 spørger kortet først, så med ældre firmware får du det at vide, før noget begynder, og der kan ikke komprimeres dér. Kortet kan ikke oplyse sin ledige plads, så selv på 1.4.0 er der intet pladstjek før komprimering: lad der være plads til spillet og dets ZSO side om side (bliver kortet fuldt, stopper arbejdet og fjerner det, det skrev)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 er en PS2-frontend i én enkelt `.elf`: en nedrivning og genopbygning af [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (Open PS2 Loader-forken), med rickgaisers [Neutrino](https://github.com/rickgaiser/neutrino) som anden spilkerne, og med sit eget udseende, startere, filbrowser og gemmeværktøjer. Glastårne står bag dine spil og kredsløbsformationer bag dine filer, alt sammen tegnet live af PS2'en."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [v1.1.4-hjul-Shorten](https://youtube.com/shorts/iQqR9lsar9Q) ([eller på GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Hjulene du holder SELECT for |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Øjeblik | `AUDIO`-fil | Sonys lyd, fra din egen PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 er en PS2-frontend i én enkelt `.elf`: en nedrivning og genopbygning af [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (Open PS2 Loader-forken), med sit eget udseende, startere, filbrowser og gemmeværktøjer. For den bredeste kompatibilitet understøtter den rickgaisers [Neutrino](https://github.com/rickgaiser/neutrino/releases) som anden spilkerne, og krHACKens [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) og Gageformers [Ember](https://github.com/Gageformer/Ember/releases) til PS1-spil: hent dem via de links, læg dem på dit drev, og RIPPS2 finder dem. Kun BIBLE, bootloaderen, ligger inde i `.elf`-filen. Glastårne står bag dine spil og kredsløbsformationer bag dine filer, alt sammen tegnet live af PS2'en."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

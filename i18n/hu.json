@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **MMCE-kártyák**: [sd2psXtd](https://sd2psxtd.github.io/) firmware egy SD2PSX-en, például a [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware) kártyán, amelyet a [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce) olvas: játékok, VMC-k és beállítások a kártya SD-jén. **Tartsd naprakészen a firmware-t** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Egy játék tömörítéséhez a kártyán sd2psXtd 1.4.0 vagy újabb kell (a kész lemezképet a helyére nevezi át); a RIPPS2 először a kártyát kérdezi, így régebbi firmware esetén ezt még azelőtt megtudod, hogy bármi elindulna, és ott nem lehet tömöríteni. A kártya nem tudja jelezni a szabad helyét, így még 1.4.0 mellett sincs helyellenőrzés tömörítés előtt: hagyj helyet a játéknak és a ZSO-jának egymás mellett (ha a kártya megtelik, a munka leáll, és eltávolítja, amit írt)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "A RIPPS2 egy PS2-es kezelőfelület egyetlen `.elf` fájlban: a [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (az Open PS2 Loader forkja) szétszedése és újraépítése, rickgaiser [Neutrinójával](https://github.com/rickgaiser/neutrino) második játékmagként, saját kinézettel, indítókkal, fájlböngészővel és mentéskezelő eszközökkel. Üvegtornyok állnak a játékaid mögött, keringő alakzatok a fájljaid mögött, és mindezt élőben rajzolja a PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [A v1.1.4 kerekes Shortja](https://youtube.com/shorts/iQqR9lsar9Q) ([vagy GitHubon](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | A kerekek, amelyekért SELECT-et nyomva tartasz |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Pillanat | `AUDIO` fájl | A Sony hangja, a saját PS2-dből (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "A RIPPS2 egy PS2-es kezelőfelület egyetlen `.elf` fájlban: a [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (az Open PS2 Loader forkja) szétszedése és újraépítése, saját kinézettel, indítókkal, fájlböngészővel és mentéskezelő eszközökkel. A legszélesebb kompatibilitásért támogatja rickgaiser [Neutrino](https://github.com/rickgaiser/neutrino/releases) magját második játékmagként, valamint krHACKen [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) és Gageformer [Ember](https://github.com/Gageformer/Ember/releases) programját a PS1-es játékokhoz: töltsd le őket ezekről a linkekről, tedd a meghajtódra, és a RIPPS2 megtalálja őket. Az `.elf` fájlban csak a BIBLE, a rendszerbetöltő utazik. Üvegtornyok állnak a játékaid mögött, keringő alakzatok a fájljaid mögött, és mindezt élőben rajzolja a PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

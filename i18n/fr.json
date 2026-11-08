@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **Cartes MMCE** : le firmware [sd2psXtd](https://sd2psxtd.github.io/) sur un SD2PSX, comme la carte [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware), lue via [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce) : jeux, VMC et réglages sur la carte SD. **Gardez le firmware à jour** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Compresser un jeu sur la carte demande sd2psXtd 1.4.0 ou plus récent (il renomme l'image terminée à sa place) ; RIPPS2 interroge d'abord la carte, donc avec un ancien firmware vous êtes prévenu avant que quoi que ce soit commence et la compression y est impossible. La carte ne peut pas indiquer son espace libre, donc même en 1.4.0 il n'y a pas de vérification de place avant de compresser : laissez de la place pour le jeu et sa ZSO côte à côte (si la carte se remplit, le travail s'arrête et supprime ce qu'il a écrit)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 est un front end PS2 en un seul `.elf` : un démontage et une reconstruction de [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (le fork d'Open PS2 Loader), avec le [Neutrino](https://github.com/rickgaiser/neutrino) de rickgaiser comme second moteur de jeux, et son propre look, ses lanceurs, son explorateur de fichiers et ses outils de sauvegarde. Des tours de verre se dressent derrière vos jeux et des formations en orbite derrière vos fichiers, le tout dessiné en direct par la PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Le Short des roues de la v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([ou sur GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Les roues qu'on ouvre en maintenant SELECT |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Moment | Fichier `AUDIO` | Le son de Sony, depuis votre propre PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 est un front end PS2 en un seul `.elf` : un démontage et une reconstruction de [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (le fork d'Open PS2 Loader), avec son propre look, ses lanceurs, son explorateur de fichiers et ses outils de sauvegarde. Pour la plus large compatibilité, il prend en charge le [Neutrino](https://github.com/rickgaiser/neutrino/releases) de rickgaiser comme second moteur de jeux, ainsi que le [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) de krHACKen et l'[Ember](https://github.com/Gageformer/Ember/releases) de Gageformer pour les jeux PS1 : récupérez-les via ces liens, placez-les sur votre disque et RIPPS2 les trouve. Seul BIBLE, le chargeur de démarrage, voyage dans le `.elf`. Des tours de verre se dressent derrière vos jeux et des formations en orbite derrière vos fichiers, le tout dessiné en direct par la PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

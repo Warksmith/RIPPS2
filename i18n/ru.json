@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **Карты MMCE**: прошивка [sd2psXtd](https://sd2psxtd.github.io/) на SD2PSX, например на карте [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware), читаемые через [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): игры, VMC и настройки на SD-карте. **Держи прошивку обновлённой** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Для сжатия игры на карте нужна sd2psXtd 1.4.0 или новее (она переименовывает готовый образ на место); RIPPS2 сначала спрашивает карту, так что со старой прошивкой ты узнаешь об этом до того, как что-то начнётся, и сжимать там нельзя. Карта не умеет сообщать свободное место, поэтому даже на 1.4.0 перед сжатием место не проверяется: оставь место для игры и её ZSO рядом (если карта заполнится, работа остановится и удалит то, что успела записать)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 представляет собой оболочку для PS2 в одном `.elf`. Это разборка и пересборка [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (форка Open PS2 Loader), с [Neutrino](https://github.com/rickgaiser/neutrino) от rickgaiser в роли второго игрового ядра и со своим внешним видом, загрузчиками, файловым браузером и инструментами для сохранений. За твоими играми стоят стеклянные башни, а за файлами стоят орбитальные формации, и всё это рисует PS2 в реальном времени."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Short про колёса v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([или на GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Колёса, ради которых зажимают SELECT |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Момент | Файл в `AUDIO` | Звук Sony из твоей собственной PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 представляет собой оболочку для PS2 в одном `.elf`. Это разборка и пересборка [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (форка Open PS2 Loader) со своим внешним видом, загрузчиками, файловым браузером и инструментами для сохранений. Для самой широкой совместимости она поддерживает [Neutrino](https://github.com/rickgaiser/neutrino/releases) от rickgaiser как второе игровое ядро, а также [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) от krHACKen и [Ember](https://github.com/Gageformer/Ember/releases) от Gageformer для игр PS1: скачай их по этим ссылкам, положи на свой накопитель, и RIPPS2 их найдёт. Внутри `.elf` есть только BIBLE, загрузчик. За твоими играми стоят стеклянные башни, а за файлами стоят орбитальные формации, и всё это рисует PS2 в реальном времени."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

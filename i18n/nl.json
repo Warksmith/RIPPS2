@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **MMCE-kaarten**: [sd2psXtd](https://sd2psxtd.github.io/)-firmware op een SD2PSX, zoals de [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware)-kaart, gelezen via [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): games, VMC's en instellingen op de SD van de kaart. **Houd de firmware bij** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Een game op de kaart comprimeren vereist sd2psXtd 1.4.0 of nieuwer (het hernoemt de klare image naar zijn plek); RIPPS2 vraagt het eerst aan de kaart, dus bij oudere firmware krijg je dat te horen voordat er iets begint en kan er niet gecomprimeerd worden. De kaart kan zijn vrije ruimte niet melden, dus ook op 1.4.0 is er geen ruimtecontrole vóór het comprimeren: laat ruimte voor de game en zijn ZSO naast elkaar (raakt de kaart vol, dan stopt het werk en verwijdert het wat het schreef)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 is een PS2-frontend in één `.elf`: een afbraak en herbouw van [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (de Open PS2 Loader-fork), met rickgaisers [Neutrino](https://github.com/rickgaiser/neutrino) als tweede gamekern, en met een eigen look, starters, bestandsbrowser en savetools. Glazen torens staan achter je games en baanformaties achter je bestanden, allemaal live getekend door de PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [De v1.1.4-wielen-Short](https://youtube.com/shorts/iQqR9lsar9Q) ([of op GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | De wielen die je opent door SELECT vast te houden |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Moment | `AUDIO`-bestand | Het geluid van Sony, uit je eigen PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 is een PS2-frontend in één `.elf`: een afbraak en herbouw van [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (de Open PS2 Loader-fork), met een eigen look, starters, bestandsbrowser en savetools. Voor de breedste compatibiliteit ondersteunt het rickgaisers [Neutrino](https://github.com/rickgaiser/neutrino/releases) als tweede gamekern, en krHACKens [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) en Gageformers [Ember](https://github.com/Gageformer/Ember/releases) voor PS1-games: haal ze via die links, zet ze op je schijf en RIPPS2 vindt ze. Alleen BIBLE, de bootloader, zit in de `.elf`. Glazen torens staan achter je games en baanformaties achter je bestanden, allemaal live getekend door de PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

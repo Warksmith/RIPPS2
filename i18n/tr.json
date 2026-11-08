@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **MMCE kartları**: bir SD2PSX üzerinde [sd2psXtd](https://sd2psxtd.github.io/) yazılımı, örneğin [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware) kartı, [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce) üzerinden okunur: oyunlar, VMC'ler ve ayarlar kartın SD'sinde. **Yazılımı güncel tut** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Kart üzerinde bir oyunu sıkıştırmak sd2psXtd 1.4.0 ya da daha yenisini gerektirir (biten kalıbı yerine yeniden adlandırır); RIPPS2 önce karta sorar, böylece eski yazılımda bunu bir şey başlamadan önce öğrenirsin ve orada sıkıştırma yapılamaz. Kart boş alanını bildiremez, bu yüzden 1.4.0'da bile sıkıştırmadan önce yer denetimi yoktur: oyun ve ZSO'su için yan yana yer bırak (kart dolarsa iş durur ve yazdıklarını kaldırır)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 tek bir `.elf` içinde bir PS2 ön yüzüdür: [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader)'in (Open PS2 Loader fork'u) sökülüp yeniden kurulmuş hâli; ikinci oyun çekirdeği olarak rickgaiser'ın [Neutrino](https://github.com/rickgaiser/neutrino)'su var, kendi görünümü, başlatıcıları, dosya tarayıcısı ve kayıt araçlarıyla. Oyunlarının arkasında cam kuleler, dosyalarının arkasında yörünge oluşumları durur ve hepsini PS2 canlı olarak çizer."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [v1.1.4 çark Short'u](https://youtube.com/shorts/iQqR9lsar9Q) ([ya da GitHub'da](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | SELECT'i basılı tutarak açtığın çarklar |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | An | `AUDIO` dosyası | Sony'nin sesi, kendi PS2'nden (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 tek bir `.elf` içinde bir PS2 ön yüzüdür: [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader)'in (Open PS2 Loader fork'u) sökülüp yeniden kurulmuş hâli, kendi görünümü, başlatıcıları, dosya tarayıcısı ve kayıt araçlarıyla. En geniş uyumluluk için ikinci oyun çekirdeği olarak rickgaiser'ın [Neutrino](https://github.com/rickgaiser/neutrino/releases)'sunu, PS1 oyunları için de krHACKen'in [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/)'ını ve Gageformer'ın [Ember](https://github.com/Gageformer/Ember/releases)'ını destekler: bunları o bağlantılardan indir, sürücüne koy, RIPPS2 onları bulur. `.elf` içinde yalnızca önyükleyici BIBLE gelir. Oyunlarının arkasında cam kuleler, dosyalarının arkasında yörünge oluşumları durur ve hepsini PS2 canlı olarak çizer."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

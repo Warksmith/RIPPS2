@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **MMCE kartice**: firmware [sd2psXtd](https://sd2psxtd.github.io/) na SD2PSX-u, poput kartice [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware), čita se kroz [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): igre, VMC-ovi i postavke na SD kartici. **Drži firmware ažurnim** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Kompresija igre na kartici traži sd2psXtd 1.4.0 ili noviji (preimenuje gotovu sliku na njezino mjesto); RIPPS2 prvo pita karticu, pa sa starijim firmwareom to saznaš prije nego išta počne i tamo se ne može komprimirati. Kartica ne može javiti svoj slobodni prostor, pa ni na 1.4.0 nema provjere prostora prije kompresije: ostavi mjesta za igru i njezin ZSO jedno pokraj drugog (ako se kartica napuni, posao se zaustavlja i uklanja ono što je zapisao)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 je PS2 front end u jednoj `.elf` datoteci: rastavljanje i ponovna izgradnja [RiptOPL-a](https://github.com/NathanNeurotic/Open-PS2-Loader) (forka Open PS2 Loadera), s rickgaiserovim [Neutrinom](https://github.com/rickgaiser/neutrino) kao drugom jezgrom za igre, te s vlastitim izgledom, pokretačima, preglednikom datoteka i alatima za spremanja. Staklene kule stoje iza tvojih igara, a orbitalne formacije iza tvojih datoteka, sve uživo crta PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Short s kotačima za v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([ili na GitHubu](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Kotači za koje držiš SELECT |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Trenutak | Datoteka u `AUDIO` | Sonyjev zvuk, s tvoje vlastite PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 je PS2 front end u jednoj `.elf` datoteci: rastavljanje i ponovna izgradnja [RiptOPL-a](https://github.com/NathanNeurotic/Open-PS2-Loader) (forka Open PS2 Loadera), s vlastitim izgledom, pokretačima, preglednikom datoteka i alatima za spremanja. Za najširu kompatibilnost podržava rickgaiserov [Neutrino](https://github.com/rickgaiser/neutrino/releases) kao drugu jezgru za igre te krHACKenov [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) i Gageformerov [Ember](https://github.com/Gageformer/Ember/releases) za PS1 igre: preuzmi ih s tih poveznica, stavi ih na svoj disk i RIPPS2 će ih pronaći. Unutar `.elf` datoteke nalazi se samo BIBLE, boot loader. Staklene kule stoje iza tvojih igara, a orbitalne formacije iza tvojih datoteka, sve uživo crta PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

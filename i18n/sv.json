@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **MMCE-kort**: [sd2psXtd](https://sd2psxtd.github.io/)-firmware på en SD2PSX, som [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware)-kortet, läst via [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): spel, VMC:er och inställningar på kortets SD. **Håll firmwaren uppdaterad** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Att komprimera ett spel på kortet kräver sd2psXtd 1.4.0 eller nyare (den byter namn på den färdiga avbilden på plats); RIPPS2 frågar kortet först, så med äldre firmware får du veta det innan något börjar, och det går inte att komprimera där. Kortet kan inte rapportera sitt lediga utrymme, så inte ens på 1.4.0 görs någon utrymmeskontroll före komprimering: lämna plats för spelet och dess ZSO sida vid sida (blir kortet fullt stoppar arbetet och tar bort det som skrevs)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 är ett PS2-gränssnitt i en enda `.elf`: en nedmontering och ombyggnad av [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (Open PS2 Loader-forken), med rickgaisers [Neutrino](https://github.com/rickgaiser/neutrino) som andra spelkärna, och med eget utseende, startare, filbläddrare och sparverktyg. Glastorn står bakom dina spel och omloppsformationer bakom dina filer, allt ritat live av PS2:an."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Hjul-Shorten för v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([eller på GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Hjulen du håller SELECT för |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Ögonblick | `AUDIO`-fil | Sonys ljud, från din egen PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 är ett PS2-gränssnitt i en enda `.elf`: en nedmontering och ombyggnad av [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (Open PS2 Loader-forken), med eget utseende, startare, filbläddrare och sparverktyg. För bredast möjliga kompatibilitet stöder det rickgaisers [Neutrino](https://github.com/rickgaiser/neutrino/releases) som andra spelkärna, och krHACKens [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) och Gageformers [Ember](https://github.com/Gageformer/Ember/releases) för PS1-spel: hämta dem via de länkarna, lägg dem på din enhet så hittar RIPPS2 dem. Bara BIBLE, startladdaren, följer med i `.elf`-filen. Glastorn står bakom dina spel och omloppsformationer bakom dina filer, allt ritat live av PS2:an."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **Karty MMCE**: firmware [sd2psXtd](https://sd2psxtd.github.io/) v SD2PSX, jako je karta [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware), čtené přes [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): hry, VMC a nastavení na SD kartě. **Udržuj firmware aktuální** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Komprimace hry na kartě vyžaduje sd2psXtd 1.4.0 nebo novější (přejmenuje hotový obraz na jeho místo); RIPPS2 se nejdřív zeptá karty, takže se starším firmwarem se to dozvíš dřív, než cokoli začne, a komprimovat tam nejde. Karta neumí ohlásit své volné místo, takže ani na 1.4.0 se před komprimací místo nekontroluje: nech místo pro hru a její ZSO vedle sebe (pokud se karta zaplní, práce se zastaví a odstraní, co zapsala)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 je front end pro PS2 v jediném `.elf`: rozebrání a přestavba [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (forku Open PS2 Loaderu), s [Neutrinem](https://github.com/rickgaiser/neutrino) od rickgaisera jako druhým herním jádrem a s vlastním vzhledem, spouštěči, prohlížečem souborů a nástroji na uložené hry. Skleněné věže stojí za tvými hrami a orbitální formace za tvými soubory, vše kreslené naživo samotnou PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Short s koly k v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([nebo na GitHubu](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Kola, kvůli kterým držíš SELECT |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Okamžik | Soubor v `AUDIO` | Zvuk od Sony, z tvé vlastní PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 je front end pro PS2 v jediném `.elf`: rozebrání a přestavba [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (forku Open PS2 Loaderu) s vlastním vzhledem, spouštěči, prohlížečem souborů a nástroji na uložené hry. Pro co nejširší kompatibilitu podporuje [Neutrino](https://github.com/rickgaiser/neutrino/releases) od rickgaisera jako druhé herní jádro a [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) od krHACKena a [Ember](https://github.com/Gageformer/Ember/releases) od Gageformera pro hry z PS1: stáhni je z těchto odkazů, dej je na svůj disk a RIPPS2 je najde. Uvnitř `.elf` je jen BIBLE, zavaděč. Skleněné věže stojí za tvými hrami a orbitální formace za tvými soubory, vše kreslené naživo samotnou PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

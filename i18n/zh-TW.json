@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **MMCE 卡**：SD2PSX 上的 [sd2psXtd](https://sd2psxtd.github.io/) 韌體，例如 [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware) 卡，透過 [mmceman](https://github.com/ps2-mmce/mmceman)（ps2-mmce）讀取：遊戲、VMC 和設定都在卡的 SD 上。**請保持韌體為最新** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download))。在卡上壓縮遊戲需要 sd2psXtd 1.4.0 或更新版本（它透過重新命名把完成的映象放到位）；RIPPS2 會先詢問卡，所以使用舊韌體時你會在開始任何操作前得知，並且無法在那裡壓縮。卡無法報告剩餘空間，所以即使是 1.4.0 也不會在壓縮前檢查空間：請為遊戲和它的 ZSO 並存留出空間（如果卡寫滿，任務會停止並刪除已寫入的內容）。"
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 是裝在單個 `.elf` 中的 PS2 前端：把 [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader)（Open PS2 Loader 的分支）拆開重組，以 rickgaiser 的 [Neutrino](https://github.com/rickgaiser/neutrino) 作為第二個遊戲核心，並擁有自己的外觀、啟動器、檔案瀏覽器和儲存工具。玻璃塔矗立在你的遊戲後面，軌道陣列排列在你的檔案後面，全部由 PS2 實時繪製。"
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [v1.1.4 轉輪短片](https://youtube.com/shorts/iQqR9lsar9Q)（[或在 GitHub 上](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)） | 1:10 | 按住 SELECT 出現的轉輪 |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | 時刻 | `AUDIO` 檔案 | Sony 的聲音，來自你自己的 PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 是裝在單個 `.elf` 中的 PS2 前端：把 [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader)（Open PS2 Loader 的分支）拆開重組，並擁有自己的外觀、啟動器、檔案瀏覽器和儲存工具。為了最廣泛的相容性，它支援 rickgaiser 的 [Neutrino](https://github.com/rickgaiser/neutrino/releases) 作為第二個遊戲核心，並支援 krHACKen 的 [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) 和 Gageformer 的 [Ember](https://github.com/Gageformer/Ember/releases) 執行 PS1 遊戲：從這些連結取得它們，放到你的硬碟上，RIPPS2 就會找到。`.elf` 裡只內建了開機程式 BIBLE。玻璃塔矗立在你的遊戲後面，軌道陣列排列在你的檔案後面，全部由 PS2 實時繪製。"
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

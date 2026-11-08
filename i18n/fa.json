@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **کارت‌های MMCE**: میان‌افزار [sd2psXtd](https://sd2psxtd.github.io/) روی یک SD2PSX، مانند کارت [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware)، که از طریق [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce) خوانده می‌شود: بازی‌ها، VMCها و تنظیمات روی SD کارت. **میان‌افزار را به‌روز نگه دار** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). فشرده‌سازی یک بازی روی کارت به sd2psXtd 1.4.0 یا جدیدتر نیاز دارد (ایمیج تمام‌شده را با تغییر نام سر جایش می‌گذارد)؛ RIPPS2 اول از کارت می‌پرسد، پس با میان‌افزار قدیمی‌تر پیش از شروع هر کاری باخبر می‌شوی و آنجا نمی‌شود فشرده کرد. کارت نمی‌تواند فضای آزادش را گزارش دهد، پس حتی روی 1.4.0 هم پیش از فشرده‌سازی بررسی فضا نیست: برای بازی و ZSO آن کنار هم جا بگذار (اگر کارت پر شود، کار متوقف می‌شود و آنچه نوشته را پاک می‌کند)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 یک فرانت‌اند PS2 در یک `.elf` تنهاست: باز کردن و از نو ساختن [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (فورک Open PS2 Loader)، با [Neutrino](https://github.com/rickgaiser/neutrino) ساختهٔ rickgaiser به‌عنوان هستهٔ دوم بازی، و با ظاهر، اجراکننده‌ها، مرورگر فایل و ابزارهای ذخیره‌سازی خودش. برج‌های شیشه‌ای پشت بازی‌هایت می‌ایستند و آرایش‌های مداری پشت فایل‌هایت، و همه را PS2 زنده می‌کشد."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [شورت چرخ‌های v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([یا در GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | چرخ‌هایی که برایشان SELECT را نگه می‌داری |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | لحظه | فایل `AUDIO` | صدای Sony، از PS2 خودت (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 یک فرانت‌اند PS2 در یک `.elf` تنهاست: باز کردن و از نو ساختن [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (فورک Open PS2 Loader)، با ظاهر، اجراکننده‌ها، مرورگر فایل و ابزارهای ذخیره‌سازی خودش. برای بیشترین سازگاری از [Neutrino](https://github.com/rickgaiser/neutrino/releases) ساختهٔ rickgaiser به‌عنوان هستهٔ دوم بازی پشتیبانی می‌کند، و از [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) ساختهٔ krHACKen و [Ember](https://github.com/Gageformer/Ember/releases) ساختهٔ Gageformer برای بازی‌های PS1: آن‌ها را از همین پیوندها بگیرید، روی درایو خود بگذارید و RIPPS2 پیدایشان می‌کند. درون `.elf` فقط BIBLE، بوت‌لودر، می‌آید. برج‌های شیشه‌ای پشت بازی‌هایت می‌ایستند و آرایش‌های مداری پشت فایل‌هایت، و همه را PS2 زنده می‌کشد."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

@@ -1,0 +1,20 @@
+Edit for RIPPS2's thread, post 428308 (the 1.3.9 "BIBLE, set up from RIPPS2" bump), brought up to v1.5.7. Replace the whole post with everything from the [CENTER] line.
+
+[CENTER][SPOILER="BIBLE's Settings in Manage"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/bible-settings.jpg[/IMG][/SPOILER]
+
+[SIZE=5][B]RIPPS2 v1.5.7 beta: BIBLE, set up from RIPPS2[/B][/SIZE]
+[URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2.elf[/URL] (2,780 KB)  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/latest']What's new[/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/blob/main/CHANGELOG.md']Changelog[/URL][/CENTER]
+
+[B]BIBLE has its own thread:[/B] [URL='https://www.psx-place.com/threads/bible.51524/']BIBLE, the boot loader RIPPS2 sets up[/URL], and [URL='https://akilluminati47.github.io/BIBLE/']its own website[/URL]. Its newest build, a060790, rides inside 1.5.7, signed by akilluminati47, and RIPPS2 sets it up by itself, no KELFBinder needed:
+
+[LIST]
+[*][B]Manage's BIBLE page[/B] (Settings > General > Boot Loader > Manage, with BIBLE on a card): Update BIBLE binds the new one over an older one in place, and every setting is a row with a tip on what it does: Background (your RIPPS2 sky, or black), Sky Color with its own colour picker, Splash, Button Glyphs, Info Line, Power-on Wait, Boot Sound, Stop Disc at Launch, the tray and Game ID rows, Video Mode and Widescreen. Each changes one line of BIBLE's settings file and keeps your notes.
+[*][B]Launch Keys and BOOT LOCK[/B] on the same page: what each button starts at power on, chosen with the Memory Files browser, and BOOT LOCK to have BIBLE start RIPPS2 first, with a game's EXIT coming back the same way.
+[*][B]One card for every region[/B]: BIBLE reads its settings from this console's own system folder first, then the other regions', so one settings file and one boot sound serve them all. Other Regions puts BIBLE in the other regions' folders too.
+[*][B]A faster start[/B]: Power-on Wait 0 ms drops the countdown, and Stop Disc at Launch Off stops BIBLE waiting on the disc drive: 3.3 s off a PCSX2 run, with a disc in the tray still spinning into RIPPS2. The boot sound (Boot Sound On, fast) sits beside BIBLE's settings and RIPPS2 reads it before any drive starts, about 0.8 s sooner than when BIBLE read it first. The race is in [URL='https://www.psx-place.com/threads/bible.51524/']BIBLE's thread[/URL].
+[*][B]No more stops on a missing file[/B]: when a path BIBLE is told to start is not there, it moves on to the next one.
+[*][B]Every older BIBLE is recognized[/B], and a plain BIBLE started by OpenTuna or FunTuna too, so the update is offered whatever installed it. On ROM 2.30 and newer, Manage says a bound BIBLE may not start at power on and still lets you try.
+[*]Tested on a SCPH-39001 with an SD2PSX: Manage bound BIBLE on the first try, it booted RIPPS2, and a missing path went on to the next.
+[/LIST]
+
+[B]Set up or update BIBLE wherever you use it[/B]: a genuine memory card (RIPPS2 on the card or USB), an SD2PSX or MemCard PRO 2, MX4SIO, or the internal HDD's boot area (Manage's first row: set up, update or restore BIBLE). So far only the SD2PSX has run on a real PS2, so the rest are wanted most, on PAL and Japanese consoles too. Tell us in [URL='https://www.psx-place.com/threads/bible.51524/']BIBLE's thread[/URL] or [URL='https://github.com/akilluminati47/RIPPS2/issues']open an issue[/URL].

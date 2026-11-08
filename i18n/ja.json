@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **MMCE カード**: SD2PSX 上の [sd2psXtd](https://sd2psxtd.github.io/) ファームウェア、たとえば [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware) カードを、[mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce) 経由で読みます: ゲーム、VMC、設定がカードの SD に。**ファームウェアは最新に保ってください** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download))。カード上のゲームの圧縮には sd2psXtd 1.4.0 以降が必要です (完成したイメージを改名で配置します)。RIPPS2 はまずカードに問い合わせるので、古いファームウェアでは何かを始める前にわかり、そこでは圧縮できません。カードは空き容量を報告できないので、1.4.0 でも圧縮前の容量確認はありません: ゲームとその ZSO が並んで入る余裕を残してください (カードがいっぱいになれば作業は止まり、書いたものを消します)。"
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 は単一の `.elf` に収まった PS2 フロントエンドです: [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (Open PS2 Loader のフォーク) を開いて組み直し、rickgaiser の [Neutrino](https://github.com/rickgaiser/neutrino) を 2 つ目のゲームコアとして使い、独自の見た目、ランチャー、ファイルブラウザー、ストレージツールを備えています。ガラスの塔がゲームの後ろに立ち、軌道の隊形がファイルの後ろに並び、すべて PS2 がリアルタイムで描きます。"
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [v1.1.4 ホイールのショート](https://youtube.com/shorts/iQqR9lsar9Q) ([GitHub 版](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | SELECT を押し続けて出るホイール |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | 瞬間 | `AUDIO` ファイル | Sony の音、自分の PS2 から (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 は単一の `.elf` に収まった PS2 フロントエンドです: [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (Open PS2 Loader のフォーク) を開いて組み直し、独自の見た目、ランチャー、ファイルブラウザー、ストレージツールを備えています。幅広い互換性のため、rickgaiser の [Neutrino](https://github.com/rickgaiser/neutrino/releases) を 2 つ目のゲームコアとして、krHACKen の [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) と Gageformer の [Ember](https://github.com/Gageformer/Ember/releases) を PS1 ゲーム用にサポートします: それぞれのリンクから入手してドライブに置けば、RIPPS2 が見つけます。`.elf` に入っているのはブートローダーの BIBLE だけです。ガラスの塔がゲームの後ろに立ち、軌道の隊形がファイルの後ろに並び、すべて PS2 がリアルタイムで描きます。"
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

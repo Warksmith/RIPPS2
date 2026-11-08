@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **ບັດ MMCE**: ເຟີມແວ [sd2psXtd](https://sd2psxtd.github.io/) ເທິງ SD2PSX, ເຊັ່ນບັດ [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware), ອ່ານຜ່ານ [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): ເກມ, VMC ແລະ ການຕັ້ງຄ່າເທິງ SD ຂອງບັດ. **ຮັກສາເຟີມແວໃຫ້ໃໝ່ສະເໝີ** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). ການບີບອັດເກມເທິງບັດຕ້ອງການ sd2psXtd 1.4.0 ຫຼື ໃໝ່ກວ່າ (ມັນວາງອິມເມຈທີ່ສຳເລັດແລ້ວເຂົ້າທີ່ດ້ວຍການປ່ຽນຊື່); RIPPS2 ຖາມບັດກ່ອນ, ດັ່ງນັ້ນກັບເຟີມແວເກົ່າເຈົ້າຈະຮູ້ກ່ອນເລີ່ມຫຍັງ, ແລະ ບີບອັດຢູ່ນັ້ນບໍ່ໄດ້. ບັດລາຍງານພື້ນທີ່ວ່າງຂອງມັນບໍ່ໄດ້, ດັ່ງນັ້ນແມ່ນແຕ່ໃນ 1.4.0 ກໍບໍ່ມີການກວດພື້ນທີ່ກ່ອນບີບອັດ: ເຫຼືອພື້ນທີ່ໃຫ້ເກມ ແລະ ZSO ຂອງມັນຢູ່ຂ້າງກັນ (ຖ້າບັດເຕັມ, ວຽກຈະຢຸດ ແລະ ລຶບສິ່ງທີ່ມັນຂຽນ)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 ແມ່ນໜ້າຈໍຫຼັກ PS2 ໃນ `.elf` ດຽວ: [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (ສາຂາຂອງ Open PS2 Loader) ທີ່ຖືກເປີດອອກ ແລະ ປະກອບຂຶ້ນໃໝ່, ມີ [Neutrino](https://github.com/rickgaiser/neutrino) ຂອງ rickgaiser ເປັນແກນເກມທີສອງ, ພ້ອມຮູບລັກ, ຕົວເປີດ, ຕົວທ່ອງໄຟລ໌ ແລະ ເຄື່ອງມືບ່ອນເກັບຂໍ້ມູນຂອງມັນເອງ. ຫໍຄອຍແກ້ວຢືນຢູ່ຫຼັງເກມຂອງເຈົ້າ, ຮູບແບບວົງໂຄຈອນຢູ່ຫຼັງໄຟລ໌ຂອງເຈົ້າ, ແລະ ທັງໝົດຖືກແຕ້ມສົດໂດຍ PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Short ວົງລໍ້ v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([ຫຼື ໃນ GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | ວົງລໍ້ທີ່ເຈົ້າກົດ SELECT ຄ້າງໄວ້ເພື່ອເປີດ |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | ຊ່ວງເວລາ | ໄຟລ໌ `AUDIO` | ສຽງ Sony, ຈາກ PS2 ຂອງເຈົ້າເອງ (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 ແມ່ນໜ້າຈໍຫຼັກ PS2 ໃນ `.elf` ດຽວ: [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (ສາຂາຂອງ Open PS2 Loader) ທີ່ຖືກເປີດອອກ ແລະ ປະກອບຂຶ້ນໃໝ່, ພ້ອມຮູບລັກ, ຕົວເປີດ, ຕົວທ່ອງໄຟລ໌ ແລະ ເຄື່ອງມືບ່ອນເກັບຂໍ້ມູນຂອງມັນເອງ. ເພື່ອຄວາມເຂົ້າກັນໄດ້ທີ່ກວ້າງທີ່ສຸດ ມັນຮອງຮັບ [Neutrino](https://github.com/rickgaiser/neutrino/releases) ຂອງ rickgaiser ເປັນແກນເກມທີສອງ, ແລະ [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) ຂອງ krHACKen ແລະ [Ember](https://github.com/Gageformer/Ember/releases) ຂອງ Gageformer ສຳລັບເກມ PS1: ດາວໂຫຼດຈາກລິ້ງເຫຼົ່ານັ້ນ, ວາງໄວ້ໃນໄດຣຟ໌ຂອງເຈົ້າ ແລະ RIPPS2 ຈະຊອກຫາພົບ. ພາຍໃນ `.elf` ມີພຽງ BIBLE, ຕົວໂຫຼດບູດ. ຫໍຄອຍແກ້ວຢືນຢູ່ຫຼັງເກມຂອງເຈົ້າ, ຮູບແບບວົງໂຄຈອນຢູ່ຫຼັງໄຟລ໌ຂອງເຈົ້າ, ແລະ ທັງໝົດຖືກແຕ້ມສົດໂດຍ PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

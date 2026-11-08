@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **Kartat MMCE**: firmware-i [sd2psXtd](https://sd2psxtd.github.io/) në një SD2PSX, si karta [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware), e lexuar përmes [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): lojëra, VMC dhe cilësime në SD-në e kartës. **Mbaje firmware-in të përditësuar** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Ngjeshja e një loje në kartë kërkon sd2psXtd 1.4.0 ose më të ri (riemërton imazhin e përfunduar në vendin e tij); RIPPS2 e pyet kartën fillimisht, kështu që me firmware më të vjetër e mëson para se të nisë diçka dhe aty nuk mund të ngjeshet. Karta nuk mund të raportojë hapësirën e lirë, kështu që edhe në 1.4.0 nuk ka kontroll hapësire para ngjeshjes: lër vend për lojën dhe ZSO-në e saj krah për krah (nëse karta mbushet, puna ndalon dhe heq atë që shkroi)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "RIPPS2 është një front end për PS2 në një `.elf` të vetëm: një çmontim dhe rindërtim i [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (fork-u i Open PS2 Loader), me [Neutrino](https://github.com/rickgaiser/neutrino) të rickgaiser si bërthamë e dytë lojërash, dhe me pamjen, nisësit, shfletuesin e skedarëve dhe mjetet e ruajtjeve të veta. Kulla xhami qëndrojnë pas lojërave të tua dhe formacione orbitale pas skedarëve të tu, të gjitha të vizatuara drejtpërdrejt nga PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [Short-i me rrotat e v1.1.4](https://youtube.com/shorts/iQqR9lsar9Q) ([ose në GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Rrotat për të cilat mban SELECT |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Çasti | Skedari në `AUDIO` | Tingulli i Sony, nga PS2-ja jote (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "RIPPS2 është një front end për PS2 në një `.elf` të vetëm: një çmontim dhe rindërtim i [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (fork-u i Open PS2 Loader), me pamjen, nisësit, shfletuesin e skedarëve dhe mjetet e ruajtjeve të veta. Për përputhshmërinë më të gjerë mbështet [Neutrino](https://github.com/rickgaiser/neutrino/releases) të rickgaiser si bërthamë të dytë lojërash, si dhe [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) të krHACKen dhe [Ember](https://github.com/Gageformer/Ember/releases) të Gageformer për lojërat PS1: shkarkoji nga ato lidhje, vendosi në diskun tënd dhe RIPPS2 i gjen. Brenda `.elf` vjen vetëm BIBLE, ngarkuesi i nisjes. Kulla xhami qëndrojnë pas lojërave të tua dhe formacione orbitale pas skedarëve të tu, të gjitha të vizatuara drejtpërdrejt nga PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",

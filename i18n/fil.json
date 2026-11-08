@@ -59,10 +59,6 @@
   "en": "1d0696b1b396",
   "t": "- **Mga MMCE card**: ang [sd2psXtd](https://sd2psxtd.github.io/) firmware sa SD2PSX, gaya ng [SD2PSXTD](https://github.com/LinkRetro/SD2PSXTD-Hardware) card, binabasa sa pamamagitan ng [mmceman](https://github.com/ps2-mmce/mmceman) (ps2-mmce): mga laro, VMC, at setting sa SD ng card. **Panatilihing bago ang firmware** ([sd2psxtd.github.io/download](https://sd2psxtd.github.io/download)). Kailangan ng sd2psXtd 1.4.0 o mas bago para mag-compress ng laro sa card (inilalagay nito ang tapos na image sa puwesto sa pamamagitan ng pagpapalit ng pangalan); nagtatanong muna ang RIPPS2 sa card, kaya sa mas lumang firmware malalaman mo bago magsimula ang anuman, at hindi ka makakapag-compress doon. Hindi kayang iulat ng card ang libre nitong espasyo, kaya kahit sa 1.4.0 walang pagsusuri ng espasyo bago mag-compress: mag-iwan ng puwang para magkatabi ang laro at ang ZSO nito (kung mapuno ang card, humihinto ang trabaho at binubura ang naisulat nito)."
  },
- "2027d346c0f8": {
-  "en": "2027d346c0f8",
-  "t": "Ang RIPPS2 ay isang PS2 front end sa iisang `.elf`: ang [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (isang fork ng Open PS2 Loader) na binuksan at binuo muli, kasama ang [Neutrino](https://github.com/rickgaiser/neutrino) ni rickgaiser bilang pangalawang game core, at may sarili nitong itsura, mga launcher, file browser, at mga storage tool. Nakatayo ang mga toreng salamin sa likod ng mga laro mo, nakahanay ang mga orbital formation sa likod ng mga file mo, at lahat ay iginuguhit nang live ng PS2."
- },
  "21fb04fdf89a": {
   "en": "21fb04fdf89a",
   "t": "| [v1.1.4 wheels Short](https://youtube.com/shorts/iQqR9lsar9Q) ([o sa GitHub](https://akilluminati47.github.io/RIPPS2/media/b114/ripps2-v114-wheels-short.mp4)) | 1:10 | Ang mga gulong na lumalabas kapag pinindot nang matagal ang SELECT |"
@@ -426,6 +422,10 @@
  "d94d1e65b49a": {
   "en": "d94d1e65b49a",
   "t": "| | Sandali | `AUDIO` file | Tunog ng Sony, mula sa sarili mong PS2 (Media Studio > Your BIOS) |"
+ },
+ "d9545baa32a6": {
+  "en": "d9545baa32a6",
+  "t": "Ang RIPPS2 ay isang PS2 front end sa iisang `.elf`: ang [RiptOPL](https://github.com/NathanNeurotic/Open-PS2-Loader) (isang fork ng Open PS2 Loader) na binuksan at binuo muli, at may sarili nitong itsura, mga launcher, file browser, at mga storage tool. Para sa pinakamalawak na compatibility, sinusuportahan nito ang [Neutrino](https://github.com/rickgaiser/neutrino/releases) ni rickgaiser bilang pangalawang game core, at ang [POPSTARTER](https://www.psx-place.com/resources/popstarter.683/) ni krHACKen at [Ember](https://github.com/Gageformer/Ember/releases) ni Gageformer para sa mga larong PS1: kunin ang mga ito sa mga link na iyon, ilagay sa iyong drive, at hahanapin ng RIPPS2. Ang BIBLE lang, ang boot loader, ang kasama sa loob ng `.elf`. Nakatayo ang mga toreng salamin sa likod ng mga laro mo, nakahanay ang mga orbital formation sa likod ng mga file mo, at lahat ay iginuguhit nang live ng PS2."
  },
  "da42e53699c3": {
   "en": "da42e53699c3",
