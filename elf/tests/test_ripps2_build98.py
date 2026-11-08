@@ -136,15 +136,21 @@ def ogg_stream(serial, pages=40, seed=7):
 if cc:
     src = snd[snd.index('#define OGG_HDR_MAX'):snd.index(SRC_READ)]
     src = src.replace('static int bgmSourceReopen(bgm_source_t *src);', '')
+    # build 156: the file read in pieces (paced on MMCE) and each piece's speed for DIAG.TXT, defined before the reopen
+    pieces = snd[snd.index('#define BGM_READ_PIECE'):snd.index('static int bgmSourceReopen(bgm_source_t *src)\n{')] if '#define BGM_READ_PIECE' in snd else ''
     neg, pos = ogg_stream(0x9234ABCD), ogg_stream(0x1234ABCD)
     prog = r'''#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #define BGM_REOPEN_TRIES 4
 typedef struct { FILE *f; long pos; long size; char path[256]; int fixSerial; unsigned char serial[4];
-                 unsigned char *cache; long cacheBase, cacheLen, cacheCap, cacheNext; int noCache; } bgm_source_t; /* build 99: the RAM pieces */
+                 unsigned char *cache; long cacheBase, cacheLen, cacheCap, cacheNext; int noCache;
+                 int paced; int pieces, notes; } bgm_source_t; /* build 99: the RAM pieces; build 156: paced, noted */
+static int DelayThread(int us) { (void)us; return 0; }
+static void ripps2Diag(const char *fmt, ...) { (void)fmt; }
 static int bgmSourceReopen(bgm_source_t *src) { (void)src; return 0; }
-''' + src + r'''
+''' + pieces + src + r'''
 int main(int argc, char **argv)
 {
     static unsigned char want[1 << 20], got[1 << 20];
