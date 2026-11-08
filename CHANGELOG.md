@@ -10,7 +10,8 @@ RiptOPL's menus or look.
   from ps2sdk (#936). Build 126 worked round it by writing one sector at a time; full-speed writes are back.
 - **Two IOP hangs in the CD stream emulation are gone** (RiptOPL #185, #924), and a game read that ends during streaming now gets the
   game's own callback.
-- **Games get 26 KB more IOP memory** back from the network stack and USB driver while they run.
+- **Network games get IOP memory back**: the network stack's pools are sized down while a game runs (RiptOPL's USB-driver half
+  of the same change stays out: it does not fit ee_core's room for its stack in RIPPS2).
 - **.hack//Infection:** its oversized IOP allocations get room to land on the OPL core.
 - **Art and covers:** each PNG keeps its own palette while the menu and the art worker load at the same time, so 8-bit art no longer
   borrows another image's colours. libpng refuses an image too big before it allocates for it.
