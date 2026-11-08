@@ -1,5 +1,21 @@
 # RIPPS2 changelog
 
+## Build 157 (not released): RiptOPL's backend fixes since our last merge
+
+Picked from RiptOPL (rebuild/main) on 11/08, backend only, as RIPPS2 takes them: drivers, the game cores, compatibility. Nothing of
+RiptOPL's menus or look.
+
+- **MX4SIO no longer leaves sectors unwritten.** When a transfer stopped part way, the MX4SIO driver began the rest again from the
+  first sector, so a game's save could lose its last sectors while reporting success. RIPPS2 now builds the driver in, with the fix
+  from ps2sdk (#936). Build 126 worked round it by writing one sector at a time; full-speed writes are back.
+- **Two IOP hangs in the CD stream emulation are gone** (RiptOPL #185, #924), and a game read that ends during streaming now gets the
+  game's own callback.
+- **Games get 26 KB more IOP memory** back from the network stack and USB driver while they run.
+- **.hack//Infection:** its oversized IOP allocations get room to land on the OPL core.
+- **Art and covers:** each PNG keeps its own palette while the menu and the art worker load at the same time, so 8-bit art no longer
+  borrows another image's colours. libpng refuses an image too big before it allocates for it.
+- An app's menu no longer crashes when the app list is read again under it; the HD Pro's driver takes its lock correctly.
+
 ## Build 156 (not released)
 
 From the user's console run on 11/08: a ripped CD track on the SD2PSX, and the page it left behind.

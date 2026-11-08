@@ -1,0 +1,5253 @@
+diff --git a/.clang-format-ignore b/.clang-format-ignore
+index cdcdc103..d6ddaeb9 100644
+--- a/.clang-format-ignore
++++ b/.clang-format-ignore
+@@ -6,6 +6,7 @@
+ ./src/md5.c
+ ./include/md5.h
+ ./modules/network/smbman-ra
++./modules/mx4sio_bd
+ ./modules/usb/usbd-ra
+ ./modules/bdmassault
+ ./third_party/mbedtls
+diff --git a/Makefile b/Makefile
+index 49a2fd7f..be7c5469 100644
+--- a/Makefile
++++ b/Makefile
+@@ -572,6 +572,7 @@ clean:	download_lwNBD
+ 	$(MAKE) -C modules/network/httpclient clean
+ 	echo " -bdm"
+ 	$(MAKE) -C modules/bdm clean
++	$(MAKE) -C modules/mx4sio_bd clean
+ 	echo " -IEEE1394_bd"
+ 	$(MAKE) -C modules/ilink/IEEE1394_bd clean
+ 	echo " -atad (ata_bd)"
+@@ -915,6 +916,16 @@ modules/pademu/usb_pademu.irx: modules/pademu
+ $(EE_ASM_DIR)usb_pademu.c: modules/pademu/usb_pademu.irx
+ 	$(BIN2C) $< $@ $(*F)_irx
+ 
++# Always enter the driver sub-make, including after a header or build-variant change.
++.PHONY: mx4sio-submake
++mx4sio-submake:
++
++modules/mx4sio_bd/mx4sio_bd.irx: mx4sio-submake
++	$(MAKE) -C modules/mx4sio_bd MINI=0
++
++modules/mx4sio_bd/mx4sio_bd_mini.irx: mx4sio-submake
++	$(MAKE) -C modules/mx4sio_bd MINI=1
++
+ # FORK-VENDORED Block Device Manager (modules/bdm, see its ORIGIN.txt): ps2sdk's bdm + libbdm with the
+ # block-cache refill fix. Always enter the sub-make so an edited source rebuilds the IRX.
+ .PHONY: bdm-submake
+@@ -953,7 +964,7 @@ $(EE_ASM_DIR)usbmass_bd.c: $(PS2SDK)/iop/irx/usbmass_bd.irx | $(EE_ASM_DIR)
+ $(EE_ASM_DIR)IEEE1394_bd.c: modules/ilink/IEEE1394_bd/IEEE1394_bd.irx | $(EE_ASM_DIR)
+ 	$(BIN2C) $< $@ $(*F)_irx
+ 
+-$(EE_ASM_DIR)mx4sio_bd.c: $(PS2SDK)/iop/irx/mx4sio_bd.irx | $(EE_ASM_DIR)
++$(EE_ASM_DIR)mx4sio_bd.c: modules/mx4sio_bd/mx4sio_bd.irx | $(EE_ASM_DIR)
+ 	$(BIN2C) $< $@ $(*F)_irx
+ else
+ # block device drivers without printf's
+@@ -963,7 +974,7 @@ $(EE_ASM_DIR)usbmass_bd.c: $(PS2SDK)/iop/irx/usbmass_bd_mini.irx | $(EE_ASM_DIR)
+ $(EE_ASM_DIR)IEEE1394_bd.c: modules/ilink/IEEE1394_bd/IEEE1394_bd_mini.irx | $(EE_ASM_DIR)
+ 	$(BIN2C) $< $@ $(*F)_irx
+ 
+-$(EE_ASM_DIR)mx4sio_bd.c: $(PS2SDK)/iop/irx/mx4sio_bd_mini.irx | $(EE_ASM_DIR)
++$(EE_ASM_DIR)mx4sio_bd.c: modules/mx4sio_bd/mx4sio_bd_mini.irx | $(EE_ASM_DIR)
+ 	$(BIN2C) $< $@ $(*F)_irx
+ endif
+ 
+diff --git a/ee_core/Makefile b/ee_core/Makefile
+index 66eb7428..387d5798 100644
+--- a/ee_core/Makefile
++++ b/ee_core/Makefile
+@@ -76,7 +76,7 @@ endif
+ # In-game freeze report, forwarded from the top Makefile's INGAMEDIAG=1 (the FREEZEDIAG flavour).
+ # Run make clean when switching it: padhook.o and iopmgr.o change with it.
+ ifeq ($(INGAMEDIAG),1)
+-EE_OBJS += freeze_diag.o
++EE_OBJS += freeze_diag.o freeze_diag_screen.o
+ EE_CFLAGS += -DINGAMEDIAG
+ endif
+ 
+diff --git a/ee_core/include/freeze_diag_core.h b/ee_core/include/freeze_diag_core.h
+index 4a53b6e8..91111a1b 100644
+--- a/ee_core/include/freeze_diag_core.h
++++ b/ee_core/include/freeze_diag_core.h
+@@ -1,6 +1,7 @@
+ /*
+   In-game freeze report (INGAMEDIAG flavour only). Called from the IGR path in padhook.c:
+-    FreezeDiag_Begin     combo seen, IGR worker at priority 0, sampler has suspended game threads
++    FreezeDiag_Begin     combo seen, IGR worker at priority 0, sampler has suspended game threads; then the
++                         report is drawn on the TV (freeze_diag_screen.c), before anything asks the IOP
+     FreezeDiag_FetchAndShutdown  replaces oplIGRShutdown(0): fetches the IOP's record, then sends
+                                  the shutdown with a deadline (skipped if the IOP did not answer)
+     FreezeDiag_Write     after the IGR IOP reboot; freezediag.irx writes mc0:/RIPTFRZ.TXT
+@@ -14,7 +15,7 @@
+ extern unsigned int g_freeze_diag_polls;
+ extern unsigned int g_freeze_diag_reset_failures;
+ 
+-void FreezeDiag_Begin(unsigned int libpad, unsigned int pad_state, unsigned int pad_frame);
++void FreezeDiag_Begin(unsigned int libpad, unsigned int pad_state, unsigned int pad_frame, unsigned int trigger);
+ void FreezeDiag_FetchAndShutdown(void);
+ void FreezeDiag_Write(void);
+ 
+diff --git a/ee_core/include/freeze_diag_report.h b/ee_core/include/freeze_diag_report.h
+index c262292b..1f7db41d 100644
+--- a/ee_core/include/freeze_diag_report.h
++++ b/ee_core/include/freeze_diag_report.h
+@@ -9,6 +9,7 @@
+ #define FREEZE_DIAG_REPORT_H
+ 
+ #include "../../modules/iopcore/common/freeze_diag.h"
++#include "../../modules/iopcore/common/heap_diag.h"
+ 
+ #define FREEZE_DIAG_MAX_THREADS 16
+ 
+@@ -28,6 +29,13 @@ enum {
+     FREEZE_DIAG_SHUTDOWN_SKIPPED, // not sent: the IOP did not answer the report request
+ };
+ 
++// What took the report.
++enum {
++    FREEZE_DIAG_TRIGGER_COMBO = 0,
++    FREEZE_DIAG_TRIGGER_POWER, // the power button, pressed once or twice
++    FREEZE_DIAG_TRIGGER_STALL, // the pad data stopped (padhook.c's watchdog): the IOP stopped sending it
++};
++
+ typedef struct freeze_diag_thread
+ {
+     unsigned int id;
+@@ -46,6 +54,8 @@ typedef struct freeze_diag_report
+     unsigned int compat;
+     unsigned int cheats;
+     unsigned int gsm;
++    unsigned int pademu;
++    unsigned int trigger; // FREEZE_DIAG_TRIGGER_*
+     unsigned int iop_resets;
+     unsigned int iop_reset_failures;
+     unsigned int igr_polls;
+@@ -65,4 +75,7 @@ typedef struct freeze_diag_report
+ // the number of characters written.
+ int freeze_diag_format(const freeze_diag_report_t *r, const char *build, char *out, int cap);
+ 
++// Writes the IOP heap part of the report (heap_diag.h) the same way.
++int freeze_diag_format_heap(const heap_diag_snapshot_t *h, char *out, int cap);
++
+ #endif
+diff --git a/ee_core/include/freeze_diag_screen.h b/ee_core/include/freeze_diag_screen.h
+new file mode 100644
+index 00000000..27e5f133
+--- /dev/null
++++ b/ee_core/include/freeze_diag_screen.h
+@@ -0,0 +1,39 @@
++/*
++  In-game freeze report on the TV (INGAMEDIAG flavour only): see ee_core/src/freeze_diag_screen.c. The page composer
++  is plain C, tested on the host (ee_core/tests/test_freeze_diag_screen.c).
++*/
++
++#ifndef FREEZE_DIAG_SCREEN_H
++#define FREEZE_DIAG_SCREEN_H
++
++#include "freeze_diag_report.h"
++
++#define FDS_CHARS 49 // 53 cells across 640 pixels, two kept clear on each side
++#define FDS_LINES 26 // 28 rows down 448 lines, one kept clear at the top and bottom
++
++// A run of 0xFF this long after a block is shown as an overrun (as the memory-card report marks it).
++#define FDS_OVERRUN_MIN 64
++
++enum {
++    FDS_C_TEXT = 0,
++    FDS_C_TITLE,
++    FDS_C_WARN,
++    FDS_C_DIM,
++    FDS_C_COUNT,
++};
++
++typedef struct fds_page
++{
++    char text[FDS_LINES][FDS_CHARS + 1];
++    unsigned char colour[FDS_LINES];
++} fds_page_t;
++
++// The page as text. saving: the footer says the memory-card report is being written.
++void freeze_diag_screen_compose(const freeze_diag_report_t *r, const heap_diag_snapshot_t *h, fds_page_t *p, int saving);
++
++#ifndef FREEZE_DIAG_SCREEN_HOST_TEST
++// Draws the page in a frame of its own and waits for a tap of the power button.
++void FreezeDiag_Screen(const freeze_diag_report_t *r, const heap_diag_snapshot_t *h);
++#endif
++
++#endif
+diff --git a/ee_core/src/freeze_diag.c b/ee_core/src/freeze_diag.c
+index b5599367..be60794d 100644
+--- a/ee_core/src/freeze_diag.c
++++ b/ee_core/src/freeze_diag.c
+@@ -1,10 +1,11 @@
+ /*
+   In-game freeze report (INGAMEDIAG flavour only).
+ 
+-  When a game freezes, the player presses the IGR combo. If the IGR thread still gets to run,
+-  this records what the console was doing -- the game's threads, the IOP's disc and VMC
+-  activity -- and writes it to the memory card as plain text, then lets IGR exit as usual.
+-  An unresponsive combo must be reported separately; it does not prove an EE freeze.
++  When a game freezes, the player presses the IGR combo or the power button, or the pad data
++  stops (padhook.c's watchdog: the IOP stopped sending it). If the IGR thread still gets to run,
++  this records what the console was doing -- the game's threads, the IOP's heap, disc and VMC
++  activity -- draws it on the TV (freeze_diag_screen.c), then writes it to the memory card as
++  plain text and lets IGR exit as usual. The TV page needs nothing from the IOP; the file does.
+ 
+   Nothing here exists in other builds: the whole file is only compiled with INGAMEDIAG=1.
+ */
+@@ -15,6 +16,7 @@
+ #include "modmgr.h"
+ #include "freeze_diag_core.h"
+ #include "freeze_diag_report.h"
++#include "freeze_diag_screen.h"
+ #include "cd_igr_rpc.h"
+ 
+ #include <iopcontrol.h>
+@@ -23,6 +25,14 @@
+ 
+ #define IGR_RPC_SERVER 0x80000598
+ 
++// IOP RAM as the EE sees it (uncached). Readable even when the IOP itself is stuck.
++#define IOP_RAM_EE 0xBC000000
++
++// The IOP heap snapshot sits in the game's memory, which IGR is about to drop: ram84 has no room
++// for it (see ee_core/linkfile), and module storage must stay intact for the reboot that writes
++// the report. Below 16 MB nothing of ee_core's or the launcher's lives there.
++#define HEAP_SNAPSHOT ((heap_diag_snapshot_t *)0x01000000)
++
+ // The EE count register runs at the CPU clock (294.912 MHz).
+ #define EE_TICKS_PER_MS           294912
+ // How long to wait for the IOP before declaring it stuck.
+@@ -54,7 +64,43 @@ static int budget_spent(u32 start)
+     return (u32)(ee_ticks() - start) >= (u32)FREEZE_DIAG_IOP_BUDGET_MS * EE_TICKS_PER_MS;
+ }
+ 
+-void FreezeDiag_Begin(unsigned int libpad, unsigned int pad_state, unsigned int pad_frame)
++// Find CDVDMAN's heap record (heap_diag.h) in IOP RAM and copy it, with the 0xFF run after each
++// live block. Straight memory reads: it needs nothing from the IOP, so it also works when the IOP
++// is stuck and the RPC below gets no answer.
++static void heap_snapshot(void)
++{
++    heap_diag_snapshot_t *h = HEAP_SNAPSHOT;
++    volatile const u32 *rec = NULL;
++    unsigned int a, i;
++
++    h->found = 0;
++    for (a = 0x800; a <= HEAP_DIAG_IOP_RAM_SIZE - HEAP_DIAG_IOP_SIZE; a += 16) {
++        volatile const u32 *p = (volatile const u32 *)(IOP_RAM_EE + a);
++
++        if (p[0] == HEAP_DIAG_MAGIC && p[1] == HEAP_DIAG_CHECK && p[2] == a) {
++            rec = p;
++            break;
++        }
++    }
++    if (rec == NULL)
++        return;
++
++    for (i = 0; i < HEAP_DIAG_IOP_SIZE / 4; i++)
++        ((u32 *)&h->iop)[i] = rec[i];
++    for (i = 0; i < HEAP_DIAG_BLOCKS; i++) {
++        unsigned int end = h->iop.blocks[i].addr + h->iop.blocks[i].size, n = 0;
++
++        if (h->iop.blocks[i].addr != 0) {
++            while (n < HEAP_DIAG_TAIL_SCAN && end + n < HEAP_DIAG_IOP_RAM_SIZE && *(volatile const u8 *)(IOP_RAM_EE + end + n) == 0xFF)
++                n++;
++        }
++        h->tail_ff[i] = (unsigned short)n;
++    }
++    h->found_at = a;
++    h->found = 1;
++}
++
++void FreezeDiag_Begin(unsigned int libpad, unsigned int pad_state, unsigned int pad_frame, unsigned int trigger)
+ {
+     USE_LOCAL_EECORE_CONFIG;
+     ee_thread_status_t status;
+@@ -66,6 +112,8 @@ void FreezeDiag_Begin(unsigned int libpad, unsigned int pad_state, unsigned int
+     report.compat = g_compat_mask;
+     report.cheats = config->gCheatList != NULL;
+     report.gsm = config->EnableGSMOp != 0;
++    report.pademu = config->EnablePadEmuOp != 0;
++    report.trigger = trigger;
+     report.iop_resets = iop_reboot_count;
+     report.iop_reset_failures = g_freeze_diag_reset_failures;
+     report.igr_polls = g_freeze_diag_polls;
+@@ -95,7 +143,12 @@ void FreezeDiag_Begin(unsigned int libpad, unsigned int pad_state, unsigned int
+         }
+     }
+ 
++    heap_snapshot();
++
+     report_armed = 1;
++
++    // A stuck IOP answers none of what follows: the TV gets the report first.
++    FreezeDiag_Screen(&report, HEAP_SNAPSHOT);
+ }
+ 
+ // Ask CDVDFSV for CDVDMAN's record over the IGR RPC, with a deadline: a stuck IOP must not hang
+@@ -200,8 +253,8 @@ void FreezeDiag_Write(void)
+ {
+     static const char hex[] = "0123456789ABCDEF";
+     unsigned int size = (sizeof(report) + 15) & ~15;
+-    char arg[9];
+-    void *iop;
++    char arg[18]; // two IOP addresses: the report, then the heap snapshot right after it
++    u8 *iop;
+     int i;
+ 
+     if (!report_armed)
+@@ -211,13 +264,17 @@ void FreezeDiag_Write(void)
+     LoadModule("rom0:SIO2MAN", 0, NULL);
+     LoadModule("rom0:MCMAN", 0, NULL);
+ 
+-    iop = SifAllocIopHeap(size);
++    iop = SifAllocIopHeap(size + sizeof(heap_diag_snapshot_t));
+     if (iop != NULL) {
+         FlushCache(0); // CopyToIop DMAs from memory, not from the cache
+         CopyToIop(&report, size, iop);
+-        for (i = 0; i < 8; i++)
++        CopyToIop(HEAP_SNAPSHOT, sizeof(heap_diag_snapshot_t), iop + size);
++        for (i = 0; i < 8; i++) {
+             arg[i] = hex[((u32)iop >> (28 - 4 * i)) & 0xF];
++            arg[9 + i] = hex[((u32)(iop + size) >> (28 - 4 * i)) & 0xF];
++        }
+         arg[8] = '\0';
++        arg[17] = '\0';
+         LoadOPLModule(OPL_MODULE_ID_FREEZEDIAG, 0, sizeof(arg), arg);
+         SifFreeIopHeap(iop);
+     }
+diff --git a/ee_core/src/freeze_diag_format.c b/ee_core/src/freeze_diag_format.c
+index 10cc6705..5c50794f 100644
+--- a/ee_core/src/freeze_diag_format.c
++++ b/ee_core/src/freeze_diag_format.c
+@@ -154,7 +154,7 @@ int freeze_diag_format(const freeze_diag_report_t *r, const char *build, char *o
+     if (iop_status == FREEZE_DIAG_IOP_ANSWERED && (iop->magic != FREEZE_DIAG_MAGIC || iop->version != FREEZE_DIAG_VERSION))
+         iop_status = FREEZE_DIAG_IOP_BAD_RECORD;
+ 
+-    put_str(&b, "RiptOPL in-game freeze report v1\n");
++    put_str(&b, "RiptOPL in-game freeze report v2\n");
+     put_str(&b, "build=");
+     put_str(&b, build != 0 ? build : "?");
+     put_char(&b, '\n');
+@@ -164,12 +164,18 @@ int freeze_diag_format(const freeze_diag_report_t *r, const char *build, char *o
+         put_char(&b, r->game_id[i]);
+     put_char(&b, '\n');
+ 
++    put_str(&b, "trigger=");
++    put_str(&b, r->trigger == FREEZE_DIAG_TRIGGER_STALL ? "stall" : r->trigger == FREEZE_DIAG_TRIGGER_POWER ? "power" :
++                                                                                                              "combo");
++    put_char(&b, '\n');
++
+     put_str(&b, "mode=");
+     put_dec(&b, r->game_mode);
+     put_str(&b, " compat=");
+     put_hex(&b, r->compat);
+     put_field(&b, "cheats", r->cheats);
+     put_field(&b, "gsm", r->gsm);
++    put_field(&b, "pademu", r->pademu);
+     put_char(&b, '\n');
+ 
+     put_str(&b, "iop_resets=");
+@@ -293,3 +299,146 @@ int freeze_diag_format(const freeze_diag_report_t *r, const char *build, char *o
+     out[b.len] = '\0';
+     return b.len;
+ }
++
++// The module whose image holds addr, as name+offset, else the bare address.
++static void put_where(fd_buf_t *b, const heap_diag_iop_t *h, unsigned int addr)
++{
++    unsigned int i, n = h->module_count < HEAP_DIAG_MODULES ? h->module_count : HEAP_DIAG_MODULES;
++    int c;
++
++    for (i = 0; i < n; i++) {
++        const heap_diag_module_t *m = &h->modules[i];
++
++        if (m->text_start != 0 && addr >= m->text_start && addr - m->text_start < m->size) {
++            for (c = 0; c < 8 && m->name[c] != '\0'; c++)
++                put_char(b, m->name[c]);
++            put_char(b, '+');
++            put_hex(b, addr - m->text_start);
++            return;
++        }
++    }
++    put_hex(b, addr);
++}
++
++// A run this long right after a block is past what a free area or the next block plausibly
++// starts with by chance: the game wrote past the end of the block.
++#define HEAP_DIAG_OVERRUN_MIN 64
++
++int freeze_diag_format_heap(const heap_diag_snapshot_t *h, char *out, int cap)
++{
++    fd_buf_t b;
++    const heap_diag_iop_t *iop;
++    unsigned char order[HEAP_DIAG_BLOCKS];
++    unsigned int i, j, n, worst = HEAP_DIAG_BLOCKS, overruns = 0;
++
++    if (out == 0 || cap <= 0)
++        return 0;
++    b.out = out;
++    b.cap = cap;
++    b.len = 0;
++
++    if (h == 0 || !h->found || h->iop.version != HEAP_DIAG_VERSION) {
++        put_str(&b, "heap=none (no IOP heap record found in IOP RAM)\n");
++        out[b.len] = '\0';
++        return b.len;
++    }
++    iop = &h->iop;
++
++    put_str(&b, "heap=found at=");
++    put_hex(&b, h->found_at);
++    put_field(&b, "allocs", iop->allocs);
++    put_field(&b, "frees", iop->frees);
++    put_field(&b, "failed", iop->fails);
++    put_field(&b, "unknown_frees", iop->unknown_frees);
++    put_field(&b, "evicted", iop->evicted);
++    put_char(&b, '\n');
++    put_str(&b, "heap_free now=");
++    put_dec(&b, iop->free_now);
++    put_field(&b, "lowest", iop->free_min);
++    put_field(&b, "largest_block_lowest", iop->largest_min);
++    put_char(&b, '\n');
++
++    n = iop->module_count < HEAP_DIAG_MODULES ? iop->module_count : HEAP_DIAG_MODULES;
++    for (i = 0; i < n; i++) {
++        const heap_diag_module_t *m = &iop->modules[i];
++        int c;
++
++        put_str(&b, "module name=");
++        for (c = 0; c < 8 && m->name[c] != '\0'; c++)
++            put_char(&b, m->name[c]);
++        put_str(&b, " text=");
++        put_hex(&b, m->text_start);
++        put_field(&b, "size", m->size);
++        put_char(&b, '\n');
++    }
++    if (iop->module_count > n) {
++        put_str(&b, "modules_not_listed=");
++        put_dec(&b, iop->module_count - n);
++        put_char(&b, '\n');
++    }
++
++    // Live blocks by address, so neighbours sit next to each other.
++    n = 0;
++    for (i = 0; i < HEAP_DIAG_BLOCKS; i++) {
++        if (iop->blocks[i].addr == 0)
++            continue;
++        for (j = n; j > 0 && iop->blocks[order[j - 1]].addr > iop->blocks[i].addr; j--)
++            order[j] = order[j - 1];
++        order[j] = (unsigned char)i;
++        n++;
++    }
++    for (j = 0; j < n; j++) {
++        const heap_diag_block_t *blk = &iop->blocks[order[j]];
++        unsigned int ff = h->tail_ff[order[j]];
++
++        put_str(&b, "block addr=");
++        put_hex(&b, blk->addr);
++        put_field(&b, "size", blk->size);
++        put_str(&b, " by=");
++        put_where(&b, iop, blk->ra);
++        put_field(&b, "seq", blk->seq);
++        put_field(&b, "ff_after", ff);
++        if (ff >= HEAP_DIAG_OVERRUN_MIN) {
++            put_str(&b, " OVERRUN?");
++            overruns++;
++            if (worst == HEAP_DIAG_BLOCKS || ff > h->tail_ff[worst])
++                worst = order[j];
++        }
++        put_char(&b, '\n');
++    }
++
++    for (i = 0; i < HEAP_DIAG_FAILS; i++) {
++        const heap_diag_block_t *f = &iop->failed[i];
++
++        if (f->size == 0 && f->ra == 0)
++            continue;
++        put_str(&b, "failed_alloc size=");
++        put_dec(&b, f->size);
++        put_field(&b, "mode", f->seq);
++        put_str(&b, " by=");
++        put_where(&b, iop, f->ra);
++        put_char(&b, '\n');
++    }
++
++    put_str(&b, "heap_hint=");
++    if (iop->fails != 0) {
++        put_dec(&b, iop->fails);
++        put_str(&b, " IOP allocation(s) failed: see failed_alloc for the mode and size (IOP RAM running out is one cause)");
++    } else if (overruns != 0) {
++        put_str(&b, "the ");
++        put_dec(&b, iop->blocks[worst].size);
++        put_str(&b, "-byte block from ");
++        put_where(&b, iop, iop->blocks[worst].ra);
++        put_str(&b, " is followed by ");
++        put_dec(&b, h->tail_ff[worst]);
++        put_str(&b, " bytes of 0xFF: likely written past its end (");
++        put_dec(&b, overruns);
++        put_str(&b, " block(s) marked OVERRUN?)");
++    } else {
++        put_str(&b, "no failed allocation and no 0xFF run after any tracked block");
++    }
++    put_char(&b, '\n');
++
++    out[b.len] = '\0';
++    return b.len;
++}
+diff --git a/ee_core/src/freeze_diag_screen.c b/ee_core/src/freeze_diag_screen.c
+new file mode 100644
+index 00000000..13826365
+--- /dev/null
++++ b/ee_core/src/freeze_diag_screen.c
+@@ -0,0 +1,405 @@
++/*
++  In-game freeze report on the TV (INGAMEDIAG flavour only).
++
++  The memory-card report needs the IOP: the RPC that fetches its record, the reboot, MCMAN. A game whose IOP is
++  stuck gets none of that, and the IGR path stops at the first SIF call with nothing written. So before any of it,
++  ee_core draws the report itself: its own 640x448 frame at FBP 0 (the game's frame is gone: the VBLANK handler has
++  reset the GS), the font of the in-game menu at twice its size, uploaded through GIF PATH3. The player takes a photo
++  of the screen, then taps the power button to go on to the memory-card report as before.
++
++  Everything shown is read from EE memory and IOP RAM (KSEG1), never asked of the IOP.
++
++  FREEZE_DIAG_SCREEN_HOST_TEST builds only the page composer, for tests/.
++*/
++
++#ifndef FREEZE_DIAG_SCREEN_HOST_TEST
++#include "ee_core.h"
++#include "padhook.h"
++#include "freeze_diag_core.h"
++#endif
++#include "freeze_diag_report.h"
++#include "freeze_diag_screen.h"
++
++static void fds_put(fds_page_t *p, int row, int colour, const char *s)
++{
++    int i;
++
++    if (row < 0 || row >= FDS_LINES)
++        return;
++    p->colour[row] = (unsigned char)colour;
++    for (i = 0; i < FDS_CHARS && s[i] != '\0'; i++)
++        p->text[row][i] = s[i];
++    for (; i <= FDS_CHARS; i++)
++        p->text[row][i] = '\0';
++}
++
++typedef struct
++{
++    char s[FDS_CHARS + 1];
++    int n;
++} fds_line_t;
++
++static void ln_str(fds_line_t *l, const char *s)
++{
++    while (*s != '\0' && l->n < FDS_CHARS)
++        l->s[l->n++] = *s++;
++    l->s[l->n] = '\0';
++}
++
++static void ln_dec(fds_line_t *l, unsigned int v)
++{
++    char d[10];
++    int n = 0;
++
++    do {
++        d[n++] = (char)('0' + v % 10);
++        v /= 10;
++    } while (v != 0);
++    while (n > 0 && l->n < FDS_CHARS)
++        l->s[l->n++] = d[--n];
++    l->s[l->n] = '\0';
++}
++
++static void ln_hex(fds_line_t *l, unsigned int v, int digits) // digits 0: as few as it takes
++{
++    static const char hex[] = "0123456789ABCDEF";
++    int i;
++
++    if (digits == 0)
++        for (digits = 1; digits < 8 && (v >> (4 * digits)) != 0; digits++)
++            ;
++    for (i = digits - 1; i >= 0 && l->n < FDS_CHARS; i--)
++        l->s[l->n++] = hex[(v >> (4 * i)) & 0xF];
++    l->s[l->n] = '\0';
++}
++
++static void ln_where(fds_line_t *l, const heap_diag_iop_t *h, unsigned int addr)
++{
++    unsigned int i, n = h->module_count < HEAP_DIAG_MODULES ? h->module_count : HEAP_DIAG_MODULES;
++    int c;
++
++    for (i = 0; i < n; i++) {
++        const heap_diag_module_t *m = &h->modules[i];
++
++        if (m->text_start != 0 && addr >= m->text_start && addr - m->text_start < m->size) {
++            for (c = 0; c < 8 && m->name[c] != '\0' && l->n < FDS_CHARS; c++)
++                l->s[l->n++] = m->name[c];
++            l->s[l->n] = '\0';
++            ln_str(l, "+");
++            ln_hex(l, addr - m->text_start, 0);
++            return;
++        }
++    }
++    ln_hex(l, addr, 8);
++}
++
++static const char *fds_trigger(unsigned int t)
++{
++    switch (t) {
++        case FREEZE_DIAG_TRIGGER_STALL:
++            return "PAD DATA STOPPED (IOP STUCK?)";
++        case FREEZE_DIAG_TRIGGER_POWER:
++            return "POWER BUTTON";
++        default:
++            return "IGR COMBO";
++    }
++}
++
++void freeze_diag_screen_compose(const freeze_diag_report_t *r, const heap_diag_snapshot_t *h, fds_page_t *p, int saving)
++{
++    unsigned char used[HEAP_DIAG_BLOCKS];
++    fds_line_t l;
++    int row = 0, last = FDS_LINES - 3, i, j;
++
++    for (i = 0; i < FDS_LINES; i++)
++        fds_put(p, i, FDS_C_TEXT, "");
++
++    l.n = 0;
++    ln_str(&l, "RIPTOPL FREEZE REPORT  ");
++    for (i = 0; i < (int)sizeof(r->game_id) && r->game_id[i] != '\0'; i++) {
++        char c[2] = {r->game_id[i], '\0'};
++        ln_str(&l, c);
++    }
++    fds_put(p, row++, FDS_C_TITLE, l.s);
++
++    l.n = 0;
++    ln_str(&l, "TRIGGER: ");
++    ln_str(&l, fds_trigger(r->trigger));
++    fds_put(p, row++, FDS_C_TEXT, l.s);
++
++    l.n = 0;
++    ln_str(&l, "PAD FRAME ");
++    ln_dec(&l, r->pad_frame);
++    ln_str(&l, " STATE ");
++    ln_dec(&l, r->pad_state);
++    ln_str(&l, " POLLS ");
++    ln_dec(&l, r->igr_polls);
++    ln_str(&l, " RESETS ");
++    ln_dec(&l, r->iop_resets);
++    fds_put(p, row++, FDS_C_TEXT, l.s);
++
++    l.n = 0;
++    ln_str(&l, "MODE ");
++    ln_dec(&l, r->game_mode);
++    ln_str(&l, " COMPAT ");
++    ln_hex(&l, r->compat, 0);
++    ln_str(&l, " PADEMU ");
++    ln_dec(&l, r->pademu);
++    ln_str(&l, " GSM ");
++    ln_dec(&l, r->gsm);
++    ln_str(&l, " CHEATS ");
++    ln_dec(&l, r->cheats);
++    fds_put(p, row++, FDS_C_TEXT, l.s);
++
++    if (!h->found || h->iop.version != HEAP_DIAG_VERSION) {
++        fds_put(p, row++, FDS_C_WARN, "IOP HEAP RECORD: NOT FOUND");
++    } else {
++        const heap_diag_iop_t *iop = &h->iop;
++        int shown = 0;
++
++        l.n = 0;
++        ln_str(&l, "ALLOCS ");
++        ln_dec(&l, iop->allocs);
++        ln_str(&l, " FREES ");
++        ln_dec(&l, iop->frees);
++        ln_str(&l, " FAILS ");
++        ln_dec(&l, iop->fails);
++        ln_str(&l, " EVICTED ");
++        ln_dec(&l, iop->evicted);
++        fds_put(p, row++, FDS_C_TEXT, l.s);
++
++        l.n = 0;
++        ln_str(&l, "FREE NOW ");
++        ln_dec(&l, iop->free_now);
++        ln_str(&l, " MIN ");
++        ln_dec(&l, iop->free_min);
++        ln_str(&l, " LARGEST ");
++        ln_dec(&l, iop->largest_min);
++        fds_put(p, row++, FDS_C_TEXT, l.s);
++
++        // The failed allocations first: the newest first, as the ring keeps them.
++        for (i = 0; i < HEAP_DIAG_FAILS && row < last; i++) {
++            const heap_diag_block_t *f = &iop->failed[(iop->fail_next + HEAP_DIAG_FAILS - 1 - i) % HEAP_DIAG_FAILS];
++
++            if (f->size == 0 && f->ra == 0)
++                continue;
++            l.n = 0;
++            ln_str(&l, "FAILED ALLOC ");
++            ln_dec(&l, f->size);
++            ln_str(&l, " BY ");
++            ln_where(&l, iop, f->ra);
++            fds_put(p, row++, FDS_C_WARN, l.s);
++        }
++
++        // Then the live blocks with the longest 0xFF run after their end: the overruns.
++        fds_put(p, row++, FDS_C_DIM, "BLOCK    SIZE  FF AFTER  CALLER");
++        for (i = 0; i < HEAP_DIAG_BLOCKS; i++)
++            used[i] = 0;
++        while (row < last) {
++            int best = -1;
++
++            for (j = 0; j < HEAP_DIAG_BLOCKS; j++)
++                if (!used[j] && iop->blocks[j].addr != 0 && h->tail_ff[j] != 0 && (best < 0 || h->tail_ff[j] > h->tail_ff[best]))
++                    best = j;
++            if (best < 0)
++                break;
++            used[best] = 1;
++            l.n = 0;
++            ln_hex(&l, iop->blocks[best].addr, 8);
++            ln_str(&l, " ");
++            ln_dec(&l, iop->blocks[best].size);
++            ln_str(&l, " FF=");
++            ln_dec(&l, h->tail_ff[best]);
++            ln_str(&l, " ");
++            ln_where(&l, iop, iop->blocks[best].ra);
++            fds_put(p, row++, h->tail_ff[best] >= FDS_OVERRUN_MIN ? FDS_C_WARN : FDS_C_TEXT, l.s);
++            shown++;
++        }
++        if (shown == 0 && row < last)
++            fds_put(p, row++, FDS_C_TEXT, "NO 0XFF RUN AFTER ANY LIVE BLOCK");
++    }
++
++    if (saving) {
++        fds_put(p, FDS_LINES - 2, FDS_C_TITLE, "SAVING RIPTFRZ.TXT TO MEMORY CARD 1...");
++        fds_put(p, FDS_LINES - 1, FDS_C_DIM, "STILL HERE AFTER A MINUTE: HOLD POWER");
++    } else {
++        fds_put(p, FDS_LINES - 2, FDS_C_TITLE, "TAKE A PHOTO OF THIS SCREEN, THEN");
++        fds_put(p, FDS_LINES - 1, FDS_C_TITLE, "TAP POWER ONCE TO SAVE RIPTFRZ.TXT");
++    }
++}
++
++#ifndef FREEZE_DIAG_SCREEN_HOST_TEST
++
++#define IGRM_FONT_DATA
++#include "igrmfont.h"
++
++// Room for this lives in the game's memory, which IGR is about to drop (as the heap snapshot does, freeze_diag.c).
++#define FDS_PAGE ((fds_page_t *)0x01010000)
++#define FDS_PKT  ((u64 *)0x01020000)
++
++#define FDS_W       640
++#define FDS_H       448
++#define FDS_CELL_W  12 // a 6x8 font cell at twice its size
++#define FDS_CELL_H  16
++#define FDS_LEFT    2 // cells kept clear of the TV's overscan
++#define FDS_TOP     1
++#define FDS_BAND_QW (FDS_W * FDS_CELL_H * 4 / 16)
++
++#define GIF_CTRL    ((vu32 *)0x10003000)
++#define GIF_MODE    ((vu32 *)0x10003010)
++#define D2_CHCR     ((vu32 *)0x1000a000)
++#define D2_MADR     ((vu32 *)0x1000a010)
++#define D2_QWC      ((vu32 *)0x1000a020)
++#define GS_PMODE    ((vu64 *)0x12000000)
++#define GS_DISPFB1  ((vu64 *)0x12000070)
++#define GS_DISPLAY1 ((vu64 *)0x12000080)
++#define GS_BGCOLOR  ((vu64 *)0x120000e0)
++
++#define FDS_GIFTAG(nloop, eop, flg, nreg) ((u64)(nloop) | (u64)(eop) << 15 | (u64)(flg) << 58 | (u64)(nreg) << 60)
++
++static const u32 fds_rgb[FDS_C_COUNT] = {
++    0x80E6DCD2, // text
++    0x8060FFFF, // title: yellow
++    0x806090FF, // warning: orange
++    0x80A09080, // quiet
++};
++#define FDS_BG 0x80401808 // dark blue
++
++#define EE_TICKS_PER_MS 294912
++
++static inline u32 fds_ticks(void)
++{
++    u32 c;
++    __asm__ __volatile__("mfc0 %0, $9"
++                         : "=r"(c));
++    return c;
++}
++
++static void fds_wait_ms(u32 ms)
++{
++    u32 start = fds_ticks();
++
++    while ((u32)(fds_ticks() - start) < ms * EE_TICKS_PER_MS)
++        ;
++}
++
++static int fds_glyph(unsigned char c)
++{
++    if (c >= 'a' && c <= 'z')
++        c -= 'a' - 'A';
++    if (c < 32 || c > 95)
++        c = '?';
++    return c - 32;
++}
++
++// Text row band `band` (FDS_CELL_H frame lines) into the frame, through GIF PATH3.
++static int fds_send_band(const fds_page_t *p, int band)
++{
++    u64 *q = FDS_PKT;
++    u32 *px = (u32 *)(q + 12);
++    int tr = band - FDS_TOP, y, x, i;
++
++    for (y = 0; y < FDS_CELL_H; y++) {
++        int gy = y >> 1;
++
++        for (x = 0; x < FDS_W; x++) {
++            int tc = x / FDS_CELL_W - FDS_LEFT, gx = (x % FDS_CELL_W) >> 1;
++            u32 c = FDS_BG;
++
++            if (tr >= 0 && tr < FDS_LINES && tc >= 0 && tc < FDS_CHARS && gy < 7 && gx < 5) {
++                unsigned char ch = (unsigned char)p->text[tr][tc];
++
++                if (ch != '\0' && (igrmFontData[fds_glyph(ch)][gy] & (0x10 >> gx)))
++                    c = fds_rgb[p->colour[tr]];
++            }
++            *px++ = c;
++        }
++    }
++
++    q[0] = FDS_GIFTAG(4, 0, 0, 1);
++    q[1] = 0xe;                     // A+D
++    q[2] = (u64)(FDS_W / 64) << 48; // BITBLTBUF: DBP 0, DBW 10, PSMCT32
++    q[3] = 0x50;
++    q[4] = (u64)(band * FDS_CELL_H) << 48; // TRXPOS: destination
++    q[5] = 0x51;
++    q[6] = (u64)FDS_W | (u64)FDS_CELL_H << 32; // TRXREG
++    q[7] = 0x52;
++    q[8] = 0; // TRXDIR: host -> local
++    q[9] = 0x53;
++    q[10] = FDS_GIFTAG(FDS_BAND_QW, 1, 2, 0); // IMAGE
++    q[11] = 0;
++
++    FlushCache(0);
++    *D2_QWC = 6 + FDS_BAND_QW;
++    *D2_MADR = (u32)q;
++    *D2_CHCR = 0x101; // from memory, normal mode, start
++    asm volatile("sync.l");
++    for (i = 0; i < 10000000; i++)
++        if (!(*D2_CHCR & 0x100))
++            return 1;
++    *D2_CHCR = 0; // a GIF that will not take data must not keep the transfer
++    return 0;
++}
++
++static void fds_draw(const fds_page_t *p, int from, int to)
++{
++    int band;
++
++    for (band = from; band < to; band++)
++        if (!fds_send_band(p, band))
++            return;
++}
++
++// The power-off request is latched until cancelled: a press counts once, when it appears (as igrmenu.c reads it).
++static int fds_power_pending(void)
++{
++    int pending;
++
++    ee_kmode_enter();
++    pending = (*CDVD_R_NDIN & 0x20) && (*CDVD_R_POFF & 0x04);
++    if (pending) {
++        *CDVD_R_SDIN = 0x00;
++        *CDVD_R_SCMD = 0x1B; // cancel the power off: this press asks for the memory-card report
++    }
++    ee_kmode_exit();
++    return pending;
++}
++
++// From the IGR thread, after FreezeDiag_Begin and before anything asks the IOP. The VBLANK handler has stopped DMA,
++// reset the GS and run ResetEE(0x7F): nothing of the game's can draw over this.
++void FreezeDiag_Screen(const freeze_diag_report_t *r, const heap_diag_snapshot_t *h)
++{
++    fds_page_t *p = FDS_PAGE;
++    int latched;
++
++    freeze_diag_screen_compose(r, h, p, 0);
++
++    *D2_CHCR = 0;
++    *GIF_CTRL = 1; // reset the GIF: a game's packet cut off by the stop must not swallow ours
++    *GIF_MODE = 0; // no PATH3 mask left by the game
++    asm volatile("sync.l");
++
++    // 640x448 NTSC interlaced, FIELD: every TV and capture card takes it, whatever the game used.
++    SetGsCrt(1, 2, 0);
++    *GS_PMODE = 0xff25;                   // circuit 1 only, alpha from ALP (0xff)
++    *GS_DISPFB1 = (u64)(FDS_W / 64) << 9; // FBP 0, FBW 10, PSMCT32
++    *GS_DISPLAY1 = 652 | (u64)50 << 12 | (u64)3 << 23 | (u64)(FDS_W * 4 - 1) << 32 | (u64)(FDS_H - 1) << 44;
++    *GS_BGCOLOR = 0;
++    fds_draw(p, 0, FDS_H / FDS_CELL_H);
++
++    // The press that took the report may still be latched; a new one goes on.
++    latched = fds_power_pending();
++    for (;;) {
++        int pending = fds_power_pending();
++
++        if (pending && !latched)
++            break;
++        latched = pending;
++        fds_wait_ms(20);
++    }
++
++    freeze_diag_screen_compose(r, h, p, 1);
++    fds_draw(p, FDS_TOP + FDS_LINES - 2, FDS_TOP + FDS_LINES);
++}
++
++#endif
+diff --git a/ee_core/src/iopmgr.c b/ee_core/src/iopmgr.c
+index 170acc15..cdc81b40 100644
+--- a/ee_core/src/iopmgr.c
++++ b/ee_core/src/iopmgr.c
+@@ -197,7 +197,34 @@ static int ResetIopSpecial(const char *args, unsigned int arglen)
+ #define PADEMU_ARG
+ #endif
+     if (config->GameMode == BDM_USB_MODE PADEMU_ARG) {
+-        LoadOPLModule(OPL_MODULE_ID_USBD, 0, 11, "thpri=2,3");
++        const char *usbd_args = "thpri=2,3";
++        int usbd_args_len = 11;
++#ifdef PADEMU
++        if (config->GameMode != BDM_USB_MODE) {
++            /* USBD serves only the pads here (the game is not on USB), so size its pools for
++               them. usbd_mini's defaults (16 devices, 32 endpoints, 64 + 64 transfer
++               descriptors, 256 I/O requests, 4 hubs) take about 33 KB of IOP RAM; these take
++               about 12.5 KB and the game gets the rest (Kingdom Hearts II over SMB ran out:
++               OPL-DualSense-BT 8bb581a). Headroom: the driver spends three device slots on
++               its virtual root and the two root-hub ports, PADEMU's USB build takes up to
++               four pads behind a hub (three endpoints each) or one Bluetooth dongle (four),
++               and pads make no isochronous transfers. The general transfer descriptors keep
++               their default of 64: every open pipe holds one, every transfer in flight takes
++               one more and a control request with data three, and a request that finds too
++               few waits at the head of a queue that holds up every pipe behind it, so a
++               shortfall there stalls the pads where the other pools refuse a device. At 20
++               bytes a descriptor, trimming them saved under 1 KB. The fork-built usbd_mini
++               parses these (ps2sdk 314d87e7 usbd.c); .github/scripts/test_usbd_pad_pool.py
++               feeds it this exact string.
++               Not const, so it sits in .data: in the LLVM build ee_core's .rodata ended on a
++               128-byte boundary, so this string there took 128 bytes from the stack above
++               .bss and went under the 3 KB guard in ee_core/linkfile. */
++            static char usbd_pad_args[] = "thpri=2,3\0dev=10\0ed=20\0itd=2\0ioreq=24\0hub=2";
++            usbd_args = usbd_pad_args;
++            usbd_args_len = sizeof(usbd_pad_args);
++        }
++#endif
++        LoadOPLModule(OPL_MODULE_ID_USBD, 0, usbd_args_len, usbd_args);
+     }
+ 
+ #if defined(RETROACHIEVEMENTS) && !defined(__LOAD_DEBUG_MODULES)
+diff --git a/ee_core/src/padhook.c b/ee_core/src/padhook.c
+index 23ddc4b7..25f6a34e 100644
+--- a/ee_core/src/padhook.c
++++ b/ee_core/src/padhook.c
+@@ -42,6 +42,7 @@
+ #include "igrmenu.h" // RIPPS2 build 87
+ #ifdef INGAMEDIAG
+ #include "freeze_diag_core.h"
++#include "freeze_diag_report.h"
+ #endif
+ 
+ /* scePadPortOpen & scePad2CreateSocket prototypes */
+@@ -54,6 +55,16 @@ static paddata_t Pad_Data;
+ /* Monitored power button data */
+ static powerbuttondata_t Power_Button;
+ 
++#ifdef INGAMEDIAG
++// Freeze watchdog: padman's thread sends the pad buffer every frame while the IOP runs. A frame counter that stopped
++// this long, after it once ran, takes the report as the combo would: a stuck IOP sends no combo either. About 15 s
++// (18 s on PAL); a game that closes its pad port for longer than that gets the report too.
++#define FREEZE_DIAG_STALL_VBLANKS 900
++static unsigned int Freeze_Stall_Vb;
++static u8 Freeze_Stall_Frame;
++static int Freeze_Stall_Fired;
++#endif
++
+ /* How IGR watches the pad: a VBLANK_END interrupt handler, in every build (issue #984).
+  *
+  * The handler samples the pad and the power button each frame. On a request it stops DMA/GS,
+@@ -261,6 +272,18 @@ static void IGR_CheckInputs(void)
+         pad_pos_combo1 = ((u8 *)UNCACHED_SEG(Pad_Data.pad_buf))[Pad_Data.pos_combo1];
+         pad_pos_combo2 = ((u8 *)UNCACHED_SEG(Pad_Data.pad_buf))[Pad_Data.pos_combo2];
+ 
++#ifdef INGAMEDIAG
++        if (padOpen_hooked && Pad_Data.combo_type == 0x00) {
++            if (pad_pos_frame != Freeze_Stall_Frame) {
++                Freeze_Stall_Frame = pad_pos_frame;
++                Freeze_Stall_Vb = 0;
++            } else if (++Freeze_Stall_Vb >= FREEZE_DIAG_STALL_VBLANKS) {
++                Freeze_Stall_Fired = 1;
++                Pad_Data.combo_type = IGR_COMBO_START_SELECT;
++            }
++        }
++#endif
++
+         // First check pad state
+         if (((Pad_Data.libpad == IGR_LIBPAD) && (pad_pos_state == IGR_PAD_STABLE_V1)) ||
+             ((Pad_Data.libpad == IGR_LIBPAD2) && (pad_pos_state == IGR_PAD_STABLE_V2))) {
+@@ -326,10 +349,16 @@ static void IGR_CheckInputs(void)
+         if (Power_Button.press) {
+             // Check number of power button press after 1 ~ sec
+             if (Power_Button.vb_count++ >= 50) {
++#ifdef INGAMEDIAG
++                // One press or two: the report. Its page then waits for one more; holding the button still
++                // powers the console off.
++                Pad_Data.combo_type = IGR_COMBO_START_SELECT;
++#else
+                 if (Power_Button.press == 1)
+                     Pad_Data.combo_type = IGR_COMBO_R3_L3; // power button press 1 time, so poweroff
+                 else
+                     Pad_Data.combo_type = IGR_COMBO_START_SELECT; // power button press 2 time, so reset
++#endif
+             }
+         }
+ 
+@@ -431,7 +460,10 @@ static void IGR_Thread(void *arg)
+             pad_state = ((u8 *)UNCACHED_SEG(Pad_Data.pad_buf))[Pad_Data.pos_state];
+             pad_frame = ((u8 *)UNCACHED_SEG(Pad_Data.pad_buf))[Pad_Data.pos_frame];
+         }
+-        FreezeDiag_Begin(Pad_Data.libpad, pad_state, pad_frame);
++        FreezeDiag_Begin(Pad_Data.libpad, pad_state, pad_frame,
++                         Freeze_Stall_Fired ? FREEZE_DIAG_TRIGGER_STALL :
++                         Power_Button.press ? FREEZE_DIAG_TRIGGER_POWER :
++                                              FREEZE_DIAG_TRIGGER_COMBO);
+     }
+ #endif
+ 
+@@ -657,6 +689,9 @@ void Invalidate_PadBuffer(void)
+     Pad_Data.pad_buf = NULL;
+     Pad_Data.vb_count = 0;
+     Pad_Data.prev_frame = 0;
++#ifdef INGAMEDIAG
++    Freeze_Stall_Vb = 0; // a new buffer starts its own count
++#endif
+ 
+     if (intr)
+         EI();
+@@ -690,6 +725,9 @@ static void Set_libpad_Params(void *addr)
+     Pad_Data.vb_count = 0;
+     Pad_Data.prev_frame = 0;
+     Pad_Data.pad_buf = addr;
++#ifdef INGAMEDIAG
++    Freeze_Stall_Vb = 0;
++#endif
+ 
+     if (intr)
+         EI();
+diff --git a/ee_core/tests/test_freeze_diag_format.c b/ee_core/tests/test_freeze_diag_format.c
+index b1b0c8cd..745c0430 100644
+--- a/ee_core/tests/test_freeze_diag_format.c
++++ b/ee_core/tests/test_freeze_diag_format.c
+@@ -19,7 +19,7 @@ static int failures = 0;
+         }                                                   \
+     } while (0)
+ 
+-static char out[4096];
++static char out[16384];
+ 
+ static void base_report(freeze_diag_report_t *r)
+ {
+@@ -71,7 +71,7 @@ int main(void)
+     r.threads[1].prio = 30;
+     len = freeze_diag_format(&r, "v1.2.0-Beta-1-abc-OFFICIALROLLING-FREEZEDIAG", out, sizeof(out));
+     CHECK(len > 0 && len == (int)strlen(out), "returns the string length");
+-    CHECK(contains("RiptOPL in-game freeze report v1"), "title");
++    CHECK(contains("RiptOPL in-game freeze report v2"), "title");
+     CHECK(contains("build=v1.2.0-Beta-1-abc-OFFICIALROLLING-FREEZEDIAG"), "build line");
+     CHECK(contains("game=SLUS_210.00"), "game id");
+     CHECK(contains("compat=0x0000000A"), "compat mask in hex");
+@@ -195,6 +195,62 @@ int main(void)
+     freeze_diag_format(&r, "b", out, sizeof(out));
+     CHECK(contains("game=AAAAAAAAAAAAAAAA\n"), "unterminated game id bounded");
+ 
++    // IOP heap record: sizes the EE copies by, module lookup, address order, the overrun flag.
++    {
++        static heap_diag_snapshot_t h;
++
++        CHECK(sizeof(heap_diag_iop_t) == HEAP_DIAG_IOP_SIZE, "heap record size matches HEAP_DIAG_IOP_SIZE");
++        CHECK(sizeof(heap_diag_iop_t) % 16 == 0, "heap record is a whole number of 16-byte blocks");
++        CHECK(sizeof(heap_diag_snapshot_t) == HEAP_DIAG_SNAPSHOT_SIZE, "snapshot size matches HEAP_DIAG_SNAPSHOT_SIZE");
++        CHECK(sizeof(heap_diag_snapshot_t) % 16 == 0, "snapshot is a whole number of SIF DMA blocks");
++
++        memset(&h, 0, sizeof(h));
++        len = freeze_diag_format_heap(&h, out, sizeof(out));
++        CHECK(len > 0 && contains("heap=none"), "no record found");
++
++        h.found = 1;
++        h.found_at = 0x1A2B0;
++        h.iop.version = HEAP_DIAG_VERSION;
++        h.iop.allocs = 40;
++        h.iop.free_now = 300000;
++        h.iop.free_min = 120000;
++        h.iop.module_count = 2;
++        memcpy(h.iop.modules[0].name, "cdvdman", 7);
++        h.iop.modules[0].text_start = 0x20000;
++        h.iop.modules[0].size = 0x8000;
++        memcpy(h.iop.modules[1].name, "sounddrv", 8); // exactly 8: no terminator
++        h.iop.modules[1].text_start = 0x60000;
++        h.iop.modules[1].size = 0x4000;
++        h.iop.blocks[3].addr = 0x90000; // listed out of order on purpose
++        h.iop.blocks[3].size = 2304;
++        h.iop.blocks[3].ra = 0x60123;
++        h.iop.blocks[3].seq = 7;
++        h.tail_ff[3] = 1792;
++        h.iop.blocks[5].addr = 0x80000;
++        h.iop.blocks[5].size = 25344;
++        h.iop.blocks[5].ra = 0x123456; // in no module
++        h.iop.blocks[5].seq = 3;
++        h.tail_ff[5] = 12; // too short to call an overrun
++        len = freeze_diag_format_heap(&h, out, sizeof(out));
++        CHECK(len > 0 && len == (int)strlen(out), "heap returns the string length");
++        CHECK(contains("heap=found at=0x0001A2B0 allocs=40"), "heap summary");
++        CHECK(contains("heap_free now=300000 lowest=120000"), "free memory");
++        CHECK(contains("module name=sounddrv text=0x00060000"), "8-character module name bounded");
++        CHECK(contains("by=sounddrv+0x00000123"), "caller resolved to module+offset");
++        CHECK(contains("by=0x00123456"), "caller outside every module stays an address");
++        CHECK(strstr(out, "addr=0x00080000") < strstr(out, "addr=0x00090000"), "blocks listed by address");
++        CHECK(contains("size=2304 by=sounddrv+0x00000123 seq=7 ff_after=1792 OVERRUN?"), "long 0xFF run flagged");
++        CHECK(!contains("ff_after=12 OVERRUN?"), "short 0xFF run not flagged");
++        CHECK(contains("heap_hint=the 2304-byte block from sounddrv+0x00000123 is followed by 1792 bytes of 0xFF"), "overrun hint");
++
++        h.iop.fails = 1;
++        h.iop.failed[0].size = 65536;
++        h.iop.failed[0].ra = 0x60010;
++        len = freeze_diag_format_heap(&h, out, sizeof(out));
++        CHECK(contains("failed_alloc size=65536 mode=0 by=sounddrv+0x00000010"), "failed allocation listed");
++        CHECK(contains("heap_hint=1 IOP allocation(s) failed"), "failed-allocation hint first");
++    }
++
+     if (failures == 0)
+         printf("test_freeze_diag_format: all checks passed\n");
+     return failures != 0;
+diff --git a/ee_core/tests/test_freeze_diag_screen.c b/ee_core/tests/test_freeze_diag_screen.c
+new file mode 100644
+index 00000000..f2eab01a
+--- /dev/null
++++ b/ee_core/tests/test_freeze_diag_screen.c
+@@ -0,0 +1,136 @@
++/*
++  Host test for the freeze report's TV page (INGAMEDIAG flavour).
++  Build: cc -std=gnu99 -Wall -Wextra -Werror -DFREEZE_DIAG_SCREEN_HOST_TEST -Iee_core/include
++         ee_core/tests/test_freeze_diag_screen.c ee_core/src/freeze_diag_screen.c -o /tmp/test_freeze_diag_screen
++*/
++
++#include <stdio.h>
++#include <string.h>
++
++#include "freeze_diag_screen.h"
++
++static int failures = 0;
++
++#define CHECK(cond, what)                                   \
++    do {                                                    \
++        if (!(cond)) {                                      \
++            printf("FAIL: %s (line %d)\n", what, __LINE__); \
++            failures++;                                     \
++        }                                                   \
++    } while (0)
++
++static freeze_diag_report_t r;
++static heap_diag_snapshot_t h;
++static fds_page_t p;
++
++static int find(const char *needle, int *colour)
++{
++    int i;
++
++    for (i = 0; i < FDS_LINES; i++)
++        if (strstr(p.text[i], needle) != NULL) {
++            if (colour != NULL)
++                *colour = p.colour[i];
++            return i;
++        }
++    return -1;
++}
++
++static void dump(void)
++{
++    int i;
++
++    for (i = 0; i < FDS_LINES; i++)
++        printf("|%-*s|\n", FDS_CHARS, p.text[i]);
++}
++
++int main(void)
++{
++    int i, colour = -1, row, rows_ok = 1;
++
++    memset(&r, 0, sizeof(r));
++    memset(&h, 0, sizeof(h));
++    memcpy(r.game_id, "SLUS_202.67", 11);
++    r.trigger = FREEZE_DIAG_TRIGGER_STALL;
++    r.pad_frame = 77;
++    r.igr_polls = 123456;
++
++    // No heap record.
++    freeze_diag_screen_compose(&r, &h, &p, 0);
++    CHECK(find("RIPTOPL FREEZE REPORT  SLUS_202.67", &colour) == 0 && colour == FDS_C_TITLE, "title with the game");
++    CHECK(find("TRIGGER: PAD DATA STOPPED", NULL) == 1, "the watchdog named as the trigger");
++    CHECK(find("POLLS 123456", NULL) > 0, "the pad and poll counts");
++    CHECK(find("IOP HEAP RECORD: NOT FOUND", &colour) > 0 && colour == FDS_C_WARN, "a missing record said so");
++    CHECK(find("TAP POWER ONCE TO SAVE RIPTFRZ.TXT", NULL) == FDS_LINES - 1, "the footer at the bottom");
++
++    // A record: two overruns, one short run, one failed allocation, a module list.
++    h.found = 1;
++    h.iop.version = HEAP_DIAG_VERSION;
++    h.iop.module_count = 2;
++    memcpy(h.iop.modules[0].name, "cdvdman", 7);
++    h.iop.modules[0].text_start = 0x10000;
++    h.iop.modules[0].size = 0x8000;
++    memcpy(h.iop.modules[1].name, "gamesnd1", 8); // 8 characters, unterminated
++    h.iop.modules[1].text_start = 0x80000;
++    h.iop.modules[1].size = 0x4000;
++    h.iop.allocs = 40;
++    h.iop.frees = 12;
++    h.iop.fails = 1;
++    h.iop.free_now = 300000;
++    h.iop.free_min = 20000;
++    h.iop.largest_min = 9000;
++    h.iop.blocks[3].addr = 0x0012A400;
++    h.iop.blocks[3].size = 25344;
++    h.iop.blocks[3].ra = 0x80123;
++    h.tail_ff[3] = 1280;
++    h.iop.blocks[7].addr = 0x00140000;
++    h.iop.blocks[7].size = 2304;
++    h.iop.blocks[7].ra = 0x99999;
++    h.tail_ff[7] = 1792;
++    h.iop.blocks[9].addr = 0x00150000;
++    h.iop.blocks[9].size = 64;
++    h.iop.blocks[9].ra = 0x10010;
++    h.tail_ff[9] = 3;
++    h.iop.blocks[11].addr = 0x00160000; // no run: not listed
++    h.iop.blocks[11].size = 128;
++    h.iop.failed[0].size = 30000;
++    h.iop.failed[0].ra = 0x10044;
++    h.iop.fail_next = 1;
++
++    freeze_diag_screen_compose(&r, &h, &p, 0);
++    CHECK(find("ALLOCS 40 FREES 12 FAILS 1", NULL) > 0, "the counts");
++    CHECK(find("FREE NOW 300000 MIN 20000 LARGEST 9000", NULL) > 0, "free memory");
++    CHECK(find("FAILED ALLOC 30000 BY cdvdman+44", &colour) > 0 && colour == FDS_C_WARN, "the failed allocation, caller resolved (the font draws it upper case)");
++    row = find("00140000 2304 FF=1792 00099999", &colour);
++    CHECK(row > 0 && colour == FDS_C_WARN, "the worst overrun first, caller outside every module as an address");
++    CHECK(find("0012A400 25344 FF=1280 gamesnd1+123", NULL) == row + 1, "then the next, the 8-character module name whole");
++    CHECK(find("00150000 64 FF=3 cdvdman+10", &colour) == row + 2 && colour == FDS_C_TEXT, "a short run, not marked");
++    CHECK(find("00160000", NULL) < 0, "a block with no run is left out");
++    for (i = 0; i < FDS_LINES; i++)
++        if (strlen(p.text[i]) > FDS_CHARS)
++            rows_ok = 0;
++    CHECK(rows_ok, "every row fits the screen");
++
++    // A full table: the list stops above the footer.
++    for (i = 0; i < HEAP_DIAG_BLOCKS; i++) {
++        h.iop.blocks[i].addr = 0x100000 + i * 0x100;
++        h.iop.blocks[i].size = 16;
++        h.tail_ff[i] = (unsigned short)(100 + i);
++    }
++    freeze_diag_screen_compose(&r, &h, &p, 1);
++    CHECK(strcmp(p.text[FDS_LINES - 3], "") == 0, "a blank row above the footer");
++    CHECK(find("SAVING RIPTFRZ.TXT", NULL) == FDS_LINES - 2, "the saving footer");
++    CHECK(find("FF=195", NULL) > 0, "the longest run of a full table shown");
++
++    r.trigger = FREEZE_DIAG_TRIGGER_POWER;
++    freeze_diag_screen_compose(&r, &h, &p, 0);
++    CHECK(find("TRIGGER: POWER BUTTON", NULL) == 1, "the power button named");
++
++    if (failures) {
++        dump();
++        printf("%d failure(s)\n", failures);
++        return 1;
++    }
++    printf("test_freeze_diag_screen: all checks passed\n");
++    return 0;
++}
+diff --git a/modules/iopcore/cdvdman/Makefile b/modules/iopcore/cdvdman/Makefile
+index ad77f294..2220e9d2 100644
+--- a/modules/iopcore/cdvdman/Makefile
++++ b/modules/iopcore/cdvdman/Makefile
+@@ -83,6 +83,8 @@ IOP_INCS += -I../common
+ # In-game freeze report (top Makefile INGAMEDIAG=1, the FREEZEDIAG flavour). Run make clean when switching it.
+ ifeq ($(INGAMEDIAG),1)
+ IOP_CFLAGS += -DINGAMEDIAG
++# The IOP heap record ee_core reads for the report (../common/heap_diag.h).
++IOP_OBJS += heapdiag.o
+ endif
+ 
+ ifeq ($(IOPCORE_DEBUG),1)
+diff --git a/modules/iopcore/cdvdman/cdvdman.c b/modules/iopcore/cdvdman/cdvdman.c
+index 47658b12..e0474608 100644
+--- a/modules/iopcore/cdvdman/cdvdman.c
++++ b/modules/iopcore/cdvdman/cdvdman.c
+@@ -982,6 +982,15 @@ int _start(int argc, char **argv)
+     // hook MODLOAD's exports
+     hookMODLOAD();
+ 
++    // Per-game fix for games that overrun the IOP buffers they allocate (sbPrepare sets it).
++    if (cdvdman_settings.common.flags & IOPCORE_COMPAT_IOP_PAD)
++        hookAllocSysMemory();
++
++#ifdef INGAMEDIAG
++    // Freeze report: note the game's IOP allocations (heapdiag.c). Every call passes through unchanged.
++    heap_diag_install();
++#endif
++
+     // init disk type stuff
+     cdvdman_initDiskType();
+ 
+diff --git a/modules/iopcore/cdvdman/device-bdm.c b/modules/iopcore/cdvdman/device-bdm.c
+index fd319dcf..9395e501 100644
+--- a/modules/iopcore/cdvdman/device-bdm.c
++++ b/modules/iopcore/cdvdman/device-bdm.c
+@@ -275,21 +275,10 @@ void bdm_writeSector(u64 lba, unsigned short int nsectors, const unsigned char *
+ #ifdef INGAMEDIAG
+     freeze_diag_vmc_begin(FREEZE_DIAG_VMC_WRITE, (unsigned int)lba);
+ #endif
+-    {
+-        // build 126 (RiptOPL #1201): MX4SIO ("sdc"): when a multi-sector write stops part way, its driver retries
+-        // the rest from the first sector again instead of the next one (ps2dev/ps2sdk#936), so the last sectors can
+-        // be left unwritten while the call reports success. It gets one sector per call; every other driver the run
+-        unsigned short int step = nsectors, done = 0;
+-        if (nsectors > 1 && g_bd->name != NULL && g_bd->name[0] == 's' && g_bd->name[1] == 'd' && g_bd->name[2] == 'c' &&
+-            g_bd->name[3] == '\0')
+-            step = 1;
+-        while (done < nsectors) {
+-            unsigned short int n = (nsectors - done < step) ? nsectors - done : step;
+-            if (g_bd->write(g_bd, lba + done, buffer + (u32)done * g_bd->sectorSize, n) != n)
+-                break;
+-            done += n;
+-        }
+-    }
++    // RIPPS2 build 157 (RiptOPL ef3c8026): the MX4SIO driver is now built in with ps2sdk#936's retry fixes (it advances
++    // both sector and buffer after a partial transfer), so every BDM device takes the whole batch again; build 126's
++    // one-sector-at-a-time MX4SIO writes are gone
++    g_bd->write(g_bd, lba, buffer, nsectors);
+ #ifdef INGAMEDIAG
+     freeze_diag_vmc_end();
+ #endif
+diff --git a/modules/iopcore/cdvdman/hdpro_atad.c b/modules/iopcore/cdvdman/hdpro_atad.c
+index 736e353e..84fba5ae 100644
+--- a/modules/iopcore/cdvdman/hdpro_atad.c
++++ b/modules/iopcore/cdvdman/hdpro_atad.c
+@@ -292,6 +292,8 @@ static int hdpro_io_start(void)
+ 
+ static int hdpro_io_finish(void)
+ {
++    int ok;
++
+     if (!hdpro_io_active)
+         return 0;
+ 
+@@ -305,10 +307,13 @@ static int hdpro_io_finish(void)
+ 
+     DelayThread(200);
+ 
+-    if (HDPROreg_IO32 == 0x401a7800) // check the 1st in ROM0 seg get
+-        hdpro_io_active = 0;         // back to it's original state
++    ok = (HDPROreg_IO32 == 0x401a7800); // check the 1st in ROM0 seg get
++
++    // Clear the flag even when the check fails: left set, hdpro_io_start() would refuse every later
++    // transfer without trying, so one failed finish would end all disc access until reboot.
++    hdpro_io_active = 0;
+ 
+-    return hdpro_io_active ^ 1;
++    return ok;
+ }
+ 
+ static void hdpro_io_write(u8 cmd, u16 val)
+@@ -678,8 +683,11 @@ int sceAtaDmaTransfer(int device, void *buf, u32 lba, u32 nsectors, int dir)
+ 
+     WAITIOSEMA(ata_io_sema);
+ 
+-    if (!hdpro_io_start())
++    if (!hdpro_io_start()) {
++        // Give the lock back, or every later disc read of the game waits on it for good.
++        SIGNALIOSEMA(ata_io_sema);
+         return -1;
++    }
+ 
+     while (nsectors) {
+         len = (nsectors > 256) ? 256 : nsectors;
+@@ -717,7 +725,7 @@ int sceAtaDmaTransfer(int device, void *buf, u32 lba, u32 nsectors, int dir)
+     }
+ 
+     if (!hdpro_io_finish())
+-        return -2;
++        res = -2; // still release the lock below
+ 
+     SIGNALIOSEMA(ata_io_sema);
+ 
+diff --git a/modules/iopcore/cdvdman/heapdiag.c b/modules/iopcore/cdvdman/heapdiag.c
+new file mode 100644
+index 00000000..a9af4224
+--- /dev/null
++++ b/modules/iopcore/cdvdman/heapdiag.c
+@@ -0,0 +1,179 @@
++/*
++  IOP heap record (INGAMEDIAG flavour only): see ../common/heap_diag.h.
++
++  Only ingamediag builds compile this file. It hooks SYSMEM's AllocSysMemory and FreeSysMemory in
++  the export table, as hookMODLOAD() does for MODLOAD: modules the game loads after CDVDMAN link to
++  the hooks, and modules already linked keep calling SYSMEM directly. The hooks pass every call
++  through unchanged and only take notes.
++*/
++
++#include "internal.h"
++#include "ioplib_util.h"
++#include "../common/heap_diag.h"
++
++heap_diag_iop_t g_heap_diag __attribute__((aligned(16)));
++
++static void *(*org_AllocSysMemory)(int mode, int size, void *ptr);
++static int (*org_FreeSysMemory)(void *ptr);
++static unsigned int heap_diag_seq;
++static int heap_diag_module_index = -1, heap_diag_module_total = -1;
++
++// Interrupts are off. The module list only changes when a module loads or unloads.
++static void heap_diag_note_modules(void)
++{
++    lc_internals_t *lc = GetLoadcoreInternalData();
++    ModuleInfo_t *m;
++    unsigned int n = 0;
++    int i;
++
++    if (lc->module_index == heap_diag_module_index && lc->module_count == heap_diag_module_total)
++        return;
++    heap_diag_module_index = lc->module_index;
++    heap_diag_module_total = lc->module_count;
++
++    for (m = lc->image_info; m != NULL; m = m->next, n++) {
++        heap_diag_module_t *d;
++
++        if (n >= HEAP_DIAG_MODULES)
++            continue;
++        d = &g_heap_diag.modules[n];
++        for (i = 0; i < 8 && m->name != NULL && m->name[i] != '\0'; i++)
++            d->name[i] = m->name[i];
++        for (; i < 8; i++)
++            d->name[i] = '\0';
++        d->text_start = m->text_start;
++        d->size = m->text_size + m->data_size + m->bss_size;
++    }
++    g_heap_diag.module_count = n;
++    for (; n < HEAP_DIAG_MODULES; n++)
++        g_heap_diag.modules[n].text_start = 0;
++}
++
++static void heap_diag_note_free_memory(int allocated)
++{
++    unsigned int total = QueryTotalFreeMemSize();
++
++    g_heap_diag.free_now = total;
++    if (total < g_heap_diag.free_min)
++        g_heap_diag.free_min = total;
++    if (allocated) {
++        unsigned int largest = QueryMaxFreeMemSize();
++
++        if (largest < g_heap_diag.largest_min)
++            g_heap_diag.largest_min = largest;
++    }
++}
++
++static void *hook_AllocSysMemory(int mode, int size, void *ptr)
++{
++    unsigned int ra = (unsigned int)__builtin_return_address(0);
++    heap_diag_block_t *slot;
++    void *result;
++    int oldstate, i;
++
++    // Keep the allocation and its record together so a racing free cannot reorder them.
++    CpuSuspendIntr(&oldstate);
++    result = org_AllocSysMemory(mode, size, ptr);
++    if (result == NULL) {
++        slot = &g_heap_diag.failed[g_heap_diag.fail_next];
++        g_heap_diag.fail_next = (g_heap_diag.fail_next + 1) % HEAP_DIAG_FAILS;
++        slot->addr = (unsigned int)ptr;
++        slot->size = (unsigned int)size;
++        slot->ra = ra;
++        slot->seq = (unsigned int)mode;
++        g_heap_diag.fails++;
++    } else {
++        // An empty slot, else the oldest block.
++        slot = &g_heap_diag.blocks[0];
++        for (i = 0; i < HEAP_DIAG_BLOCKS; i++) {
++            if (g_heap_diag.blocks[i].addr == 0) {
++                slot = &g_heap_diag.blocks[i];
++                break;
++            }
++            if (g_heap_diag.blocks[i].seq < slot->seq)
++                slot = &g_heap_diag.blocks[i];
++        }
++        if (slot->addr != 0)
++            g_heap_diag.evicted++;
++        slot->addr = (unsigned int)result;
++        slot->size = (unsigned int)size;
++        slot->ra = ra;
++        slot->seq = ++heap_diag_seq;
++        g_heap_diag.allocs++;
++    }
++    heap_diag_note_free_memory(1);
++    heap_diag_note_modules();
++    CpuResumeIntr(oldstate);
++
++    return result;
++}
++
++static int hook_FreeSysMemory(void *ptr)
++{
++    int result, oldstate, i;
++
++    // Keep the free and its record update together so a racing allocation cannot reuse the slot first.
++    CpuSuspendIntr(&oldstate);
++    result = org_FreeSysMemory(ptr);
++    for (i = 0; i < HEAP_DIAG_BLOCKS; i++) {
++        if (result >= 0 && g_heap_diag.blocks[i].addr == (unsigned int)ptr && ptr != NULL) {
++            g_heap_diag.blocks[i].addr = 0;
++            g_heap_diag.blocks[i].seq = 0;
++            g_heap_diag.frees++;
++            break;
++        }
++    }
++    if (result >= 0 && i == HEAP_DIAG_BLOCKS)
++        g_heap_diag.unknown_frees++;
++    heap_diag_note_free_memory(0);
++    heap_diag_note_modules();
++    CpuResumeIntr(oldstate);
++
++    return result;
++}
++
++// A record left by the CDVDMAN of an earlier IOP session would be found too: wipe every copy but
++// this one before arming it.
++static void heap_diag_wipe_stale(void)
++{
++    // Below 0x800 is the IOP kernel's own area; nothing of ours lives there.
++    volatile unsigned int *p = (volatile unsigned int *)0x800;
++    volatile unsigned int *end = (volatile unsigned int *)HEAP_DIAG_IOP_RAM_SIZE;
++
++    for (; p < end; p += 4) {
++        if (p[0] == HEAP_DIAG_MAGIC && p[1] == HEAP_DIAG_CHECK && p != (volatile unsigned int *)&g_heap_diag)
++            p[1] = 0;
++    }
++}
++
++void heap_diag_install(void)
++{
++    modinfo_t info;
++    int oldstate;
++
++    heap_diag_wipe_stale();
++
++    if (!getModInfo("sysmem\0\0", &info))
++        return;
++
++    CpuSuspendIntr(&oldstate);
++    g_heap_diag.version = HEAP_DIAG_VERSION;
++    g_heap_diag.self = (unsigned int)&g_heap_diag;
++    g_heap_diag.free_min = 0xFFFFFFFF;
++    g_heap_diag.largest_min = 0xFFFFFFFF;
++    heap_diag_note_free_memory(1);
++    heap_diag_note_modules();
++
++    org_AllocSysMemory = (void *)info.exports[4];
++    org_FreeSysMemory = (void *)info.exports[5];
++    info.exports[4] = (void *)hook_AllocSysMemory;
++    info.exports[5] = (void *)hook_FreeSysMemory;
++
++    g_heap_diag.magic = HEAP_DIAG_MAGIC;
++    g_heap_diag.check = HEAP_DIAG_CHECK;
++    CpuResumeIntr(oldstate);
++
++    // The modules already loaded (and the IOP pad hook's own import, when it is on) go through the
++    // record too.
++    relinkExports(&info);
++}
+diff --git a/modules/iopcore/cdvdman/imports.lst b/modules/iopcore/cdvdman/imports.lst
+index c8fb70b2..379589e6 100644
+--- a/modules/iopcore/cdvdman/imports.lst
++++ b/modules/iopcore/cdvdman/imports.lst
+@@ -24,9 +24,12 @@ sysmem_IMPORTS_start
+ I_Kprintf
+ I_AllocSysMemory
+ I_FreeSysMemory
+-#ifdef __IOPCORE_DEBUG
++#if defined(__IOPCORE_DEBUG) || defined(INGAMEDIAG)
+ I_QueryTotalFreeMemSize
+ #endif
++#ifdef INGAMEDIAG
++I_QueryMaxFreeMemSize
++#endif
+ sysmem_IMPORTS_end
+ 
+ loadcore_IMPORTS_start
+diff --git a/modules/iopcore/cdvdman/internal.h b/modules/iopcore/cdvdman/internal.h
+index 03054c74..f06ca208 100644
+--- a/modules/iopcore/cdvdman/internal.h
++++ b/modules/iopcore/cdvdman/internal.h
+@@ -146,6 +146,9 @@ extern u32 mediaLsnCount;
+ 
+ extern freeze_diag_iop_t g_freeze_diag;
+ 
++// IOP heap record for ee_core's freeze report: see heapdiag.c and ../common/heap_diag.h.
++void heap_diag_install(void);
++
+ // VMC sector I/O exported to MCEMU. A call that never returns stays marked busy in the report.
+ static inline void freeze_diag_vmc_begin(unsigned int op, unsigned int lba)
+ {
+diff --git a/modules/iopcore/cdvdman/ioplib_util.c b/modules/iopcore/cdvdman/ioplib_util.c
+index 82cf7ffe..a1365956 100644
+--- a/modules/iopcore/cdvdman/ioplib_util.c
++++ b/modules/iopcore/cdvdman/ioplib_util.c
+@@ -249,6 +249,29 @@ static int Hook_ReferModuleStatus(int id, ModuleStatus_t *status)
+     return ReferModuleStatus(id, status);
+ }
+ 
++//--------------------------------------------------------------
++// Point every module that imports the library at its export table again, after a hook changed it.
++void relinkExports(modinfo_t *info)
++{
++    iop_library_t *lib = (iop_library_t *)((u32)info->exports - 0x14);
++
++    struct irx_import_table *table;
++    struct irx_import_stub *stub;
++
++    FlushDcache();
++
++    // go through each table that imports the library
++    for (table = lib->caller; table != NULL; table = table->next) {
++        // go through each import in the table
++        for (stub = (struct irx_import_stub *)table->stubs; stub->jump != 0; stub++) {
++            // patch the stub to jump to the address specified in the library export table for "fno"
++            stub->jump = 0x08000000 | (((u32)lib->exports[stub->fno] << 4) >> 6);
++        }
++    }
++
++    FlushIcache();
++}
++
+ //--------------------------------------------------------------
+ void hookMODLOAD(void)
+ {
+@@ -301,21 +324,69 @@ void hookMODLOAD(void)
+     }
+ 
+     // fix imports
+-    iop_library_t *lib = (iop_library_t *)((u32)info.exports - 0x14);
++    relinkExports(&info);
++}
+ 
+-    struct irx_import_table *table;
+-    struct irx_import_stub *stub;
++//--------------------------------------------------------------
++/* Per-game fix (IOPCORE_COMPAT_IOP_PAD, set by sbPrepare from a title list): some games write past the
++   end of the IOP buffers they allocate. .hack//Infection overruns three of them, 25344, 3328 and 2304
++   bytes long, by 1280, 768 and 1792 bytes and hangs loading into "The World" on USB, HDD and UDPBD alike
++   (neutrino #92). Those three get the overrun plus 256 bytes more, so it lands in memory nobody else
++   owns. Every other allocation gets 256 bytes, like neutrino's Mode 7: a flat 2 KB on every block
++   (neutrino p-membo2k) runs the IOP out of RAM on some setups and black-screens the game (neutrino #148).
++   If the larger block does not fit, the size asked for is used: the pad never makes an allocation fail. */
++#define IOP_PAD_SIZE 256
++
++static const struct
++{
++    int size; // the overrun block, rounded up to SYSMEM's 256-byte units
++    int pad;
++} iop_pad_blocks[] = {
++    {25344, 1280 + IOP_PAD_SIZE},
++    {3328, 768 + IOP_PAD_SIZE},
++    {2304, 1792 + IOP_PAD_SIZE},
++};
+ 
+-    FlushDcache();
++static int iopPadFor(int size)
++{
++    int rounded = (size + 255) & ~255;
++    unsigned int i;
+ 
+-    // go through each table that imports the library
+-    for (table = lib->caller; table != NULL; table = table->next) {
+-        // go through each import in the table
+-        for (stub = (struct irx_import_stub *)table->stubs; stub->jump != 0; stub++) {
+-            // patch the stub to jump to the address specified in the library export table for "fno"
+-            stub->jump = 0x08000000 | (((u32)lib->exports[stub->fno] << 4) >> 6);
+-        }
++    for (i = 0; i < sizeof(iop_pad_blocks) / sizeof(iop_pad_blocks[0]); i++) {
++        if (rounded == iop_pad_blocks[i].size)
++            return iop_pad_blocks[i].pad;
+     }
++    return IOP_PAD_SIZE;
++}
+ 
+-    FlushIcache();
++static void *(*AllocSysMemory_org)(int mode, int size, void *ptr);
++
++static void *Hook_AllocSysMemory(int mode, int size, void *ptr)
++{
++    void *result = NULL;
++
++    // A fixed-address request (pbuf_realloc grows a block in place) must keep its exact extent.
++    if (mode != ALLOC_ADDRESS && size > 0 && size <= 0x7FFFFFFF - (1792 + IOP_PAD_SIZE))
++        result = AllocSysMemory_org(mode, size + iopPadFor(size), ptr);
++    if (result == NULL)
++        result = AllocSysMemory_org(mode, size, ptr);
++
++    return result;
++}
++
++void hookAllocSysMemory(void)
++{
++    modinfo_t info;
++    int oldstate;
++
++    if (!getModInfo("sysmem\0\0", &info))
++        return;
++
++    CpuSuspendIntr(&oldstate);
++    AllocSysMemory_org = (void *)info.exports[4];
++    info.exports[4] = (void *)Hook_AllocSysMemory;
++    CpuResumeIntr(oldstate);
++
++    // The modules already loaded (THREADMAN's thread stacks among them) take the pad too, as in neutrino.
++    relinkExports(&info);
+ }
+diff --git a/modules/iopcore/cdvdman/ioplib_util.h b/modules/iopcore/cdvdman/ioplib_util.h
+index 21524360..cffc90da 100644
+--- a/modules/iopcore/cdvdman/ioplib_util.h
++++ b/modules/iopcore/cdvdman/ioplib_util.h
+@@ -15,5 +15,7 @@ typedef struct
+ 
+ int getModInfo(char *modname, modinfo_t *info);
+ void hookMODLOAD(void);
++void hookAllocSysMemory(void);
++void relinkExports(modinfo_t *info);
+ 
+ #endif /* IOPLIB_UTIL_H */
+diff --git a/modules/iopcore/cdvdman/streaming.c b/modules/iopcore/cdvdman/streaming.c
+index 00d1e637..548a7db1 100644
+--- a/modules/iopcore/cdvdman/streaming.c
++++ b/modules/iopcore/cdvdman/streaming.c
+@@ -199,14 +199,25 @@ static int ReadSectorsEE(int maxcount, void *buffer)
+         }
+     }
+ 
+-    if (dmat_count > 0)
+-        while ((dmat_id = sceSifSetDma(dmat, dmat_count)) == 0) {
+-        };
+-
+     CpuResumeIntr(OldState);
+ 
+     if (dmat_count > 0) // Only if there is data to copy
+     {
++        /* sceSifSetDma returns 0 while SIFMAN's tag queue is full. The queue only drains from the SIF0 DMA
++           completion interrupt, so retrying with interrupts suspended never succeeds: the IOP hangs with
++           interrupts off and every other IOP module (pad, sound, the drive) stops. Retry with interrupts on
++           and yield in between, as SCE's CDVDSTM and CDVDFSV do (#185).
++           Leaving the critical section before the transfer is safe: only this reader moves StReadPtr, and a
++           stream fill cannot reuse these sectors until StStreamed is lowered below, after the DMA ends. */
++        while (1) {
++            CpuSuspendIntr(&OldState);
++            dmat_id = sceSifSetDma(dmat, dmat_count);
++            CpuResumeIntr(OldState);
++            if (dmat_id != 0)
++                break;
++            DelayThread(500);
++        }
++
+         while (sceSifDmaStat(dmat_id) >= 0) {
+         };
+ 
+@@ -412,6 +423,13 @@ int sceCdStRead(u32 sectors, u32 *buffer, u32 mode, u32 *error)
+             // if(mode == STMNBLK) break;
+             if (mode == 0)
+                 break;
++
++            /* Blocking read still short: make sure a fill is on its way before waiting for the next read end.
++               The fill chain stops when the buffer is full and only restarts from here or after StRead returns,
++               so a blocking read that drained a full buffer without getting enough waited forever (#185).
++               Does nothing while a fill is already in flight. */
++            if (result < sectors)
++                StStartFillStreamBuffer();
+         }
+         *error = sceCdGetError();
+ 
+diff --git a/modules/iopcore/common/cdvd_config.h b/modules/iopcore/common/cdvd_config.h
+index 152f6c48..e55e9297 100644
+--- a/modules/iopcore/common/cdvd_config.h
++++ b/modules/iopcore/common/cdvd_config.h
+@@ -11,6 +11,7 @@
+ #define IOPCORE_COMPAT_EMU_DVDDL     0x0004
+ #define IOPCORE_COMPAT_ACCU_READS    0x0008
+ #define IOPCORE_COMPAT_SLOW_READS    0x0010 // with ACCU_READS: DVD media at the CD rate (~900KB/s)
++#define IOPCORE_COMPAT_IOP_PAD       0x0020 // per-game fix: pad IOP allocations past a known overrun (ioplib_util.c)
+ #define IOPCORE_ENABLE_POFF          0x0100
+ #define IOPCORE_SMB_FORMAT_USBLD     0x0200
+ 
+diff --git a/modules/iopcore/common/heap_diag.h b/modules/iopcore/common/heap_diag.h
+new file mode 100644
+index 00000000..d2c153ac
+--- /dev/null
++++ b/modules/iopcore/common/heap_diag.h
+@@ -0,0 +1,87 @@
++/*
++  IOP heap record (INGAMEDIAG flavour only).
++
++  CDVDMAN hooks SYSMEM's AllocSysMemory and FreeSysMemory while a game runs and keeps this record of
++  the blocks the game's IOP modules allocate, the allocations that failed, the lowest free memory
++  seen and the modules loadcore lists. It changes no allocation: sizes, order and addresses are the
++  game's own. Some games overrun their own IOP buffers (.hack//Infection, SLUS_202.67, fills the
++  overrun with 0xFF; neutrino issue #92), and how far past each block's end the 0xFF run reaches is
++  the size of the guard a per-game fix needs.
++
++  ee_core reads this record straight from IOP RAM (KSEG1 0xBC000000), so it also works when the IOP
++  is dead: it scans for magic + check + self. check is written at run time, so the module's file
++  image, which the IOP may still hold, never contains the pair. Shared by CDVDMAN, ee_core and the
++  formatter, so it uses plain C types only.
++*/
++
++#ifndef HEAP_DIAG_H
++#define HEAP_DIAG_H
++
++#define HEAP_DIAG_MAGIC   0x50414548 // "HEAP"
++#define HEAP_DIAG_CHECK   0xAFBEBAB7 // ~HEAP_DIAG_MAGIC
++#define HEAP_DIAG_VERSION 1
++
++#define HEAP_DIAG_BLOCKS  96 // live blocks; when full, the oldest is dropped (evicted)
++#define HEAP_DIAG_FAILS   8  // the last failed allocations
++#define HEAP_DIAG_MODULES 24
++
++// How far past a block's end ee_core looks for the overrun's 0xFF run.
++#define HEAP_DIAG_TAIL_SCAN 2048
++
++#define HEAP_DIAG_IOP_RAM_SIZE (2 * 1024 * 1024)
++
++typedef struct heap_diag_block
++{
++    unsigned int addr; // 0: empty slot
++    unsigned int size; // as the caller asked for it
++    unsigned int ra;   // the caller's return address
++    unsigned int seq;  // allocation number; for a failed one, the mode
++} heap_diag_block_t;
++
++typedef struct heap_diag_module
++{
++    char name[8]; // the first 8 characters, not necessarily terminated
++    unsigned int text_start;
++    unsigned int size; // text + data + bss
++} heap_diag_module_t;
++
++typedef struct heap_diag_iop
++{
++    unsigned int magic;
++    unsigned int check;
++    unsigned int self; // this record's IOP address
++    unsigned int version;
++
++    unsigned int allocs;        // successful allocations seen
++    unsigned int frees;         // frees of a tracked block
++    unsigned int fails;         // allocations that returned NULL
++    unsigned int unknown_frees; // frees of a block allocated before the hook or evicted
++    unsigned int evicted;       // live blocks dropped because the table was full
++    unsigned int free_now;      // QueryTotalFreeMemSize after the last allocation or free
++    unsigned int free_min;      // the lowest free_now
++    unsigned int largest_min;   // the lowest QueryMaxFreeMemSize after an allocation
++    unsigned int module_count;  // modules loadcore listed (may exceed HEAP_DIAG_MODULES)
++    unsigned int fail_next;     // next slot of failed[]
++    unsigned int reserved[2];
++
++    heap_diag_block_t blocks[HEAP_DIAG_BLOCKS];
++    heap_diag_block_t failed[HEAP_DIAG_FAILS];
++    heap_diag_module_t modules[HEAP_DIAG_MODULES];
++} heap_diag_iop_t;
++
++// sizeof is checked by the host test; it is copied in 16-byte blocks.
++#define HEAP_DIAG_IOP_SIZE 2112
++
++// What ee_core keeps after reading the record: the record and, per block, the 0xFF run after it.
++typedef struct heap_diag_snapshot
++{
++    unsigned int found;    // 1: a record was found in IOP RAM
++    unsigned int found_at; // its IOP address
++    unsigned int reserved[2];
++    unsigned short tail_ff[HEAP_DIAG_BLOCKS]; // 0xFF bytes right after blocks[i] (up to HEAP_DIAG_TAIL_SCAN)
++    heap_diag_iop_t iop;
++} heap_diag_snapshot_t;
++
++#define HEAP_DIAG_SNAPSHOT_SIZE (16 + 2 * HEAP_DIAG_BLOCKS + HEAP_DIAG_IOP_SIZE)
++
++#endif
+diff --git a/modules/iopcore/freezediag/freezediag.c b/modules/iopcore/freezediag/freezediag.c
+index 70b7eb15..86253bc9 100644
+--- a/modules/iopcore/freezediag/freezediag.c
++++ b/modules/iopcore/freezediag/freezediag.c
+@@ -2,7 +2,8 @@
+   In-game freeze report writer (INGAMEDIAG flavour only).
+ 
+   ee_core loads this once, after the IGR IOP reboot, with ROM SIO2MAN and MCMAN already loaded.
+-  argv[1] is the IOP address (eight hex digits) where ee_core copied its freeze_diag_report_t.
++  argv[1] is the IOP address (eight hex digits) where ee_core copied its freeze_diag_report_t, and
++  argv[2], when present, where it copied its heap_diag_snapshot_t (the game's IOP allocations).
+   This formats it with the same formatter the host test covers and writes mc0:/RIPTFRZ.TXT
+   (mc1 if slot 1 fails). The work lives on the IOP because ee_core has no room for the
+   formatter or the EE file client.
+@@ -18,7 +19,7 @@ IRX_ID(MODNAME, 1, 1);
+ #define FREEZEDIAG_BUILD "unknown"
+ #endif
+ 
+-#define TEXT_CAP 4096
++#define TEXT_CAP 16384
+ 
+ static unsigned int parse_hex8(const char *s)
+ {
+@@ -69,6 +70,9 @@ int _start(int argc, char *argv[])
+         return MODULE_NO_RESIDENT_END;
+ 
+     len = freeze_diag_format(report, FREEZEDIAG_BUILD, text, TEXT_CAP);
++    // argv[2]: ee_core's copy of CDVDMAN's IOP heap record (heap_diag.h).
++    if (argc >= 3 && argv[2] != NULL)
++        len += freeze_diag_format_heap((const heap_diag_snapshot_t *)parse_hex8(argv[2]), text + len, TEXT_CAP - len);
+     if (!write_report("mc0:/RIPTFRZ.TXT", text, len))
+         write_report("mc1:/RIPTFRZ.TXT", text, len);
+ 
+diff --git a/modules/mx4sio_bd/LICENSE b/modules/mx4sio_bd/LICENSE
+new file mode 100644
+index 00000000..e299e7ef
+--- /dev/null
++++ b/modules/mx4sio_bd/LICENSE
+@@ -0,0 +1,167 @@
++
++  The Academic Free License
++  v. 2.0
++
++This Academic Free License (the "License") applies to any original work
++of authorship (the "Original Work") whose owner (the "Licensor") has
++placed the following notice immediately following the copyright notice
++for the Original Work:
++
++    *Licensed under the Academic Free License version 2.0*
++
++1) *Grant of Copyright License.* Licensor hereby grants You a
++world-wide, royalty-free, non-exclusive, perpetual, sublicenseable
++license to do the following:
++
++    a) to reproduce the Original Work in copies;
++
++    b) to prepare derivative works ("Derivative Works") based upon the
++    Original Work;
++
++    c) to distribute copies of the Original Work and Derivative Works to
++    the public;
++
++    d) to perform the Original Work publicly; and
++
++    e) to display the Original Work publicly.
++
++2) *Grant of Patent License.* Licensor hereby grants You a world-wide,
++royalty-free, non-exclusive, perpetual, sublicenseable license, under
++patent claims owned or controlled by the Licensor that are embodied in
++the Original Work as furnished by the Licensor, to make, use, sell and
++offer for sale the Original Work and Derivative Works.
++
++3) *Grant of Source Code License.* The term "Source Code" means the
++preferred form of the Original Work for making modifications to it and
++all available documentation describing how to modify the Original Work.
++Licensor hereby agrees to provide a machine-readable copy of the Source
++Code of the Original Work along with each copy of the Original Work that
++Licensor distributes. Licensor reserves the right to satisfy this
++obligation by placing a machine-readable copy of the Source Code in an
++information repository reasonably calculated to permit inexpensive and
++convenient access by You for as long as Licensor continues to distribute
++the Original Work, and by publishing the address of that information
++repository in a notice immediately following the copyright notice that
++applies to the Original Work.
++
++4) *Exclusions From License Grant. *Neither the names of Licensor, nor
++the names of any contributors to the Original Work, nor any of their
++trademarks or service marks, may be used to endorse or promote products
++derived from this Original Work without express prior written permission
++of the Licensor. Nothing in this License shall be deemed to grant any
++rights to trademarks, copyrights, patents, trade secrets or any other
++intellectual property of Licensor except as expressly stated herein. No
++patent license is granted to make, use, sell or offer to sell
++embodiments of any patent claims other than the licensed claims defined
++in Section 2. No right is granted to the trademarks of Licensor even if
++such marks are included in the Original Work. Nothing in this License
++shall be interpreted to prohibit Licensor from licensing under different
++terms from this License any Original Work that Licensor otherwise would
++have a right to license.
++
++5) This section intentionally omitted.
++
++6) *Attribution Rights.* You must retain, in the Source Code of any
++Derivative Works that You create, all copyright, patent or trademark
++notices from the Source Code of the Original Work, as well as any
++notices of licensing and any descriptive text identified therein as an
++"Attribution Notice." You must cause the Source Code for any Derivative
++Works that You create to carry a prominent Attribution Notice reasonably
++calculated to inform recipients that You have modified the Original Work.
++
++7) *Warranty of Provenance and Disclaimer of Warranty.* Licensor
++warrants that the copyright in and to the Original Work and the patent
++rights granted herein by Licensor are owned by the Licensor or are
++sublicensed to You under the terms of this License with the permission
++of the contributor(s) of those copyrights and patent rights. Except as
++expressly stated in the immediately proceeding sentence, the Original
++Work is provided under this License on an "AS IS" BASIS and WITHOUT
++WARRANTY, either express or implied, including, without limitation, the
++warranties of NON-INFRINGEMENT, MERCHANTABILITY or FITNESS FOR A
++PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY OF THE ORIGINAL
++WORK IS WITH YOU. This DISCLAIMER OF WARRANTY constitutes an essential
++part of this License. No license to Original Work is granted hereunder
++except under this disclaimer.
++
++8) *Limitation of Liability.* Under no circumstances and under no legal
++theory, whether in tort (including negligence), contract, or otherwise,
++shall the Licensor be liable to any person for any direct, indirect,
++special, incidental, or consequential damages of any character arising
++as a result of this License or the use of the Original Work including,
++without limitation, damages for loss of goodwill, work stoppage,
++computer failure or malfunction, or any and all other commercial damages
++or losses. This limitation of liability shall not apply to liability for
++death or personal injury resulting from Licensor's negligence to the
++extent applicable law prohibits such limitation. Some jurisdictions do
++not allow the exclusion or limitation of incidental or consequential
++damages, so this exclusion and limitation may not apply to You.
++
++9) *Acceptance and Termination.* If You distribute copies of the
++Original Work or a Derivative Work, You must make a reasonable effort
++under the circumstances to obtain the express assent of recipients to
++the terms of this License. Nothing else but this License (or another
++written agreement between Licensor and You) grants You permission to
++create Derivative Works based upon the Original Work or to exercise any
++of the rights granted in Section 1 herein, and any attempt to do so
++except under the terms of this License (or another written agreement
++between Licensor and You) is expressly prohibited by U.S. copyright law,
++the equivalent laws of other countries, and by international treaty.
++Therefore, by exercising any of the rights granted to You in Section 1
++herein, You indicate Your acceptance of this License and all of its
++terms and conditions.
++
++10) *Termination for Patent Action.* This License shall terminate
++automatically and You may no longer exercise any of the rights granted
++to You by this License as of the date You commence an action, including
++a cross-claim or counterclaim, for patent infringement (i) against
++Licensor with respect to a patent applicable to software or (ii) against
++any entity with respect to a patent applicable to the Original Work (but
++excluding combinations of the Original Work with other software or
++hardware).
++
++11) *Jurisdiction, Venue and Governing Law.* Any action or suit relating
++to this License may be brought only in the courts of a jurisdiction
++wherein the Licensor resides or in which Licensor conducts its primary
++business, and under the laws of that jurisdiction excluding its
++conflict-of-law provisions. The application of the United Nations
++Convention on Contracts for the International Sale of Goods is expressly
++excluded. Any use of the Original Work outside the scope of this License
++or after its termination shall be subject to the requirements and
++penalties of the U.S. Copyright Act, 17 U.S.C. � 101 et seq., the
++equivalent laws of other countries, and international treaty. This
++section shall survive the termination of this License.
++
++12) *Attorneys Fees.* In any action to enforce the terms of this License
++or seeking damages relating thereto, the prevailing party shall be
++entitled to recover its costs and expenses, including, without
++limitation, reasonable attorneys' fees and costs incurred in connection
++with such action, including any appeal of such action. This section
++shall survive the termination of this License.
++
++13) *Miscellaneous.* This License represents the complete agreement
++concerning the subject matter hereof. If any provision of this License
++is held to be unenforceable, such provision shall be reformed only to
++the extent necessary to make it enforceable.
++
++14) *Definition of "You" in This License.* "You" throughout this
++License, whether in upper or lower case, means an individual or a legal
++entity exercising rights under, and complying with all of the terms of,
++this License. For legal entities, "You" includes any entity that
++controls, is controlled by, or is under common control with you. For
++purposes of this definition, "control" means (i) the power, direct or
++indirect, to cause the direction or management of such entity, whether
++by contract or otherwise, or (ii) ownership of fifty percent (50%) or
++more of the outstanding shares, or (iii) beneficial ownership of such
++entity.
++
++15) *Right to Use.* You may use the Original Work in all ways not
++otherwise restricted or conditioned by this License or by law, and
++Licensor promises not to interfere with or be responsible for such uses
++by You.
++
++This license is Copyright (C) 2003 Lawrence E. Rosen. All rights
++reserved. Permission is hereby granted to copy and distribute this
++license without modification. This license may not be modified without
++the express written permission of its copyright owner.
++
++
+diff --git a/modules/mx4sio_bd/Makefile b/modules/mx4sio_bd/Makefile
+new file mode 100644
+index 00000000..79b984b2
+--- /dev/null
++++ b/modules/mx4sio_bd/Makefile
+@@ -0,0 +1,28 @@
++# ps2sdk MX4SIO with the partial-transfer retry fix; see ORIGIN.md.
++# Keep full/mini objects separate so changing variants never reuses stale objects.
++ifeq ($(MINI),1)
++IOP_BIN := mx4sio_bd_mini.irx
++IOP_OBJS_DIR := obj_mini/
++IOP_CFLAGS += -DMINI_DRIVER
++else
++IOP_BIN := mx4sio_bd.irx
++IOP_OBJS_DIR := obj/
++endif
++IOP_SRC_DIR := src/
++IOP_INCS := -Isrc
++IOP_OBJS := spi_sdcard_crc7.o spi_sdcard_driver.o crc16.o ioplib.o sio2man_hook.o mx4sio.o imports.o
++IOP_LIBS += -lgcc
++
++all:: $(IOP_BIN)
++
++$(IOP_OBJS_DIR):
++	mkdir -p $@
++$(IOP_OBJS_DIR)build-imports.c: | $(IOP_OBJS_DIR)
++MX4SIO_OBJ_DEPS := $(wildcard src/*.h) src/imports.lst Makefile
++$(addprefix $(IOP_OBJS_DIR),$(IOP_OBJS)): $(MX4SIO_OBJ_DEPS)
++
++clean::
++	rm -f -r mx4sio_bd.irx mx4sio_bd_mini.irx obj/ obj_mini/ *.notiopmod*.elf
++
++include $(PS2SDK)/samples/Makefile.pref
++include $(PS2SDK)/samples/Makefile.iopglobal
+diff --git a/modules/mx4sio_bd/src/crc16.c b/modules/mx4sio_bd/src/crc16.c
+new file mode 100644
+index 00000000..d1dc64f2
+--- /dev/null
++++ b/modules/mx4sio_bd/src/crc16.c
+@@ -0,0 +1,27 @@
++#include "crc16.h"
++
++
++uint16_t crc16(void *buf, int len)
++{
++    uint16_t *bf  = buf;
++    uint32_t poly = 0; // Initializing poly to 0 AND using it as initializer in the loop for polyIn results in the compiler forcing it always to 0 in the loop (so don't use variables as initializers - i.e. u32 polyIn = poly; ).
++    int i;
++    len /= 2; // to u16
++    for (i = 0; i < len; i++) {
++        uint32_t polyIn, di;
++
++        di     = (((bf[i]) << 8) & 0xFF00) | (((bf[i]) >> 8) & 0xFF);
++        polyIn = poly;
++        // PPC has an instruction for shifting and masking (continuous mask) at the same time.
++        // This sequence must be folowed because some of the bits altered in the first operations are used in the folowing.
++        polyIn ^= ((polyIn ^ di) >> 4) & 0x0F00;
++        polyIn ^= ((polyIn ^ di) >> 4) & 0x00F0;
++        polyIn ^= ((polyIn ^ di) >> 11) & 0x001F;
++        polyIn ^= ((polyIn ^ di) >> 4) & 0x000F;
++        polyIn ^= di;
++        poly = polyIn ^ (polyIn << 5) ^ (polyIn << 12);
++    }
++
++    uint16_t crc = poly;
++    return crc;
++}
+diff --git a/modules/mx4sio_bd/src/crc16.h b/modules/mx4sio_bd/src/crc16.h
+new file mode 100644
+index 00000000..12452e25
+--- /dev/null
++++ b/modules/mx4sio_bd/src/crc16.h
+@@ -0,0 +1,8 @@
++#ifndef CRC16_H
++#define CRC16_H
++
++#include "stdint.h"
++
++extern uint16_t crc16(void *buf, int len);
++
++#endif
+diff --git a/modules/mx4sio_bd/src/imports.lst b/modules/mx4sio_bd/src/imports.lst
+new file mode 100644
+index 00000000..5a24f645
+--- /dev/null
++++ b/modules/mx4sio_bd/src/imports.lst
+@@ -0,0 +1,57 @@
++bdm_IMPORTS_start
++I_bdm_connect_bd
++I_bdm_disconnect_bd
++bdm_IMPORTS_end
++
++dmacman_IMPORTS_start
++I_sceSetSliceDMA
++I_sceStartDMA
++I_sceSetDMAPriority
++I_sceEnableDMAChannel
++//I_sceDisableDMAChannel
++dmacman_IMPORTS_end
++
++intrman_IMPORTS_start
++I_DisableIntr
++I_EnableIntr
++I_RegisterIntrHandler
++I_CpuSuspendIntr
++I_CpuResumeIntr
++intrman_IMPORTS_end
++
++loadcore_IMPORTS_start
++I_GetLoadcoreInternalData
++loadcore_IMPORTS_end
++
++#ifndef MINI_DRIVER
++stdio_IMPORTS_start
++I_printf
++stdio_IMPORTS_end
++#endif
++
++sysclib_IMPORTS_start
++I_strcmp
++stdio_IMPORTS_end
++
++thbase_IMPORTS_start
++I_CreateThread
++I_StartThread
++I_DeleteThread
++I_DelayThread
++thbase_IMPORTS_end
++
++thevent_IMPORTS_start
++I_CreateEventFlag
++I_DeleteEventFlag
++//I_SetEventFlag
++I_iSetEventFlag
++I_ClearEventFlag
++I_WaitEventFlag
++thevent_IMPORTS_end
++
++thsemap_IMPORTS_start
++I_CreateSema
++I_WaitSema
++I_SignalSema
++I_DeleteSema
++thsemap_IMPORTS_end
+diff --git a/modules/mx4sio_bd/src/ioplib.c b/modules/mx4sio_bd/src/ioplib.c
+new file mode 100644
+index 00000000..0b888578
+--- /dev/null
++++ b/modules/mx4sio_bd/src/ioplib.c
+@@ -0,0 +1,101 @@
++/*
++# _____     ___ ____     ___ ____
++#  ____|   |    ____|   |        | |____|
++# |     ___|   |____ ___|    ____| |    \    PS2DEV Open Source Project.
++#-----------------------------------------------------------------------
++# Copyright ps2dev - http://www.ps2dev.org
++# Licenced under Academic Free License version 2.0
++# Review ps2sdk README & LICENSE files for further details.
++#
++# taken from MX4SIO driver for simplicity.
++# all credits go to maximus32
++*/
++
++#include "ioplib.h"
++#include <intrman.h>
++
++int ioplib_iterateByName(const char *name, ioplib_libiterate_cb_t cb, void *userdata)
++{
++    iop_library_t *libptr;
++    int i;
++    int count;
++
++    count = 0;
++    // Get first loaded library
++    libptr = GetLoadcoreInternalData()->let_next;
++    // Loop through all loaded libraries
++    while (libptr != NULL) {
++        // Compare library name only
++        for (i = 0; i < 8; i++) {
++            if (libptr->name[i] != name[i])
++                break;
++        }
++
++        // Call callback if match
++        if (i == 8) {
++            count += 1;
++            // Return early if requested
++            if (cb(libptr, userdata))
++                break;
++        }
++
++        // Next library
++        libptr = libptr->prev;
++    }
++
++    return count;
++}
++
++unsigned int ioplib_getTableSize(iop_library_t *lib)
++{
++    void **exp;
++    unsigned int size;
++
++    exp = NULL;
++    if (lib != NULL) {
++        exp = lib->exports;
++    }
++    size = 0;
++
++    if (exp != NULL)
++        while (*exp++ != NULL)
++            size++;
++
++    return size;
++}
++
++void *ioplib_hookSameExportEntries(iop_library_t *lib, unsigned int entry, void *func)
++{
++    int table_size;
++    int oldstate;
++    void *oldfunc;
++    unsigned int i;
++
++    table_size = ioplib_getTableSize(lib);
++    if (entry >= table_size)
++        return NULL;
++
++    CpuSuspendIntr(&oldstate);
++    oldfunc = lib->exports[entry];
++    for (i = 0; i < table_size; i += 1)
++        if (lib->exports[i] == oldfunc)
++            lib->exports[i] = func;
++    CpuResumeIntr(oldstate);
++
++    return oldfunc;
++}
++
++void ioplib_relinkExports(iop_library_t *lib)
++{
++    struct irx_import_table *table;
++    struct irx_import_stub *stub;
++
++    // go through each table that imports the library
++    for (table = lib->caller; table != NULL; table = table->next) {
++        // go through each import in the table
++        for (stub = (struct irx_import_stub *)table->stubs; stub->jump != 0; stub++) {
++            // patch the stub to jump to the address specified in the library export table for "fno"
++            stub->jump = 0x08000000 | (((u32)lib->exports[stub->fno] << 4) >> 6);
++        }
++    }
++}
+diff --git a/modules/mx4sio_bd/src/ioplib.h b/modules/mx4sio_bd/src/ioplib.h
+new file mode 100644
+index 00000000..d0f0e175
+--- /dev/null
++++ b/modules/mx4sio_bd/src/ioplib.h
+@@ -0,0 +1,40 @@
++/*
++# _____     ___ ____     ___ ____
++#  ____|   |    ____|   |        | |____|
++# |     ___|   |____ ___|    ____| |    \    PS2DEV Open Source Project.
++#-----------------------------------------------------------------------
++# Copyright ps2dev - http://www.ps2dev.org
++# Licenced under Academic Free License version 2.0
++# Review ps2sdk README & LICENSE files for further details.
++#
++# taken from MX4SIO driver for simplicity.
++# all credits go to maximus32
++*/
++
++#ifndef IOPLIB_H
++#define IOPLIB_H
++
++
++#include <loadcore.h>
++
++typedef int (*ioplib_libiterate_cb_t)(iop_library_t *lib, void *userdata);
++
++/** @brief Iterate for each library found by name
++ * @param name Name of the module to search for
++ * @param callback Callback called when the library name matches
++ * @param userdata User data to pass to the callback
++ * @return count of items found
++ */
++extern int ioplib_iterateByName(const char *name, ioplib_libiterate_cb_t cb, void *userdata);
++extern unsigned int ioplib_getTableSize(iop_library_t *lib);
++/** @brief Hook all IRX module exported functions that matches the specified entry.
++ * @param lib Library object of the module to hook
++ * @param entry Export number to be hooked
++ * @param func Hook function
++ * @return on error: NULL | on success: original function pointer
++ */
++extern void *ioplib_hookSameExportEntries(iop_library_t *lib, unsigned int entry, void *func);
++extern void ioplib_relinkExports(iop_library_t *lib);
++
++
++#endif
+diff --git a/modules/mx4sio_bd/src/irx_imports.h b/modules/mx4sio_bd/src/irx_imports.h
+new file mode 100644
+index 00000000..39ad21b5
+--- /dev/null
++++ b/modules/mx4sio_bd/src/irx_imports.h
+@@ -0,0 +1,31 @@
++/*
++# _____     ___ ____     ___ ____
++#  ____|   |    ____|   |        | |____|
++# |     ___|   |____ ___|    ____| |    \    PS2DEV Open Source Project.
++#-----------------------------------------------------------------------
++# Copyright 2001-2004, ps2dev - http://www.ps2dev.org
++# Licenced under Academic Free License version 2.0
++# Review ps2sdk README & LICENSE files for further details.
++#
++# $Id$
++# Defines all IRX imports.
++*/
++
++#ifndef IOP_IRX_IMPORTS_H
++#define IOP_IRX_IMPORTS_H
++
++#include "irx.h"
++
++/* Please keep these in alphabetical order!  */
++#include "bdm.h"
++#include "dmacman.h"
++#include "intrman.h"
++#include "loadcore.h"
++#include "stdio.h"
++#include "sysclib.h"
++#include "thbase.h"
++#include "thevent.h"
++#include "thsemap.h"
++
++
++#endif /* IOP_IRX_IMPORTS_H */
+diff --git a/modules/mx4sio_bd/src/module_debug.h b/modules/mx4sio_bd/src/module_debug.h
+new file mode 100644
+index 00000000..2e47f34b
+--- /dev/null
++++ b/modules/mx4sio_bd/src/module_debug.h
+@@ -0,0 +1,24 @@
++#ifndef _MODULE_DEBUG_H
++#define _MODULE_DEBUG_H
++
++// #define MINI_DRIVER
++
++#ifndef MINI_DRIVER
++#include "stdio.h"
++#define M_PRINTF(format, args...) printf("MX4SIO: " format, ##args);
++#else
++#define M_PRINTF(format, args...) \
++    do {                          \
++    } while (0)
++#endif
++
++
++#ifdef DEBUG
++#define M_DEBUG M_PRINTF
++#else
++#define M_DEBUG(format, args...) \
++    do {                         \
++    } while (0)
++#endif
++
++#endif
+diff --git a/modules/mx4sio_bd/src/mx4sio.c b/modules/mx4sio_bd/src/mx4sio.c
+new file mode 100644
+index 00000000..c80635f6
+--- /dev/null
++++ b/modules/mx4sio_bd/src/mx4sio.c
+@@ -0,0 +1,847 @@
++#include <bdm.h>
++#include <dmacman.h>
++#include <intrman.h>
++#include <loadcore.h>
++#include <thbase.h>
++#include <thevent.h>
++#include <thsemap.h>
++#include <xsio2man.h>
++
++#include "mx4sio.h"
++#include "crc16.h"
++#include "sio2man_hook.h"
++#include "sio2regs.h"
++#include "spi_sdcard_driver.h"
++
++#include "module_debug.h"
++
++IRX_ID("mx4sio", 1, 2);
++
++/* globals */
++dma_command_t cmd;
++int sio2_event_flag;
++
++static int sd_detect_thread_id = -1;
++static sio2_transfer_data_t global_td;
++static uint8_t sio2_current_baud = SIO2_BAUD_DIV_SLOW;
++static uint32_t sio2_save_crtl;
++
++/* ISR triggered by the completion of DMA transfer: SIO2 RX FIFO -> MEM */
++int mx_sio2_dma_isr_rx(void *arg)
++{
++    int ef     = *(int *)arg;
++    int eflags = EF_SIO2_INTR_REVERSE;
++
++    /* clear SIO2 stat reg */
++    inl_sio2_stat_set(inl_sio2_stat_get());
++
++    /* wait for PIO portion of transfer to complete */
++    while ((inl_sio2_stat6c_get() & (1 << 12)) == 0)
++        ;
++
++#ifdef CONFIG_USE_CRC16
++    /* get CRC16 bytes from RX FIFO */
++    cmd.crc[cmd.sectors_transferred] = reverse_byte_LUT8[inl_sio2_data_in()] << 8;
++    cmd.crc[cmd.sectors_transferred] |= reverse_byte_LUT8[inl_sio2_data_in()];
++#else
++    inl_sio2_data_in();
++    inl_sio2_data_in();
++#endif
++
++    /* NOTE: Some cards respond with 0xFE immediately after the CRC16, others do not.
++     * Try to get 0xFE regardless of whether the transfers complete as it's
++     * needed for correct alignment of CMD12 (STOP_TRANSMISSION) later */
++    if (inl_sio2_data_in() != 0xFE) {
++        cmd.response = mx_sio2_wait_equal(0xFE, READ_TOKEN_TIMEOUT);
++    } else {
++        cmd.response = SPISD_RESULT_OK;
++    }
++
++    cmd.sectors_transferred++;
++
++    if (cmd.sectors_transferred < cmd.sector_count && cmd.abort == 0) {
++
++        if (cmd.response == SPISD_RESULT_OK) {
++            /* start next DMA transfer */
++            mx_sio2_start_rx_dma(&cmd.buffer[cmd.sectors_transferred * SECTOR_SIZE]);
++            /* notify thread data is ready to be reversed */
++            iSetEventFlag(ef, eflags);
++            /* return from ISR */
++            return 1;
++        }
++
++        cmd.abort = CMD_ABORT_NO_READ_TOKEN;
++    }
++
++    /* done or error, notify thread */
++    eflags |= EF_SIO2_INTR_COMPLETE;
++    iSetEventFlag(ef, eflags);
++
++    return 1;
++}
++
++/* ISR triggered by the completetion of DMA transfer: MEM -> SIO2 TX FIFO */
++int mx_sio2_dma_isr_tx(void *arg)
++{
++    int ef     = *(int *)arg;
++    int eflags = 0;
++
++    /* clear SIO2 stat reg */
++    inl_sio2_stat_set(inl_sio2_stat_get());
++
++    /* SIO2 requires all data to be sent to be present in the TX FIFO
++     * prior to starting the transfer. As such, SIO2 will not
++     * have completed the transfer prior to reaching this ISR */
++
++    /* wait for transfer to complete */
++    while ((inl_sio2_stat6c_get() & (1 << 12)) == 0)
++        ;
++
++    /* CRC16 not yet implemented for writes */
++    mx_sio2_write_dummy();
++    mx_sio2_write_dummy();
++
++    /* get data response token */
++    /* 0101 = data accepted */
++    /* 1011 = data rejected, CRC error */
++    /* 1101 = data rejected, write error */
++    cmd.response = mx_sio2_wait_equal_masked(0x5, 0x1F, 10);
++    if (cmd.response != 0x5) {
++        M_DEBUG("ERROR: write data rejected, token 0x%x\n", cmd.response);
++        cmd.abort = 1;
++    }
++
++    /* wait for card to finish programming */
++    cmd.response = mx_sio2_wait_equal(0xFF, 0x80000);
++    if (cmd.response != SPISD_RESULT_OK) {
++        M_DEBUG("ERROR: failed to finish programming\n");
++        cmd.abort = 1;
++    }
++
++    /* Count only accepted, programmed data; a rejected sector must be retried. */
++    if (cmd.abort == 0)
++        cmd.sectors_transferred++;
++
++    if (cmd.sectors_transferred < cmd.sector_count && cmd.abort == 0) {
++        /* send write token */
++        mx_sio2_write_byte(0xFC);
++        /* start next DMA transfer */
++        mx_sio2_start_tx_dma(&cmd.buffer[cmd.sectors_transferred * SECTOR_SIZE]);
++        /* return from ISR */
++        return 1;
++    }
++
++    /* done or error, notify thread */
++    eflags = EF_SIO2_INTR_COMPLETE;
++    iSetEventFlag(ef, eflags);
++
++    return 1;
++}
++
++void mx_sio2_init_ports(sio2_transfer_data_t *td)
++{
++    for (uint8_t i = 0; i < 4; i++) {
++        inl_sio2_portN_ctrl1_set(i, td->port_ctrl1[i]);
++        inl_sio2_portN_ctrl2_set(i, td->port_ctrl2[i]);
++    }
++}
++
++void mx_sio2_init_td(sio2_transfer_data_t *td)
++{
++    for (uint8_t i = 0; i < 4; i++) {
++        td->port_ctrl1[i] = 0;
++        td->port_ctrl2[i] = 0;
++    }
++
++    td->port_ctrl1[PORT_NR] =
++        PCTRL0_ATT_LOW_PER(0x5) |
++        PCTRL0_ATT_MIN_HIGH_PER(0x5) |
++        PCTRL0_BAUD0_DIV(0x78) |             /* BAUD0 is unused */
++        PCTRL0_BAUD1_DIV(sio2_current_baud); /* BAUD1 is used for every transfer */
++
++    td->port_ctrl2[PORT_NR] =
++        PCTRL1_ACK_TIMEOUT_PER(0x12C) |
++        PCTRL1_INTER_BYTE_PER(0x0) |
++        PCTRL1_UNK24(0x0) |
++        PCTRL1_IF_MODE_SPI_DIFF(0x0);
++}
++
++void mx_sio2_lock(uint8_t intr_type)
++{
++    int state;
++
++    /* lock sio2man driver so we can use it exclusively */
++    sio2man_hook_sio2_lock();
++
++    /* save ctrl state */
++    sio2_save_crtl = inl_sio2_ctrl_get();
++
++    /* we're in control, setup the ports for our use */
++    mx_sio2_init_ports(&global_td);
++
++    /* enable DMA interrupts */
++    CpuSuspendIntr(&state);
++
++    if (intr_type == INTR_RX) {
++        RegisterIntrHandler(IOP_IRQ_DMA_SIO2_OUT, 1, mx_sio2_dma_isr_rx, &sio2_event_flag);
++        EnableIntr(IOP_IRQ_DMA_SIO2_OUT);
++    }
++
++    if (intr_type == INTR_TX) {
++        RegisterIntrHandler(IOP_IRQ_DMA_SIO2_IN, 1, mx_sio2_dma_isr_tx, &sio2_event_flag);
++        EnableIntr(IOP_IRQ_DMA_SIO2_IN);
++    }
++
++    CpuResumeIntr(state);
++}
++
++void mx_sio2_unlock(uint8_t intr_type)
++{
++    int state;
++    int res;
++
++    /* disable DMA interrupts */
++    CpuSuspendIntr(&state);
++
++    if (intr_type == INTR_RX)
++        DisableIntr(IOP_IRQ_DMA_SIO2_OUT, &res);
++
++    if (intr_type == INTR_TX)
++        DisableIntr(IOP_IRQ_DMA_SIO2_IN, &res);
++
++    CpuResumeIntr(state);
++
++    /* restore ctrl state, and reset STATE + FIFOS */
++    inl_sio2_ctrl_set(sio2_save_crtl | 0xc);
++
++    /* unlock sio2man driver */
++    sio2man_hook_sio2_unlock();
++}
++
++void mx_sio2_set_baud(uint8_t baud)
++{
++    sio2_current_baud = baud;
++
++    mx_sio2_init_td(&global_td);
++    mx_sio2_init_ports(&global_td);
++}
++
++uint8_t mx_sio2_write_byte(uint8_t byte)
++{
++    /* reset SIO2 + FIFO pointers, disable interrupts */
++    inl_sio2_ctrl_set(0x0bc);
++
++    inl_sio2_regN_set(0,
++                      TR_CTRL_PORT_NR(PORT_NR) |
++                          TR_CTRL_PAUSE(0) |
++                          TR_CTRL_TX_MODE_PIO_DMA(0) |
++                          TR_CTRL_RX_MODE_PIO_DMA(0) |
++                          TR_CTRL_NORMAL_TR(1) |
++                          TR_CTRL_SPECIAL_TR(0) |
++                          TR_CTRL_BAUD_DIV(1) |
++                          TR_CTRL_WAIT_ACK_FOREVER(0) |
++                          TR_CTRL_TX_DATA_SZ(1) |
++                          TR_CTRL_RX_DATA_SZ(1));
++    inl_sio2_regN_set(1, 0);
++
++    /* put byte in TX FIFO */
++    inl_sio2_data_out(reverse_byte_LUT8[byte]);
++
++    /* start queue exec */
++    inl_sio2_ctrl_set(inl_sio2_ctrl_get() | 1);
++
++    /* wait for completion */
++    while ((inl_sio2_stat6c_get() & (1 << 12)) == 0)
++        ;
++
++#ifdef DEBUG_VERBOSE
++    uint8_t rx = reverse_byte_LUT8[inl_sio2_data_in()];
++    M_DEBUG("W:0x%x, R:0x%x\n", byte, rx);
++    return rx;
++#endif
++
++    /* get byte from RX FIFO */
++    return reverse_byte_LUT8[inl_sio2_data_in()];
++}
++
++uint8_t mx_sio2_write_dummy(void)
++{
++    /* reset SIO2 + FIFO pointers, disable interrupts */
++    inl_sio2_ctrl_set(0x0bc);
++
++    /* add transfer to queue */
++    inl_sio2_regN_set(0,
++                      TR_CTRL_PORT_NR(PORT_NR) |
++                          TR_CTRL_PAUSE(0) |
++                          TR_CTRL_TX_MODE_PIO_DMA(0) |
++                          TR_CTRL_RX_MODE_PIO_DMA(0) |
++                          TR_CTRL_NORMAL_TR(1) |
++                          TR_CTRL_SPECIAL_TR(0) |
++                          TR_CTRL_BAUD_DIV(1) |
++                          TR_CTRL_WAIT_ACK_FOREVER(0) |
++                          TR_CTRL_TX_DATA_SZ(1) |
++                          TR_CTRL_RX_DATA_SZ(1));
++    inl_sio2_regN_set(1, 0);
++
++    /* put byte in TX FIFO */
++    inl_sio2_data_out(0xFF);
++
++    /* start queue exec */
++    inl_sio2_ctrl_set(inl_sio2_ctrl_get() | 1);
++
++    /* wait for completion */
++    while ((inl_sio2_stat6c_get() & (1 << 12)) == 0)
++        ;
++
++#ifdef DEBUG_VERBOSE
++    uint8_t rx = reverse_byte_LUT8[inl_sio2_data_in()];
++    M_DEBUG("R:0x%x\n", rx);
++    return rx;
++#endif
++
++    /* get byte from RX FIFO */
++    return reverse_byte_LUT8[inl_sio2_data_in()];
++}
++
++/* 1.440uS delay between bytes with clk div 0x2 */
++uint8_t mx_sio2_wait_equal(uint8_t value, uint32_t count)
++{
++    uint8_t exp_byte = reverse_byte_LUT8[value];
++    uint8_t in_byte  = 0;
++
++    while (count > 0 && in_byte != exp_byte) {
++        /* reset SIO2 + FIFO pointers, disable interrupts */
++        inl_sio2_ctrl_set(0x0bc);
++
++        inl_sio2_regN_set(0,
++                          TR_CTRL_PORT_NR(PORT_NR) |
++                              TR_CTRL_PAUSE(0) |
++                              TR_CTRL_TX_MODE_PIO_DMA(0) |
++                              TR_CTRL_RX_MODE_PIO_DMA(0) |
++                              TR_CTRL_NORMAL_TR(1) |
++                              TR_CTRL_SPECIAL_TR(0) |
++                              TR_CTRL_BAUD_DIV(1) |
++                              TR_CTRL_WAIT_ACK_FOREVER(0) |
++                              TR_CTRL_TX_DATA_SZ(0) |
++                              TR_CTRL_RX_DATA_SZ(1));
++        inl_sio2_regN_set(1, 0);
++
++        /* start queue exec */
++        inl_sio2_ctrl_set(inl_sio2_ctrl_get() | 1);
++
++        /* wait for completion */
++        while ((inl_sio2_stat6c_get() & (1 << 12)) == 0)
++            ;
++
++        in_byte = inl_sio2_data_in();
++
++#ifdef DEBUG_VERBOSE
++        M_DEBUG("WE: 0x%x, EX: 0x%x\n", reverse_byte_LUT8[in_byte], value);
++#endif
++
++        count--;
++    }
++
++    return (exp_byte != in_byte) ? SPISD_RESULT_ERROR : SPISD_RESULT_OK;
++}
++
++uint8_t mx_sio2_wait_not_equal(uint8_t value, uint32_t count)
++{
++    uint8_t exp_byte = reverse_byte_LUT8[value];
++    uint8_t in_byte  = exp_byte;
++
++    while (count > 0 && in_byte == exp_byte) {
++        /* reset SIO2 + FIFO pointers, disable interrupts */
++        inl_sio2_ctrl_set(0x0bc);
++
++        /* add transfer to queue */
++        inl_sio2_regN_set(0,
++                          TR_CTRL_PORT_NR(PORT_NR) |
++                              TR_CTRL_PAUSE(0) |
++                              TR_CTRL_TX_MODE_PIO_DMA(0) |
++                              TR_CTRL_RX_MODE_PIO_DMA(0) |
++                              TR_CTRL_NORMAL_TR(1) |
++                              TR_CTRL_SPECIAL_TR(0) |
++                              TR_CTRL_BAUD_DIV(1) |
++                              TR_CTRL_WAIT_ACK_FOREVER(0) |
++                              TR_CTRL_TX_DATA_SZ(0) |
++                              TR_CTRL_RX_DATA_SZ(1));
++        inl_sio2_regN_set(1, 0);
++
++        /* start queue exec */
++        inl_sio2_ctrl_set(inl_sio2_ctrl_get() | 1);
++
++        /* wait for completion */
++        while ((inl_sio2_stat6c_get() & (1 << 12)) == 0)
++            ;
++
++        /* get byte from RX FIFO */
++        in_byte = inl_sio2_data_in();
++
++#ifdef DEBUG_VERBOSE
++        M_DEBUG("WNE: 0x%x, EX: !0x%x\n", reverse_byte_LUT8[in_byte], value);
++#endif
++        count--;
++    }
++
++    return reverse_byte_LUT8[in_byte];
++}
++
++uint8_t mx_sio2_wait_equal_masked(uint8_t value, uint8_t mask, uint32_t count)
++{
++    uint8_t exp_byte = reverse_byte_LUT8[value];
++    uint8_t rev_mask = reverse_byte_LUT8[mask];
++    uint8_t in_byte  = 0;
++
++    while (count > 0 && in_byte != exp_byte) {
++        /* reset SIO2 + FIFO pointers, disable interrupts */
++        inl_sio2_ctrl_set(0x0bc);
++
++        inl_sio2_regN_set(0,
++                          TR_CTRL_PORT_NR(PORT_NR) |
++                              TR_CTRL_PAUSE(0) |
++                              TR_CTRL_TX_MODE_PIO_DMA(0) |
++                              TR_CTRL_RX_MODE_PIO_DMA(0) |
++                              TR_CTRL_NORMAL_TR(1) |
++                              TR_CTRL_SPECIAL_TR(0) |
++                              TR_CTRL_BAUD_DIV(1) |
++                              TR_CTRL_WAIT_ACK_FOREVER(0) |
++                              TR_CTRL_TX_DATA_SZ(0) |
++                              TR_CTRL_RX_DATA_SZ(1));
++        inl_sio2_regN_set(1, 0);
++
++        /* start queue exec */
++        inl_sio2_ctrl_set(inl_sio2_ctrl_get() | 1);
++
++        /* wait for completion */
++        while ((inl_sio2_stat6c_get() & (1 << 12)) == 0)
++            ;
++
++        in_byte = inl_sio2_data_in();
++
++#ifdef DEBUG_VERBOSE
++        M_DEBUG("WEM: 0x%x M:\n", reverse_byte_LUT8[in_byte], reverse_byte_LUT8[in_byte & rev_mask]);
++#endif
++        in_byte = in_byte & rev_mask;
++
++        count--;
++    }
++
++    return reverse_byte_LUT8[in_byte];
++}
++
++void mx_sio2_rx_pio(uint8_t *buffer, uint32_t size)
++{
++    uint32_t transfer_size;
++#ifdef DEBUG_VERBOSE
++    uint8_t *buffer_start = buffer;
++#endif
++    while (size > 0) {
++        /* SIO2 can only transfer 256 bytes at a time */
++        transfer_size = size > SIO2_MAX_TRANSFER_SIZE ? SIO2_MAX_TRANSFER_SIZE : size;
++
++        /* reset SIO2 + FIFO pointers, disable interrupts */
++        inl_sio2_ctrl_set(0x0bc);
++
++        /* add transfer to queue */
++        inl_sio2_regN_set(0,
++                          TR_CTRL_PORT_NR(PORT_NR) |
++                              TR_CTRL_PAUSE(0) |
++                              TR_CTRL_TX_MODE_PIO_DMA(0) |
++                              TR_CTRL_RX_MODE_PIO_DMA(0) |
++                              TR_CTRL_NORMAL_TR(1) |
++                              TR_CTRL_SPECIAL_TR(0) |
++                              TR_CTRL_BAUD_DIV(1) |
++                              TR_CTRL_WAIT_ACK_FOREVER(0) |
++                              TR_CTRL_TX_DATA_SZ(0) |
++                              TR_CTRL_RX_DATA_SZ(transfer_size));
++        inl_sio2_regN_set(1, 0);
++
++        /* start queue exec */
++        inl_sio2_ctrl_set(inl_sio2_ctrl_get() | 1);
++
++        /* wait for completion */
++        while ((inl_sio2_stat6c_get() & (1 << 12)) == 0)
++            ;
++
++        /* PIO: IOP <- SIO2 */
++        for (int i = 0; i < transfer_size; i++) {
++            *buffer++ = reverse_byte_LUT8[inl_sio2_data_in()];
++        }
++
++#ifdef DEBUG_VERBOSE
++        for (int i = 0; i < transfer_size; i++) {
++            M_DEBUG("W:0xFF, R:0x%x\n", buffer_start[i]);
++        }
++#endif
++
++        size -= transfer_size;
++    }
++}
++
++void mx_sio2_tx_pio(uint8_t *buffer, uint32_t size)
++{
++    uint32_t transfer_size;
++
++#ifdef DEBUG_VERBOSE
++    uint8_t *buffer_start = buffer;
++#endif
++
++    while (size > 0) {
++        /* SIO2 can only transfer 256 bytes at a time */
++        transfer_size = size > SIO2_MAX_TRANSFER_SIZE ? SIO2_MAX_TRANSFER_SIZE : size;
++
++        /* reset SIO2 + FIFO pointers, disable interrupts */
++        inl_sio2_ctrl_set(0x0bc);
++
++        /* add transfer to queue */
++        inl_sio2_regN_set(0,
++                          TR_CTRL_PORT_NR(PORT_NR) |
++                              TR_CTRL_PAUSE(0) |
++                              TR_CTRL_TX_MODE_PIO_DMA(0) |
++                              TR_CTRL_RX_MODE_PIO_DMA(0) |
++                              TR_CTRL_NORMAL_TR(1) |
++                              TR_CTRL_SPECIAL_TR(0) |
++                              TR_CTRL_BAUD_DIV(1) |
++                              TR_CTRL_WAIT_ACK_FOREVER(0) |
++                              TR_CTRL_TX_DATA_SZ(transfer_size) |
++#ifdef DEBUG_VERBOSE
++                              TR_CTRL_RX_DATA_SZ(transfer_size));
++#else
++                              TR_CTRL_RX_DATA_SZ(0));
++#endif
++
++        inl_sio2_regN_set(1, 0);
++
++        /* PIO: IOP -> SIO2 */
++        for (int i = 0; i < transfer_size; i++) {
++            inl_sio2_data_out(reverse_byte_LUT8[*buffer++]);
++        }
++
++        /* start queue exec */
++        inl_sio2_ctrl_set(inl_sio2_ctrl_get() | 1);
++
++        /* wait for completion */
++        while ((inl_sio2_stat6c_get() & (1 << 12)) == 0)
++            ;
++
++#ifdef DEBUG_VERBOSE
++        for (int i = 0; i < transfer_size; i++) {
++            M_DEBUG("W:0x%x, R:0x%x\n", buffer_start[i], reverse_byte_LUT8[inl_sio2_data_in()]);
++        }
++#endif
++        size -= transfer_size;
++    }
++}
++
++void mx_sio2_start_rx_dma(uint8_t *buffer)
++{
++    /* DMA: 256 bytes */
++    const uint32_t tr_ctrl_dma =
++        TR_CTRL_PAUSE(0) |
++        TR_CTRL_TX_MODE_PIO_DMA(0) |
++        TR_CTRL_RX_MODE_PIO_DMA(1) |
++        TR_CTRL_NORMAL_TR(1) |
++        TR_CTRL_SPECIAL_TR(0) |
++        TR_CTRL_TX_DATA_SZ(0) |
++        TR_CTRL_RX_DATA_SZ(0x100) |
++        TR_CTRL_BAUD_DIV(1) |
++        TR_CTRL_WAIT_ACK_FOREVER(0);
++
++    /* PIO: CRC16 (2 bytes) + 0xFE token (1 byte) */
++    const uint32_t tr_ctrl_pio =
++        TR_CTRL_PAUSE(0) |
++        TR_CTRL_TX_MODE_PIO_DMA(0) |
++        TR_CTRL_RX_MODE_PIO_DMA(0) |
++        TR_CTRL_NORMAL_TR(1) |
++        TR_CTRL_SPECIAL_TR(0) |
++        TR_CTRL_TX_DATA_SZ(0) |
++        TR_CTRL_RX_DATA_SZ(3) |
++        TR_CTRL_BAUD_DIV(1) |
++        TR_CTRL_WAIT_ACK_FOREVER(0);
++
++    /* reset SIO2 + FIFO pointers, disable interrupts */
++    inl_sio2_ctrl_set(0x0bc);
++
++    /* add transfers to queue */
++    inl_sio2_regN_set(0, tr_ctrl_dma | TR_CTRL_PORT_NR(PORT_NR));
++    inl_sio2_regN_set(1, tr_ctrl_dma | TR_CTRL_PORT_NR(PORT_NR));
++    inl_sio2_regN_set(2, tr_ctrl_pio | TR_CTRL_PORT_NR(PORT_NR));
++    inl_sio2_regN_set(3, 0);
++
++    /* enable dmac transfer */
++    sceSetSliceDMA(IOP_DMAC_SIO2out, buffer, 0x100 >> 2, 2, DMAC_TO_MEM);
++    sceStartDMA(IOP_DMAC_SIO2out);
++
++    /* start queue exec */
++    inl_sio2_ctrl_set(inl_sio2_ctrl_get() | 1);
++}
++
++void mx_sio2_start_tx_dma(uint8_t *buffer)
++{
++    /* DMA: 256 bytes */
++    const uint32_t tr_ctrl_dma =
++        TR_CTRL_PAUSE(0) |
++        TR_CTRL_TX_MODE_PIO_DMA(1) |
++        TR_CTRL_RX_MODE_PIO_DMA(0) |
++        TR_CTRL_NORMAL_TR(1) |
++        TR_CTRL_SPECIAL_TR(0) |
++        TR_CTRL_TX_DATA_SZ(0x100) |
++        TR_CTRL_RX_DATA_SZ(0) |
++        TR_CTRL_BAUD_DIV(1) |
++        TR_CTRL_WAIT_ACK_FOREVER(0);
++
++    /* reset SIO2 + FIFO pointers, disable interrupts */
++    inl_sio2_ctrl_set(0x0bc);
++
++    /* add transfers to queue */
++    inl_sio2_regN_set(0, tr_ctrl_dma | TR_CTRL_PORT_NR(PORT_NR));
++    inl_sio2_regN_set(1, tr_ctrl_dma | TR_CTRL_PORT_NR(PORT_NR));
++    inl_sio2_regN_set(2, 0);
++    inl_sio2_regN_set(3, 0);
++
++    /* enable dmac transfer */
++    sceSetSliceDMA(IOP_DMAC_SIO2in, buffer, 0x100 >> 2, 2, DMAC_FROM_MEM);
++    sceStartDMA(IOP_DMAC_SIO2in);
++
++    /* start queue exec */
++    inl_sio2_ctrl_set(inl_sio2_ctrl_get() | 1);
++}
++
++static void sd_detect()
++{
++    uint16_t results;
++
++    mx_sio2_lock(INTR_NONE);
++
++    if (sdcard.initialized == 0) {
++        M_PRINTF("Trying to init card\n");
++        /* bring card up from identification mode to data-transfer mode */
++        if (spisd_init_card() == SPISD_RESULT_OK) {
++
++            /* get card capacity and attach to BDM */
++            if (spisd_get_card_info() == SPISD_RESULT_OK) {
++                bdm_connect_bd(&bd);
++                sdcard.initialized = 1;
++            }
++        }
++    } else {
++        /* try to detect card removal by requesting card status (CMD13) */
++        results = spisd_read_status_register();
++        /* comparing without a mask might be a bit overkill */
++        if (results != 0x0) {
++            /* try to recover */
++            results = spisd_recover();
++            /* maybe add a var to keep track of capacity */
++            if ((sdcard.initialized == 1) && (results != SPISD_RESULT_OK)) {
++                /* recovery failed, disconnect from BDM */
++                M_DEBUG("Recovery failed, disconnecting from bdm.\n");
++                bdm_disconnect_bd(&bd);
++                sdcard.initialized = 0;
++            }
++        }
++    }
++
++    mx_sio2_unlock(INTR_NONE);
++}
++
++static void sd_detect_thread(void *arg)
++{
++    (void)arg;
++
++    M_PRINTF("card detection thread running\n");
++
++    while (1) {
++        DelayThread(1000 * 1000);
++
++        /* try to detect card removal if it hasn't been used recently */
++        if (sdcard.used == 0)
++            sd_detect();
++        sdcard.used = 0;
++    }
++}
++
++
++/* Maximus32's C r3000 optimized byte reversal */
++/* 58-59uS avg on DECKARD */
++#if defined(__GNUC__) && !defined(__clang__)
++#pragma GCC push_options
++#pragma GCC optimize("-O3")
++#endif
++inline void reverse_buffer(uint32_t *buffer, uint32_t count)
++{
++    const uint32_t mask0F = 0x0F0F0F0F;
++    const uint32_t maskF0 = 0xF0F0F0F0;
++    const uint32_t mask33 = 0x33333333;
++    const uint32_t maskCC = 0xCCCCCCCC;
++    const uint32_t mask55 = 0x55555555;
++    const uint32_t maskAA = 0xAAAAAAAA;
++    uint32_t n;
++
++#pragma GCC unroll 2
++    for (int i = 0; i < count; i++) {
++        n = buffer[i];
++        n = ((n & maskF0) >> 4) | ((n & mask0F) << 4);
++        n = ((n & maskCC) >> 2) | ((n & mask33) << 2);
++        n = ((n & maskAA) >> 1) | ((n & mask55) << 1);
++
++        buffer[i] = n;
++    }
++}
++#if defined(__GNUC__) && !defined(__clang__)
++#pragma GCC pop_options
++#endif
++
++/* LUT for single byte reversal */
++const uint8_t reverse_byte_LUT8[256] = {
++    0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0,
++    0x10, 0x90, 0x50, 0xd0, 0x30, 0xb0, 0x70, 0xf0,
++    0x08, 0x88, 0x48, 0xc8, 0x28, 0xa8, 0x68, 0xe8,
++    0x18, 0x98, 0x58, 0xd8, 0x38, 0xb8, 0x78, 0xf8,
++    0x04, 0x84, 0x44, 0xc4, 0x24, 0xa4, 0x64, 0xe4,
++    0x14, 0x94, 0x54, 0xd4, 0x34, 0xb4, 0x74, 0xf4,
++    0x0c, 0x8c, 0x4c, 0xcc, 0x2c, 0xac, 0x6c, 0xec,
++    0x1c, 0x9c, 0x5c, 0xdc, 0x3c, 0xbc, 0x7c, 0xfc,
++    0x02, 0x82, 0x42, 0xc2, 0x22, 0xa2, 0x62, 0xe2,
++    0x12, 0x92, 0x52, 0xd2, 0x32, 0xb2, 0x72, 0xf2,
++    0x0a, 0x8a, 0x4a, 0xca, 0x2a, 0xaa, 0x6a, 0xea,
++    0x1a, 0x9a, 0x5a, 0xda, 0x3a, 0xba, 0x7a, 0xfa,
++    0x06, 0x86, 0x46, 0xc6, 0x26, 0xa6, 0x66, 0xe6,
++    0x16, 0x96, 0x56, 0xd6, 0x36, 0xb6, 0x76, 0xf6,
++    0x0e, 0x8e, 0x4e, 0xce, 0x2e, 0xae, 0x6e, 0xee,
++    0x1e, 0x9e, 0x5e, 0xde, 0x3e, 0xbe, 0x7e, 0xfe,
++    0x01, 0x81, 0x41, 0xc1, 0x21, 0xa1, 0x61, 0xe1,
++    0x11, 0x91, 0x51, 0xd1, 0x31, 0xb1, 0x71, 0xf1,
++    0x09, 0x89, 0x49, 0xc9, 0x29, 0xa9, 0x69, 0xe9,
++    0x19, 0x99, 0x59, 0xd9, 0x39, 0xb9, 0x79, 0xf9,
++    0x05, 0x85, 0x45, 0xc5, 0x25, 0xa5, 0x65, 0xe5,
++    0x15, 0x95, 0x55, 0xd5, 0x35, 0xb5, 0x75, 0xf5,
++    0x0d, 0x8d, 0x4d, 0xcd, 0x2d, 0xad, 0x6d, 0xed,
++    0x1d, 0x9d, 0x5d, 0xdd, 0x3d, 0xbd, 0x7d, 0xfd,
++    0x03, 0x83, 0x43, 0xc3, 0x23, 0xa3, 0x63, 0xe3,
++    0x13, 0x93, 0x53, 0xd3, 0x33, 0xb3, 0x73, 0xf3,
++    0x0b, 0x8b, 0x4b, 0xcb, 0x2b, 0xab, 0x6b, 0xeb,
++    0x1b, 0x9b, 0x5b, 0xdb, 0x3b, 0xbb, 0x7b, 0xfb,
++    0x07, 0x87, 0x47, 0xc7, 0x27, 0xa7, 0x67, 0xe7,
++    0x17, 0x97, 0x57, 0xd7, 0x37, 0xb7, 0x77, 0xf7,
++    0x0f, 0x8f, 0x4f, 0xcf, 0x2f, 0xaf, 0x6f, 0xef,
++    0x1f, 0x9f, 0x5f, 0xdf, 0x3f, 0xbf, 0x7f, 0xff};
++
++/* module */
++static int module_start(int argc, char *argv[], void *startaddr, ModuleInfo_t *mi)
++{
++    iop_event_t event;
++    iop_thread_t thread;
++    int rv;
++
++#ifndef MINI_DRIVER
++    int i;
++
++    M_PRINTF("Starting module\n");
++    for (i = 0; i < argc; i++)
++        M_PRINTF(" - argv[%d] = %s\n", i, argv[i]);
++#else
++    (void)argc;
++    (void)argv;
++#endif
++    (void)startaddr;
++
++    /* create default transfer descriptor */
++    mx_sio2_init_td(&global_td);
++
++    /* create event flag */
++    event.attr      = 2;
++    event.option    = 0;
++    event.bits      = 0;
++    sio2_event_flag = CreateEventFlag(&event);
++    if (sio2_event_flag < 0) {
++        M_PRINTF("ERROR: CreateEventFlag returned %d\n", sio2_event_flag);
++        goto error1;
++    }
++
++    rv = sio2man_hook_init();
++    if (rv < 0) {
++        M_PRINTF("ERROR: sio2man_hook_init returned %d\n", rv);
++        goto error2;
++    }
++
++    /* Just in case sio2man was not loaded, we initialize the dmac channels too */
++    sceSetDMAPriority(IOP_DMAC_SIO2in, 3);
++    sceSetDMAPriority(IOP_DMAC_SIO2out, 3);
++    sceEnableDMAChannel(IOP_DMAC_SIO2in);
++    sceEnableDMAChannel(IOP_DMAC_SIO2out);
++
++    /* After a reboot the SD will always respond with:
++     * - 0xff 0xff 0xc1 0x3f
++     * - followed by an infinite amount of 0xff
++     */
++    mx_sio2_lock(INTR_NONE);
++    mx_sio2_rx_pio((void *)&rv, 4);
++    mx_sio2_unlock(INTR_NONE);
++
++    /* create SD card detection thread */
++    thread.attr      = TH_C;
++    thread.thread    = sd_detect_thread;
++    thread.option    = 0;
++    thread.priority  = USER_LOWEST_PRIORITY;
++    thread.stacksize = 0x1000; // 4KiB
++    rv = sd_detect_thread_id = CreateThread(&thread);
++    if (rv < 0) {
++        M_PRINTF("ERROR: CreateThread returned %d\n", rv);
++        goto error3;
++    }
++
++    /* Start thread */
++    rv = StartThread(sd_detect_thread_id, NULL);
++    if (rv < 0) {
++        M_PRINTF("ERROR: StartThread returned %d\n", rv);
++        goto error4;
++    }
++
++    // If modload has certain flags set indicating new version,
++    // set the unloadable flag
++    if (mi && ((mi->newflags & 2) != 0))
++        mi->newflags |= 0x10;
++    return MODULE_RESIDENT_END;
++
++error4:
++    DeleteThread(sd_detect_thread_id);
++error3:
++    sio2man_hook_deinit();
++error2:
++    DeleteEventFlag(sio2_event_flag);
++error1:
++    return MODULE_NO_RESIDENT_END;
++}
++
++static int module_stop(int argc, char *argv[], void *startaddr, ModuleInfo_t *mi)
++{
++#ifndef MINI_DRIVER
++    int i;
++
++    M_PRINTF("Stopping module\n");
++    for (i = 0; i < argc; i++)
++        M_PRINTF(" - argv[%d] = %s\n", i, argv[i]);
++#else
++    (void)argc;
++    (void)argv;
++#endif
++    (void)startaddr;
++    (void)mi;
++
++    DeleteThread(sd_detect_thread_id);
++    sio2man_hook_deinit();
++    DeleteEventFlag(sio2_event_flag);
++
++    return MODULE_NO_RESIDENT_END;
++}
++
++int _start(int argc, char *argv[], void *startaddr, ModuleInfo_t *mi)
++{
++    M_PRINTF("MX4SIO v1.2\n");
++
++    if (argc >= 0)
++        return module_start(argc, argv, startaddr, mi);
++    else
++        return module_stop(-argc, argv, startaddr, mi);
++}
+diff --git a/modules/mx4sio_bd/src/mx4sio.h b/modules/mx4sio_bd/src/mx4sio.h
+new file mode 100644
+index 00000000..259c34ff
+--- /dev/null
++++ b/modules/mx4sio_bd/src/mx4sio.h
+@@ -0,0 +1,78 @@
++#ifndef MX4SIO_H
++#define MX4SIO_H
++
++#include <stdint.h>
++
++/*
++ * Clock divider for 48MHz clock:
++ * 1 = 48  MHz - Invalid setting
++ * 2 = 24  MHz - Fastest usable speed
++ * 3 = 16  MHz
++ * 4 = 12  MHz
++ * 5 =  9.6MHz
++ * 6 =  6  MHz
++ * ...
++ * 0x78 = 400KHz - Initialization speed
++ */
++
++/* baud dividers */
++#define SIO2_BAUD_DIV_SLOW 0x78
++#define SIO2_BAUD_DIV_FAST 0x2
++
++/* SIO2 can only transfer 256 bytes at a time */
++#define SIO2_MAX_TRANSFER_SIZE 256
++
++/* interrupt event flags */
++#define EF_SIO2_INTR_REVERSE  0x00000100
++#define EF_SIO2_INTR_COMPLETE 0x00000200
++
++/* interrupt types */
++#define INTR_NONE 0x0
++#define INTR_RX   0x1
++#define INTR_TX   0x2
++
++/* mem slot 2 */
++#define PORT_NR 3
++
++// #define CONFIG_USE_CRC16
++
++typedef struct dma_command_t
++{
++    uint8_t *buffer;
++    uint16_t sector_count;
++    volatile uint16_t sectors_transferred;
++    uint16_t sectors_reversed;
++#ifdef CONFIG_USE_CRC16
++    uint16_t crc[512]; /*FIXME*/
++#endif
++    uint8_t response;
++    volatile uint8_t abort;
++} dma_command_t;
++
++/* globals */
++extern dma_command_t cmd;
++extern int sio2_event_flag;
++extern const uint8_t reverse_byte_LUT8[256];
++
++/* MX SIO2 functions */
++extern void mx_sio2_lock(uint8_t intr_type);
++extern void mx_sio2_unlock(uint8_t intr_type);
++extern void mx_sio2_set_baud(uint8_t baud);
++
++extern uint8_t mx_sio2_write_byte(uint8_t byte);
++extern uint8_t mx_sio2_write_dummy(void);
++
++extern void mx_sio2_rx_pio(uint8_t *buffer, uint32_t size); /* PIO only used for sending commands */
++extern void mx_sio2_tx_pio(uint8_t *buffer, uint32_t size);
++
++extern void mx_sio2_start_rx_dma(uint8_t *buffer); /* DMA used for all other transfers */
++extern void mx_sio2_start_tx_dma(uint8_t *buffer);
++
++extern uint8_t mx_sio2_wait_equal(uint8_t value, uint32_t count);
++extern uint8_t mx_sio2_wait_not_equal(uint8_t value, uint32_t count);
++extern uint8_t mx_sio2_wait_equal_masked(uint8_t value, uint8_t mask, uint32_t count);
++
++/* misc */
++extern void reverse_buffer(uint32_t *buffer, uint32_t count);
++
++#endif
+diff --git a/modules/mx4sio_bd/src/sio2man_hook.c b/modules/mx4sio_bd/src/sio2man_hook.c
+new file mode 100644
+index 00000000..808ed98d
+--- /dev/null
++++ b/modules/mx4sio_bd/src/sio2man_hook.c
+@@ -0,0 +1,315 @@
++/*
++# _____     ___ ____     ___ ____
++#  ____|   |    ____|   |        | |____|
++# |     ___|   |____ ___|    ____| |    \    PS2DEV Open Source Project.
++#-----------------------------------------------------------------------
++# Copyright ps2dev - http://www.ps2dev.org
++# Licenced under Academic Free License version 2.0
++# Review ps2sdk README & LICENSE files for further details.
++#
++# taken from MX4SIO driver for simplicity.
++# all credits go to maximus32
++*/
++
++#include <stdio.h>
++#include <string.h>
++#include <thsemap.h>
++#include <intrman.h>
++
++#include "ioplib.h"
++#include "sio2man.h"
++#include "sio2man_hook.h"
++
++// #define DEBUG  //comment out this line when not debugging
++#include "module_debug.h"
++
++#define PORT_NR 3
++#ifndef M_DEBUG
++#define M_DEBUG DPRINTF
++#endif
++
++// sio2man function typedefs
++typedef void (*psio2_transfer_init)(void);
++typedef int (*psio2_transfer)(sio2_transfer_data_t *td);
++typedef void (*psio2_transfer_reset)(void);
++
++struct sio2man_hook_data
++{
++    iop_library_t *m_lib;
++    // Original sio2man function pointers
++    psio2_transfer_init m_23_psio2_pad_transfer_init;
++#ifdef PORT_NR
++    psio2_transfer m_25_psio2_transfer;
++#endif
++    psio2_transfer_reset m_26_psio2_transfer_reset;
++};
++
++static struct sio2man_hook_data g_hook_data[2];
++static iop_library_t *g_loadcore_lib;
++#if SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++static iop_library_t *g_intrman_lib;
++static int (*g_sio2man_intr_handler_ptr)(void *arg);
++static void *g_sio2man_intr_arg_ptr;
++#endif
++
++#ifdef PORT_NR
++static sio2_transfer_data_t g_null_td;
++// Generic sio2man transfer function
++static int _sio2_transfer(psio2_transfer transfer_func, sio2_transfer_data_t *td)
++{
++    unsigned int i;
++
++    //M_DEBUG("%s\n", __FUNCTION__);
++
++    // Do not allow transfers to/from our used port
++    for (i = 0; i < (sizeof(td->regdata)/sizeof(td->regdata[0])); i++) {
++        // Last transfer, we're ok.
++        if (td->regdata[i] == 0)
++            break;
++
++        // Wrong port; behave as a no-op.
++        // This will allow the transfer reset behavior for old library to work.
++        if ((td->regdata[i] & 3) == PORT_NR)
++            return transfer_func(&g_null_td);
++    }
++
++    return transfer_func(td);
++}
++
++// Hooked sio2man functions
++static int _1_25_sio2_transfer(sio2_transfer_data_t *td) { return _sio2_transfer(g_hook_data[0].m_25_psio2_transfer, td); }
++static int _2_25_sio2_transfer(sio2_transfer_data_t *td) { return _sio2_transfer(g_hook_data[1].m_25_psio2_transfer, td); }
++#endif
++
++static void unhook_loadcore(void);
++#if SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++static void unhook_intrman(void);
++#endif
++
++static void _sio2man_hook(iop_library_t *lib)
++{
++    int state;
++
++    // Disable interrupts to prevent race conditions with MC/PAD libraries
++    CpuSuspendIntr(&state);
++    // Only the newest sio2man libraries (using one semaphore for locks for all devices) are supported
++    switch (lib->version)
++    {
++        case IRX_VER(1, 2):
++        case IRX_VER(2, 7):
++        {
++            int major_version;
++
++            M_DEBUG("Installing sio2man hooks for version 0x%x\n", lib->version);
++
++            major_version = ((lib->version >> 8) & 0xFF);
++            if (g_hook_data[major_version - 1].m_lib) {
++                M_DEBUG("Warning: trying to hook sio2man version 0x%x\n", lib->version);
++                M_DEBUG("         while version 0x%x already hooked\n", g_hook_data[major_version - 1].m_lib->version);
++            }
++            g_hook_data[major_version - 1].m_lib = lib;
++            g_hook_data[major_version - 1].m_23_psio2_pad_transfer_init  = lib->exports[23];
++#ifdef PORT_NR
++            g_hook_data[major_version - 1].m_25_psio2_transfer           = ioplib_hookSameExportEntries(lib, 25, (major_version == 1) ? &_1_25_sio2_transfer : &_2_25_sio2_transfer);
++#endif
++            g_hook_data[major_version - 1].m_26_psio2_transfer_reset     = lib->exports[26];
++#ifdef PORT_NR
++            ioplib_relinkExports(lib);
++#endif
++            break;
++        }
++        default:
++        {
++            M_DEBUG("ERROR: sio2man version 0x%x not supported\n", lib->version);
++            break;
++        }
++    }
++    if (g_hook_data[0].m_lib && g_hook_data[1].m_lib)
++        unhook_loadcore();
++    CpuResumeIntr(state);
++}
++
++#if SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++// intrman hook
++static int (*pRegisterIntrHandler)(int irq, int mode, int (*handler)(void *), void *arg);
++static int hookRegisterIntrHandler(int irq, int mode, int (*handler)(void *), void *arg)
++{
++    int ret;
++    M_DEBUG("RegisterIntrHandler irq: %i, handler @ 0x%p\n", irq, handler);
++
++    ret = pRegisterIntrHandler(irq, mode, handler, arg);
++    // If handler already exists or other error, then do not save handler
++    if (ret)
++        return ret;
++    // SIO2 interrupt
++    if (irq == IOP_IRQ_SIO2 && !g_sio2man_intr_handler_ptr) {
++        g_sio2man_intr_handler_ptr = handler;
++        g_sio2man_intr_arg_ptr = arg;
++        M_DEBUG("Got SIO2MAN intr handler @ 0x%p, arg @ 0x%p\n", handler, arg);
++        unhook_intrman();
++    }
++    return ret;
++}
++#endif
++
++// loadcore hook
++static int (*pRegisterLibraryEntries)(iop_library_t *lib);
++static int hookRegisterLibraryEntries(iop_library_t *lib)
++{
++    int ret;
++    M_DEBUG("RegisterLibraryEntries: %s 0x%x\n", lib->name, lib->version);
++
++    ret = pRegisterLibraryEntries(lib);
++    // If library already exists or other error, then do not hook
++    if (ret)
++        return ret;
++    if (!strcmp(lib->name, "sio2man"))
++        _sio2man_hook(lib);
++    return ret;
++}
++
++static void unhook_loadcore(void)
++{
++    int state;
++
++    CpuSuspendIntr(&state);
++    if (g_loadcore_lib) {
++        if (pRegisterLibraryEntries)
++            ioplib_hookSameExportEntries(g_loadcore_lib, 6, pRegisterLibraryEntries);
++        g_loadcore_lib = NULL;
++    }
++    CpuResumeIntr(state);
++}
++
++#if SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++static void unhook_intrman(void)
++{
++    int state;
++
++    CpuSuspendIntr(&state);
++    if (g_intrman_lib) {
++        if (pRegisterIntrHandler)
++            ioplib_hookSameExportEntries(g_intrman_lib, 4, pRegisterIntrHandler);
++        g_intrman_lib = NULL;
++    }
++    CpuResumeIntr(state);
++}
++#endif
++
++static int generic_hook_iterate_cb(iop_library_t *lib, void *userdata)
++{
++    (void)userdata;
++    if (userdata && !*(iop_library_t **)userdata)
++        *(iop_library_t **)userdata = lib;
++    return 1;
++}
++
++static int sio2man_hook_iterate_cb(iop_library_t *lib, void *userdata)
++{
++    (void)userdata;
++    switch ((lib->version >> 8) & 0xFF)
++    {
++        case 1:
++        case 2:
++        {
++            _sio2man_hook(lib);
++            return (g_hook_data[0].m_lib && g_hook_data[1].m_lib) ? 1 : 0;
++        }
++        default:
++            return 1;
++    }
++}
++
++int sio2man_hook_init()
++{
++    M_DEBUG("%s\n", __FUNCTION__);
++
++#if SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++    {
++        intrman_internals_t *intrman_internals;
++
++        intrman_internals = GetIntrmanInternalData();
++        // Get sio2man intr handler
++        g_sio2man_intr_handler_ptr = intrman_internals->interrupt_handler_table[IOP_IRQ_SIO2].handler;
++        g_sio2man_intr_arg_ptr = intrman_internals->interrupt_handler_table[IOP_IRQ_SIO2].userdata;
++    }
++#endif
++
++    // Hook into 'sio2man' now if it's already loaded
++    if (!ioplib_iterateByName("sio2man", &sio2man_hook_iterate_cb, NULL)) {
++        // Hook into 'loadcore' so we know when sio2man is loaded in the future
++        ioplib_iterateByName("loadcore", &generic_hook_iterate_cb, &g_loadcore_lib);
++#if SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++        // Hook into 'intrman' so we can get its handlers when they are registered
++        ioplib_iterateByName("intrman", &generic_hook_iterate_cb, &g_intrman_lib);
++#endif
++        if (!g_loadcore_lib)
++            return -1;
++#if SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++        if (!g_intrman_lib)
++            return -1;
++#endif
++        pRegisterLibraryEntries = ioplib_hookSameExportEntries(g_loadcore_lib, 6, hookRegisterLibraryEntries);
++        ioplib_relinkExports(g_loadcore_lib);
++#if SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++        pRegisterIntrHandler = ioplib_hookSameExportEntries(g_intrman_lib, 4, hookRegisterIntrHandler);
++        ioplib_relinkExports(g_intrman_lib);
++#endif
++    }
++
++    return 0;
++}
++
++void sio2man_hook_deinit()
++{
++    unsigned int i;
++
++    M_DEBUG("%s\n", __FUNCTION__);
++
++    // Unhook 'sio2man'
++    for (i = 0; i < (sizeof(g_hook_data)/sizeof(g_hook_data[0])); i += 1) {
++        if (g_hook_data[i].m_lib) {
++#ifdef PORT_NR
++            if (g_hook_data[i].m_25_psio2_transfer) {
++                ioplib_hookSameExportEntries(g_hook_data[i].m_lib, 25, g_hook_data[i].m_25_psio2_transfer);
++                g_hook_data[i].m_25_psio2_transfer = NULL;
++            }
++            ioplib_relinkExports(g_hook_data[i].m_lib);
++#endif
++            g_hook_data[i].m_lib = NULL;
++        }
++    }
++
++    unhook_loadcore();
++#if SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++    unhook_intrman();
++#endif
++}
++
++void sio2man_hook_sio2_lock()
++{
++    // Lock sio2man driver so we can use it exclusively
++    if (g_hook_data[1].m_23_psio2_pad_transfer_init)
++        g_hook_data[1].m_23_psio2_pad_transfer_init();
++}
++
++void sio2man_hook_sio2_unlock()
++{
++    // Unlock sio2man driver
++    if (g_hook_data[1].m_26_psio2_transfer_reset)
++        g_hook_data[1].m_26_psio2_transfer_reset();
++}
++
++#if SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++void sio2man_hook_sio2_set_intr_handler(int (*handler)(void *userdata), void *userdata)
++{
++    intrman_internals_t *intrman_internals;
++    int state;
++
++    intrman_internals = GetIntrmanInternalData();
++    CpuSuspendIntr(&state);
++    intrman_internals->interrupt_handler_table[IOP_IRQ_SIO2].handler = handler ? handler : g_sio2man_intr_handler_ptr;
++    intrman_internals->interrupt_handler_table[IOP_IRQ_SIO2].userdata = handler ? userdata : g_sio2man_intr_arg_ptr;
++    CpuResumeIntr(state);    
++}
++#endif
+diff --git a/modules/mx4sio_bd/src/sio2man_hook.h b/modules/mx4sio_bd/src/sio2man_hook.h
+new file mode 100644
+index 00000000..b0c849fb
+--- /dev/null
++++ b/modules/mx4sio_bd/src/sio2man_hook.h
+@@ -0,0 +1,33 @@
++/*
++# _____     ___ ____     ___ ____
++#  ____|   |    ____|   |        | |____|
++# |     ___|   |____ ___|    ____| |    \    PS2DEV Open Source Project.
++#-----------------------------------------------------------------------
++# Copyright ps2dev - http://www.ps2dev.org
++# Licenced under Academic Free License version 2.0
++# Review ps2sdk README & LICENSE files for further details.
++#
++# taken from MX4SIO driver for simplicity.
++# all credits go to maximus32
++*/
++
++#ifndef SIO2MAN_HOOK_H
++#define SIO2MAN_HOOK_H
++
++#ifndef SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++#define SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER 0
++#endif
++
++extern int sio2man_hook_init();
++extern void sio2man_hook_deinit();
++
++// Lock all communication to SIO2MAN
++// this is needed for drivers that communicate directly to sio2, like mx4sio.
++// Do NOT lock for long duration, only for single (high speed) transfers
++extern void sio2man_hook_sio2_lock();
++extern void sio2man_hook_sio2_unlock();
++#if SIO2MAN_HOOK_SUPPORT_SET_INTR_HANDLER
++extern void sio2man_hook_sio2_set_intr_handler(int (*handler)(void *userdata), void *userdata);
++#endif
++
++#endif
+diff --git a/modules/mx4sio_bd/src/sio2regs.h b/modules/mx4sio_bd/src/sio2regs.h
+new file mode 100644
+index 00000000..99bc2241
+--- /dev/null
++++ b/modules/mx4sio_bd/src/sio2regs.h
+@@ -0,0 +1,174 @@
++#ifndef SIO2REGS_H
++#define SIO2REGS_H
++
++
++// SIO2 registers:
++
++#define SIO2_REL_BASE 0x1F808000
++#define SIO2_SEG      0xA0000000 // Uncached
++#define SIO2_BASE     (SIO2_REL_BASE + SIO2_SEG)
++
++#define SIO2_REG_BASE        (SIO2_BASE + 0x200)
++#define SIO2_REG_PORT0_CTRL1 (SIO2_BASE + 0x240)
++#define SIO2_REG_PORT0_CTRL2 (SIO2_BASE + 0x244)
++#define SIO2_REG_DATA_OUT    (SIO2_BASE + 0x260)
++#define SIO2_REG_DATA_IN     (SIO2_BASE + 0x264)
++#define SIO2_REG_CTRL        (SIO2_BASE + 0x268)
++#define SIO2_REG_STAT6C      (SIO2_BASE + 0x26C)
++#define SIO2_REG_STAT70      (SIO2_BASE + 0x270)
++#define SIO2_REG_STAT74      (SIO2_BASE + 0x274)
++#define SIO2_REG_UNKN78      (SIO2_BASE + 0x278)
++#define SIO2_REG_UNKN7C      (SIO2_BASE + 0x27C)
++#define SIO2_REG_STAT        (SIO2_BASE + 0x280)
++
++#define SIO2_A_QUEUE       (SIO2_BASE + 0x200)
++#define SIO2_A_PORT0_CTRL1 (SIO2_BASE + 0x240)
++#define SIO2_A_PORT0_CTRL2 (SIO2_BASE + 0x244)
++#define SIO2_A_DATA_OUT    (SIO2_BASE + 0x260)
++#define SIO2_A_DATA_IN     (SIO2_BASE + 0x264)
++#define SIO2_A_CTRL        (SIO2_BASE + 0x268)
++#define SIO2_A_STAT6C      (SIO2_BASE + 0x26C)
++#define SIO2_A_CONN_STAT70 (SIO2_BASE + 0x270)
++#define SIO2_A_FIFO_STAT74 (SIO2_BASE + 0x274)
++#define SIO2_A_TX_FIFO_PT  (SIO2_BASE + 0x278)
++#define SIO2_A_RX_FIFO_PT  (SIO2_BASE + 0x27C)
++#define SIO2_A_INTR_STAT   (SIO2_BASE + 0x280)
++
++// Bit-field definitions:
++
++#define PCTRL0_ATT_LOW_PER(x)      ((((u32)(x)) << 0) & 0xFF)
++#define PCTRL0_ATT_MIN_HIGH_PER(x) ((((u32)(x)) << 8) & 0xFF00)
++#define PCTRL0_BAUD0_DIV(x)        ((((u32)(x)) << 16) & 0xFF0000)
++#define PCTRL0_BAUD1_DIV(x)        ((((u32)(x)) << 24) & 0xFF000000)
++
++#define PCTRL1_ACK_TIMEOUT_PER(x)  ((((u32)(x)) << 0) & 0xFFFF)
++#define PCTRL1_INTER_BYTE_PER(x)   ((((u32)(x)) << 16) & 0xFF0000)
++#define PCTRL1_UNK24(x)            ((((u32)(x))&1) << 24)
++#define PCTRL1_IF_MODE_SPI_DIFF(x) ((((u32)(x))&1) << 25)
++
++#define TR_CTRL_PORT_NR(x)          ((((u32)(x))&0x3) << 0)
++#define TR_CTRL_PAUSE(x)            ((((u32)(x))&1) << 2)
++#define TR_CTRL_UNK03(x)            ((((u32)(x))&1) << 3)
++// Each of the folowing is 0 for PIO transfer in the given direction. to select DMA, set to 1.
++#define TR_CTRL_TX_MODE_PIO_DMA(x)  ((((u32)(x))&1) << 4)
++#define TR_CTRL_RX_MODE_PIO_DMA(x)  ((((u32)(x))&1) << 5)
++/*
++normal    special
++0            0                no transfer done(???)
++1            0                normal transfer - usually used
++0            1                "special" transfer (not known to have been ever used by anything, no known difference from normal).
++1            1                no transfer takes place
++*/
++#define TR_CTRL_NORMAL_TR(x)        (((u32)((x))&1) << 6)
++#define TR_CTRL_SPECIAL_TR(x)       (((u32)((x))&1) << 7)
++// In bytes 0 - 0x100:
++#define TR_CTRL_TX_DATA_SZ(x)       ((((u32)(x))&0x1FF) << 8)
++#define TR_CTRL_UNK17(x)            ((((u32)(x))&1) << 17)
++#define TR_CTRL_RX_DATA_SZ(x)       ((((u32)(x))&0x1FF) << 18)
++#define TR_CTRL_UNK27(x)            ((((u32)(x))&1) << 27)
++// 28 and 29 can't be set
++#define TR_CTRL_UNK28(x)            ((((u32)(x))&1) << 28)
++#define TR_CTRL_UNK29(x)            ((((u32)(x))&1) << 29)
++// selects between baud rate divisors 0 and 1
++#define TR_CTRL_BAUD_DIV(x)         ((((u32)(x))&1) << 30)
++#define TR_CTRL_WAIT_ACK_FOREVER(x) ((((u32)(x))&1) << 31)
++
++// 8268 SIO2 (main) CTRL register.
++#define CTRL_TR_START(x)             ((((u32)(x))&1) << 0)
++#define CTRL_TR_RESUME_PAUSED(x)     ((((u32)(x))&1) << 1)
++#define CTRL_RESET_STATE(x)          ((((u32)(x))&1) << 2)
++#define CTRL_RESET_FIFOS(x)          ((((u32)(x))&1) << 3)
++#define CTRL_USE_ACK_WAIT_TIMEOUT(x) ((((u32)(x))&1) << 4)
++#define CTRL_NO_MISSING_ACK_ERR(x)   ((((u32)(x))&1) << 5)
++// bit6 unknonw r/o, 0
++#define CTRL_UNK06(x)                ((((u32)(x))&1) << 6)
++// bit7 unknonw r/w, usually set to 1 by software
++#define CTRL_UNK07(x)                ((((u32)(x))&1) << 7)
++#define CTRL_ERROR_INTR_EN(x)        ((((u32)(x))&1) << 8)
++#define CTRL_TR_COMP_INTR_EN(x)      ((((u32)(x))&1) << 9)
++// bits 10, 11 unknonw r/w, usually set to 0 by software
++#define CTRL_UNK10(x)                ((((u32)(x))&1) << 10)
++#define CTRL_UNK11(x)                ((((u32)(x))&1) << 11)
++// Unknown r/o, 0:
++#define CTRL_UNK2912(x)              ((((u32)(x))&0x3FFFF) << 12)
++#define CTRL_PS1_MODE_EN(x)          ((((u32)(x))&1) << 30)
++#define CTRL_SLAVE_MODE_EN(x)        ((((u32)(x))&1) << 31)
++
++// 826C SIO2 (main) STAT register. (read-only)
++#define STAT_UNK0300(x)              ((((u32)(x)) >> 0) & 0xF)
++// Needs more data through DMA to complete transfer:
++#define STAT_NEED_DMA_DATA_TX(x)     ((((u32)(x)) >> 4) & 1)
++#define STAT_NEED_DMA_DATA_RX(x)     ((((u32)(x)) >> 5) & 1)
++#define STAT_UNK0706(x)              ((((u32)(x)) >> 6) & 3)
++// Queue slot number that is going to be processed next (0-15):
++#define STAT_QUEUE_SLOT_PROC(x)      ((((u32)(x)) >> 8) & 0xF)
++// Kept clear only while tranfer is running, and set while idle. 1 can also signify transfer completion:
++#define STAT_TR_IDLE(x)              ((((u32)(x)) >> 12) & 1)
++// FIFO underflow / overflow errors: (I am not sure if they really correspond to the TX and RX FIFOs)
++#define STAT_ERR_TX_FIFO_UOFLOW(x)   ((((u32)(x)) >> 13) & 1)
++#define STAT_ERR_RX_FIFO_UOFLOW(x)   ((((u32)(x)) >> 14) & 1)
++#define STAT_ERR_ACK_MISSING(x)      ((((u32)(x)) >> 15) & 1)
++// Flags used to determine the transfers of which queue slots triggered erroirs. Slot = 0 - 15:
++#define STAT_ERR_QUEUE_SLOT(x, slot) ((((u32)(x)) >> (slot + 16)) & 1)
++
++// 8270 SIO2 Device connected detection status register. (read-only)
++// For ports 0-3. Only SAS0 and SAS1 are actually connected to the physical port and only on early PS2 models (~ SCPH-30000).
++#define CONN_STAT_CDC0(x) ((((u32)(x)) >> 0) & 1)
++#define CONN_STAT_CDC1(x) ((((u32)(x)) >> 1) & 1)
++#define CONN_STAT_CDC2(x) ((((u32)(x)) >> 2) & 1)
++#define CONN_STAT_CDC3(x) ((((u32)(x)) >> 3) & 1)
++#define CONN_STAT_SAS0(x) ((((u32)(x)) >> 4) & 1)
++#define CONN_STAT_SAS1(x) ((((u32)(x)) >> 5) & 1)
++#define CONN_STAT_SAS2(x) ((((u32)(x)) >> 6) & 1)
++#define CONN_STAT_SAS3(x) ((((u32)(x)) >> 7) & 1)
++
++// 8274 SIO2 FIFO status register. (read-only)
++// values 0 - 0x100 bytes:
++#define FSTAT_TX_SZ(x)        ((((u32)(x)) >> 0) & 0x1FF)
++#define FSTAT_TX_UNK09(x)     ((((u32)(x)) >> 9) & 1)
++#define FSTAT_TX_OVERFLOW(x)  ((((u32)(x)) >> 10) & 1)
++#define FSTAT_TX_UNDERFLOW(x) ((((u32)(x)) >> 11) & 1)
++#define FSTAT_UNK1512(x)      ((((u32)(x)) >> 12) & 0xF)
++#define FSTAT_RX_SZ(x)        ((((u32)(x)) >> 16) & 0x1FF)
++#define FSTAT_RX_UNK09(x)     ((((u32)(x)) >> 25) & 1)
++#define FSTAT_RX_OVERFLOW(x)  ((((u32)(x)) >> 26) & 1)
++#define FSTAT_RX_UNDERFLOW(x) ((((u32)(x)) >> 27) & 1)
++#define FSTAT_UNK3128(x)      ((((u32)(x)) >> 28) & 0xF)
++
++// 8278 SIO2_REG_UNKN78    TX FIFO pointers. (read/write)
++// #define GET_TXFPNTS_HEAD(x) ((((u32)(x)) >> 0) & 0xFF)
++// #define SET_TXFPNTS_HEAD(x) ((((u32)(x)) >> 0) & 0xFF)
++//...
++// Better not add the FIFO pointers, as to change only one of them would require more complex macros.
++// 827C SIO2_REG_UNKN7C    RX FIFO pointers.
++
++// 8280    SIO2_REG_STAT    u32 Interrupt status. Writing 1 to an interrupt flag clears it.
++#define GET_ISTAT_TR_COMP(x) ((((u32)(x)) >> 0) & 1)
++// Any error:
++#define GET_ISTAT_TR_ERR(x)  ((((u32)(x)) >> 1) & 1)
++
++// Inline (faster) versions of sio2_* functions
++/* 04 */ static inline void inl_sio2_ctrl_set(u32 val) { _sw(val, SIO2_REG_CTRL); }
++/* 05 */ static inline u32 inl_sio2_ctrl_get() { return _lw(SIO2_REG_CTRL); }
++/* 06 */ static inline u32 inl_sio2_stat6c_get() { return _lw(SIO2_REG_STAT6C); }
++/* 07 */ static inline void inl_sio2_portN_ctrl1_set(int N, u32 val) { _sw(val, SIO2_REG_PORT0_CTRL1 + (N * 8)); }
++/* 08 */ static inline u32 inl_sio2_portN_ctrl1_get(int N) { return _lw(SIO2_REG_PORT0_CTRL1 + (N * 8)); }
++/* 09 */ static inline void inl_sio2_portN_ctrl2_set(int N, u32 val) { _sw(val, SIO2_REG_PORT0_CTRL2 + (N * 8)); }
++/* 10 */ static inline u32 inl_sio2_portN_ctrl2_get(int N) { return _lw(SIO2_REG_PORT0_CTRL2 + (N * 8)); }
++/* 11 */ static inline u32 inl_sio2_stat70_get() { return _lw(SIO2_REG_STAT70); }
++/* 12 */ static inline void inl_sio2_regN_set(int N, u32 val) { _sw(val, SIO2_REG_BASE + (N * 4)); }
++/* 13 */ static inline u32 inl_sio2_regN_get(int N) { return _lw(SIO2_REG_BASE + (N * 4)); }
++/* 14 */ static inline u32 inl_sio2_stat74_get() { return _lw(SIO2_REG_STAT74); }
++/* 15 */ static inline void inl_sio2_unkn78_set(u32 val) { _sw(val, SIO2_REG_UNKN78); }
++/* 16 */ static inline u32 inl_sio2_unkn78_get() { return _lw(SIO2_REG_UNKN78); }
++/* 17 */ static inline void inl_sio2_unkn7c_set(u32 val) { _sw(val, SIO2_REG_UNKN7C); }
++/* 18 */ static inline u32 inl_sio2_unkn7c_get() { return _lw(SIO2_REG_UNKN7C); }
++/* 19 */ static inline void inl_sio2_data_out(u8 val) { _sb(val, SIO2_REG_DATA_OUT); }
++/* 20 */ static inline u8 inl_sio2_data_in() { return _lb(SIO2_REG_DATA_IN); }
++/* 21 */ static inline void inl_sio2_stat_set(u32 val) { _sw(val, SIO2_REG_STAT); }
++/* 22 */ static inline u32 inl_sio2_stat_get() { return _lw(SIO2_REG_STAT); }
++
++static inline u16 inl_sio2_data_inh() { return _lh(SIO2_REG_DATA_IN); }
++static inline u32 inl_sio2_data_inw() { return _lw(SIO2_REG_DATA_IN); }
++
++#endif
+diff --git a/modules/mx4sio_bd/src/spi_sdcard_crc7.c b/modules/mx4sio_bd/src/spi_sdcard_crc7.c
+new file mode 100644
+index 00000000..6c75ab39
+--- /dev/null
++++ b/modules/mx4sio_bd/src/spi_sdcard_crc7.c
+@@ -0,0 +1,83 @@
++/* Includes ------------------------------------------------------------------*/
++#include "spi_sdcard_driver_config.h"
++#include "spi_sdcard_crc7.h"
++
++#if SD_CRC7_MODE == SD_CRC7_MODE_RAM_TABLE || SD_CRC7_MODE == SD_CRC7_MODE_ROM_TABLE
++
++#if SD_CRC7_MODE == CRC7_MODE_RAM_TABLE
++uint8_t crc7_table[256];
++
++void crc7_generate_table(void)
++{
++    int i, j;
++    uint8_t poly = 0x89; // the value of our CRC-7 polynomial
++
++    for (i = 0; i < 256; ++i) {
++        crc7_table[i] = (i & 0x80) ? i ^ poly : i;
++
++        for (j = 1; j < 8; ++j) {
++            crc7_table[i] <<= 1;
++
++            if (crc7_table[i] & 0x80) {
++                crc7_table[i] ^= poly;
++            }
++        }
++    }
++}
++#else  // SD_CRC7_MODE == SD_CRC7_MODE_ROM_TABLE
++const uint8_t crc7_table[256] = {
++    0x00, 0x09, 0x12, 0x1B, 0x24, 0x2D, 0x36, 0x3F, 0x48, 0x41, 0x5A, 0x53, 0x6C, 0x65, 0x7E, 0x77,
++    0x19, 0x10, 0x0B, 0x02, 0x3D, 0x34, 0x2F, 0x26, 0x51, 0x58, 0x43, 0x4A, 0x75, 0x7C, 0x67, 0x6E,
++    0x32, 0x3B, 0x20, 0x29, 0x16, 0x1F, 0x04, 0x0D, 0x7A, 0x73, 0x68, 0x61, 0x5E, 0x57, 0x4C, 0x45,
++    0x2B, 0x22, 0x39, 0x30, 0x0F, 0x06, 0x1D, 0x14, 0x63, 0x6A, 0x71, 0x78, 0x47, 0x4E, 0x55, 0x5C,
++    0x64, 0x6D, 0x76, 0x7F, 0x40, 0x49, 0x52, 0x5B, 0x2C, 0x25, 0x3E, 0x37, 0x08, 0x01, 0x1A, 0x13,
++    0x7D, 0x74, 0x6F, 0x66, 0x59, 0x50, 0x4B, 0x42, 0x35, 0x3C, 0x27, 0x2E, 0x11, 0x18, 0x03, 0x0A,
++    0x56, 0x5F, 0x44, 0x4D, 0x72, 0x7B, 0x60, 0x69, 0x1E, 0x17, 0x0C, 0x05, 0x3A, 0x33, 0x28, 0x21,
++    0x4F, 0x46, 0x5D, 0x54, 0x6B, 0x62, 0x79, 0x70, 0x07, 0x0E, 0x15, 0x1C, 0x23, 0x2A, 0x31, 0x38,
++    0x41, 0x48, 0x53, 0x5A, 0x65, 0x6C, 0x77, 0x7E, 0x09, 0x00, 0x1B, 0x12, 0x2D, 0x24, 0x3F, 0x36,
++    0x58, 0x51, 0x4A, 0x43, 0x7C, 0x75, 0x6E, 0x67, 0x10, 0x19, 0x02, 0x0B, 0x34, 0x3D, 0x26, 0x2F,
++    0x73, 0x7A, 0x61, 0x68, 0x57, 0x5E, 0x45, 0x4C, 0x3B, 0x32, 0x29, 0x20, 0x1F, 0x16, 0x0D, 0x04,
++    0x6A, 0x63, 0x78, 0x71, 0x4E, 0x47, 0x5C, 0x55, 0x22, 0x2B, 0x30, 0x39, 0x06, 0x0F, 0x14, 0x1D,
++    0x25, 0x2C, 0x37, 0x3E, 0x01, 0x08, 0x13, 0x1A, 0x6D, 0x64, 0x7F, 0x76, 0x49, 0x40, 0x5B, 0x52,
++    0x3C, 0x35, 0x2E, 0x27, 0x18, 0x11, 0x0A, 0x03, 0x74, 0x7D, 0x66, 0x6F, 0x50, 0x59, 0x42, 0x4B,
++    0x17, 0x1E, 0x05, 0x0C, 0x33, 0x3A, 0x21, 0x28, 0x5F, 0x56, 0x4D, 0x44, 0x7B, 0x72, 0x69, 0x60,
++    0x0E, 0x07, 0x1C, 0x15, 0x2A, 0x23, 0x38, 0x31, 0x46, 0x4F, 0x54, 0x5D, 0x62, 0x6B, 0x70, 0x79};
++#endif // SD_CRC7_MODE == SD_CRC7_MODE_RAM_TABLE
++
++static uint8_t _crc7_get_item(uint8_t init_crc, uint8_t message_byte)
++{
++    return crc7_table[(init_crc << 1) ^ message_byte];
++}
++
++uint8_t crc7(const uint8_t message[], size_t length)
++{
++    size_t i;
++    uint8_t crc = 0;
++
++    for (i = 0; i < length; ++i) {
++        crc = _crc7_get_item(crc, message[i]);
++    }
++
++    return crc;
++}
++#elif SD_CRC7_MODE == SD_CRC7_MODE_RUNTIME
++
++uint8_t crc7(const uint8_t message[], size_t length)
++{
++    const uint8_t poly = 0x89;
++    uint8_t crc        = 0;
++
++    for (size_t i = 0; i < length; i++) {
++        crc ^= message[i];
++
++        for (size_t j = 0; j < 8; j++) {
++            crc = (crc & 0x80u) ? ((crc << 1) ^ (poly << 1)) : (crc << 1);
++        }
++    }
++
++    return crc >> 1;
++}
++
++#else
++#error set corret SD_CRC7_MODE
++#endif
+diff --git a/modules/mx4sio_bd/src/spi_sdcard_crc7.h b/modules/mx4sio_bd/src/spi_sdcard_crc7.h
+new file mode 100644
+index 00000000..2867f379
+--- /dev/null
++++ b/modules/mx4sio_bd/src/spi_sdcard_crc7.h
+@@ -0,0 +1,16 @@
++#ifndef __SPI_SDCARD_CRC7_H__
++#define __SPI_SDCARD_CRC7_H__
++
++/* Includes ------------------------------------------------------------------*/
++#include <tamtypes.h>
++#include <stddef.h>
++#include "spi_sdcard_driver_config.h"
++// Set
++
++#if SD_CRC7_MODE == CRC7_MODE_RAM_TABLE
++extern void crc7_generate_table(void);
++#endif
++
++extern uint8_t crc7(const uint8_t message[], size_t length);
++
++#endif //__SPI_SDCARD_CRC7_H__
+diff --git a/modules/mx4sio_bd/src/spi_sdcard_driver.c b/modules/mx4sio_bd/src/spi_sdcard_driver.c
+new file mode 100644
+index 00000000..fb73c06f
+--- /dev/null
++++ b/modules/mx4sio_bd/src/spi_sdcard_driver.c
+@@ -0,0 +1,710 @@
++#include <bdm.h>
++#include <stdint.h>
++#include <thevent.h>
++#include <thbase.h>
++
++#include "spi_sdcard_driver.h"
++#include "spi_sdcard_crc7.h"
++#include "crc16.h"
++#include "mx4sio.h"
++#include "sio2regs.h"
++
++#include "module_debug.h"
++
++#define CMD0   (0  | 0x40)  /* Reset */
++#define CMD1   (1  | 0x40)  /* Send Operator Condition - SEND_OP_COND */
++#define CMD8   (8  | 0x40)  /* Send Interface Condition - SEND_IF_COND */
++#define CMD9   (9  | 0x40)  /* Read CSD */
++#define CMD10  (10 | 0x40)  /* Read CID */
++#define CMD12  (12 | 0x40)  /* Stop data transmit */
++#define CMD13  (13 | 0x40)  /* SEND_STATUS */
++#define CMD16  (16 | 0x40)  /* Set block size, should return 0x00 */
++#define CMD17  (17 | 0x40)  /* Read single block */
++#define CMD18  (18 | 0x40)  /* Read multi block */
++#define ACMD23 (23 | 0x40)  /* Prepare erase N-blocks before multi block write */
++#define CMD24  (24 | 0x40)  /* Write single block */
++#define CMD25  (25 | 0x40)  /* Write multi block */
++#define ACMD41 (41 | 0x40)  /* should return 0x00 */
++#define CMD55  (55 | 0x40)  /* should return 0x01 */
++#define CMD58  (58 | 0x40)  /* Read OCR */
++#define CMD59  (59 | 0x40)  /* CRC disable/enable, should return 0x00 */
++
++#define SPISD_R1_IDLE_FLAG            (0x01)
++#define SPISD_R1_ERASE_RESET_FLAG     (0x02)
++#define SPISD_R1_ILLEGAL_CMD_FLAG     (0x04)
++#define SPISD_R1_CMD_CRC_FLAG         (0x08)
++#define SPISD_R1_ERASE_SEQ_ERROR_FLAG (0x10)
++#define SPISD_R1_ADDR_ERROR_FLAG      (0x20)
++#define SPISD_R1_PARAM_ERROR_FLAG     (0x40)
++#define SPISD_R1_ZERO_FLAG            (0x80)
++
++#define CMD_WAIT_RESP_TIMEOUT (100U)
++#define WAIT_IDLE_TIMEOUT     (50U)
++#define MAX_RETRIES            4
++
++#define CMD_CRC_OFFSET        5
++#define CRC7_SHIFT_MASK(crc7) ((crc7) << 1U | 1U)
++
++/* globals */
++spisd_t sdcard;
++
++/* BDM interface */
++struct block_device bd = {
++    NULL,        /* priv */
++    "sdc",       /* name */
++    1,           /* devNr, mx4sio is always in the second port */
++    0,           /* parNr */
++    0x00,        /* parId */
++    SECTOR_SIZE, /* sectorSize */
++    0,           /* sectorOffset */
++    0,           /* sectorCount */
++    spisd_read,
++    spisd_write,
++    spisd_flush,
++    spisd_stop,
++    "mx4sio" /* path */ };
++
++/* NOTE: SIO2 does *NOT* allow for direct control of /CS line.
++ * It's controlled by the SIO2 hardware and automatically asserted at the start
++ * of a transfer and deasserted at the end. This has lead to the need for some
++ * conditions surrounding dummy writes to avoid timing disruption. */
++static uint8_t spisd_send_cmd(uint8_t cmd, uint32_t arg)
++{
++    uint8_t response = 0xFF;
++
++    /* avoid disrupting CMD12 alignment */
++    if (cmd != CMD12 && cmd != CMD0)
++        mx_sio2_write_dummy();
++
++    uint8_t packet[]       = {cmd, arg >> 24, arg >> 16, arg >> 8, arg, 0};
++    packet[CMD_CRC_OFFSET] = CRC7_SHIFT_MASK(crc7(packet, CMD_CRC_OFFSET));
++
++    /* begin SIO2 PIO TX transfer */
++    mx_sio2_tx_pio(packet, sizeof(packet));
++
++    /* discard extra data on CMD12 */
++    if (cmd == CMD12)
++        mx_sio2_write_dummy();
++
++    /* wait for card to respond */
++    response = mx_sio2_wait_not_equal(0xFF, CMD_WAIT_RESP_TIMEOUT);
++
++    /* avoid disrupting alignment on commands with mutli byte responses */
++    if (cmd != CMD9 && cmd != CMD10 && cmd != CMD13 && cmd != CMD18 && cmd != CMD25) {
++        mx_sio2_write_dummy();
++    }
++
++    return response;
++}
++
++static uint8_t spisd_send_cmd_recv_data(uint8_t cmd, uint32_t arg, uint8_t *data, size_t size)
++{
++    uint8_t response = 0xFF;
++
++    mx_sio2_write_dummy();
++
++    uint8_t packet[]       = {cmd, arg >> 24, arg >> 16, arg >> 8, arg, 0};
++    packet[CMD_CRC_OFFSET] = CRC7_SHIFT_MASK(crc7(packet, CMD_CRC_OFFSET));
++
++    /* begin SIO2 PIO TX transfer */
++    mx_sio2_tx_pio(packet, sizeof(packet));
++
++    /* wait for card to respond */
++    response = mx_sio2_wait_not_equal(0xFF, CMD_WAIT_RESP_TIMEOUT);
++    if (response != 0xFF) {
++        /* start SIO2 PIO RX transfer */
++        mx_sio2_rx_pio(data, size);
++    }
++
++    mx_sio2_write_dummy();
++
++    return response;
++}
++
++static uint8_t spisd_read_register(uint8_t *buff, uint32_t len)
++{
++    uint8_t results = SPISD_RESULT_ERROR;
++
++    results = mx_sio2_wait_equal(0xFE, 2000);
++    if (results == SPISD_RESULT_OK) {
++        /* got read token, start SIO2 PIO RX transfer */
++        mx_sio2_rx_pio(buff, len);
++    }
++
++    return results;
++}
++
++/* TODO: use this to verify writes */
++uint16_t spisd_read_status_register()
++{
++    uint16_t response;
++
++    response = spisd_send_cmd(CMD13, 0) << 8;
++    response |= mx_sio2_write_dummy();
++
++    mx_sio2_write_dummy();
++
++    return response;
++}
++
++int spisd_init_card()
++{
++    uint16_t timeout = WAIT_IDLE_TIMEOUT;
++    uint8_t response = 0;
++    uint8_t buffer[6];
++
++    /* set baud to (400kHZ) for init */
++    mx_sio2_set_baud(SIO2_BAUD_DIV_SLOW);
++
++    /* send at least 74 dummy clocks */
++    /*
++    uint8_t dummy_clks[10] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
++                              0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
++
++    mx_sio2_tx_pio(dummy_clks, 10);*/
++
++    for (int i = 0; i < 16; i++) {
++        mx_sio2_write_dummy();
++    }
++
++    do {
++        response = spisd_send_cmd(CMD0, 0);
++        timeout--;
++    } while ((response != SPISD_R1_IDLE_FLAG) && timeout > 0);
++
++    if (!timeout) {
++        M_DEBUG("ERROR: CMD0 returned 0x%x, exp: 0x1\n", response);
++        return SPISD_RESULT_TIMEOUT;
++    }
++
++    /* send CMD8 with check pattern, store R3 response in buffer */
++    response = spisd_send_cmd_recv_data(CMD8, 0x1AA, buffer, sizeof(buffer));
++
++    /* if CMD8 response is idle, card is CSD v2 */
++    if (response == SPISD_R1_IDLE_FLAG) {
++
++        /* valid check pattern */
++        if (buffer[2] == 0x01 && buffer[3] == 0xAA) {
++            /* CMD55 / ACMD41 pairs */
++            for (int i = 0; i < 0xFFF; i++) {
++                response = spisd_send_cmd(CMD55, 0);
++                if (response != 0x01) {
++                    M_DEBUG("ERROR: CMD55 returned 0x%x, exp: 0x1\n", response);
++                    return SPISD_RESULT_TIMEOUT;
++                }
++
++                response = spisd_send_cmd(ACMD41, 0x40000000);
++                if (response == 0x00) {
++                    break;
++                }
++            }
++
++            if (response != 0x00) {
++                M_DEBUG("ERROR: ACMD41 returned 0x%x, exp: 0x1\n", response);
++                return SPISD_RESULT_TIMEOUT;
++            }
++
++            /* read OCR by CMD58 */
++            response = spisd_send_cmd_recv_data(CMD58, 0, buffer, sizeof(buffer));
++            if (response != 0x00) {
++                M_DEBUG("ERROR: CMD58 returned 0x%x, exp 0x0\n", response);
++                return SPISD_RESULT_TIMEOUT;
++            }
++
++            /* OCR -> CCS(bit30)  1: SDV2HC     0: SDV2 */
++            sdcard.card_type = (buffer[0] & 0x40) ? CARD_TYPE_SDV2HC : CARD_TYPE_SDV2;
++
++            /* set baud to 25MHz */
++            mx_sio2_set_baud(SIO2_BAUD_DIV_FAST);
++
++        } else {
++            M_DEBUG("ERROR: CMD8 check pattern failed, got 0x%x, 0x%x\n", buffer[2], buffer[3]);
++            return SPISD_RESULT_ERROR;
++        }
++
++    /* if CMD8 response is illegal, card is CSD v1 / MMC */
++    } else if (response & SPISD_R1_ILLEGAL_CMD_FLAG) {
++        M_DEBUG("CMD8 illegal, trying CSD v1.0 init\n");
++
++        /* end of CMD8, dummy write */
++        mx_sio2_write_dummy();
++
++        /* CMD55 / ACMD41 pairs */
++        for (int i = 0; i < 0xFFF; i++) {
++            response = spisd_send_cmd(CMD55, 0);
++            if (response != 0x01) {
++                M_DEBUG("ERROR: CMD55 returned 0x%x, exp 0x1\n", response);
++                return SPISD_RESULT_TIMEOUT;
++            }
++
++            response = spisd_send_cmd(ACMD41, 0);
++            if (response == 0x00) {
++                break;
++            }
++        }
++
++        /* no response to CMD55 / ACMD41 means MMC card */
++        if (response != 0x00) {
++            for (int i = 0; i < 0xFFF; i++) {
++                response = spisd_send_cmd(CMD1, 0);
++                if (response == 0x00) {
++                    break;
++                }
++            }
++
++            if (response != 0x00) {
++                M_DEBUG("ERROR: CMD1 returned 0x%x, exp 0x0\n", response);
++                return SPISD_RESULT_TIMEOUT;
++            }
++
++            sdcard.card_type = CARD_TYPE_MMC;
++            M_DEBUG("Card Type : MMC\r\n");
++        } else {
++            sdcard.card_type = CARD_TYPE_SDV1;
++            M_DEBUG("Card Type : CSD v1\r\n");
++        }
++
++        /* set baud to 25MHz */
++        mx_sio2_set_baud(SIO2_BAUD_DIV_FAST);
++
++        /* CRC disable */
++        response = spisd_send_cmd(CMD59, 0);
++
++        if (response != 0x00) {
++            M_DEBUG("Send CMD59 should return 0x00, response=0x%02x\r\n", response);
++            return SPISD_RESULT_TIMEOUT;
++        }
++
++        /* set the block size */
++        response = spisd_send_cmd(CMD16, 512);
++        if (response != 0x00) {
++            M_DEBUG("ERROR: CMD16 returned 0x%x, exp 0x0\n", response);
++            return SPISD_RESULT_TIMEOUT;
++        }
++
++    /* CMD8 response invalid */
++    } else {
++        M_DEBUG("ERROR: CMD8 returned 0x%x, exp 0x1 or 0x4\n", response);
++        return SPISD_RESULT_ERROR;
++    }
++
++    return SPISD_RESULT_OK;
++}
++
++/* get card info and attach to bdm driver */
++int spisd_get_card_info()
++{
++    /* 16 bytes + 2 byte CRC16 */
++    uint8_t reg_data[18];
++
++    /* send CMD9, read CSD */
++    uint8_t result = spisd_send_cmd(CMD9, 0);
++    if (result != 0x0) {
++        return result;
++    }
++
++    result = spisd_read_register(reg_data, sizeof(reg_data));
++
++    /* dummy write between reg reads */
++    mx_sio2_write_dummy();
++
++    if (result != 0x0) {
++        return SPISD_RESULT_ERROR;
++    }
++
++    /* send CMD10, read CID */
++    /* The two CRC bytes belong to the response, not the 16-byte CSD array. */
++    for (unsigned int i = 0; i < sizeof(sdcard.csd); i++)
++        sdcard.csd[i] = reg_data[i];
++
++    result = spisd_send_cmd(CMD10, 0);
++
++    if (result != 0x0) {
++        return SPISD_RESULT_ERROR;
++    }
++
++    result = spisd_read_register(reg_data, sizeof(reg_data));
++
++    mx_sio2_write_dummy();
++
++    if (result != 0x0) {
++        return SPISD_RESULT_ERROR;
++    }
++
++    sdcard.cid.ManufacturerID = reg_data[0];
++    /* Byte 1 */
++    sdcard.cid.OEM_AppliID = reg_data[1] << 8;
++    /* Byte 2 */
++    sdcard.cid.OEM_AppliID |= reg_data[2];
++    /* Byte 3 */
++    sdcard.cid.ProdName1 = reg_data[3] << 24;
++    /* Byte 4 */
++    sdcard.cid.ProdName1 |= reg_data[4] << 16;
++    /* Byte 5 */
++    sdcard.cid.ProdName1 |= reg_data[5] << 8;
++    /* Byte 6 */
++    sdcard.cid.ProdName1 |= reg_data[6];
++    /* Byte 7 */
++    sdcard.cid.ProdName2 = reg_data[7];
++    /* Byte 8 */
++    sdcard.cid.ProdRev = reg_data[8];
++    /* Byte 9 */
++    sdcard.cid.ProdSN = reg_data[9] << 24;
++    /* Byte 10 */
++    sdcard.cid.ProdSN |= reg_data[10] << 16;
++    /* Byte 11 */
++    sdcard.cid.ProdSN |= reg_data[11] << 8;
++    /* Byte 12 */
++    sdcard.cid.ProdSN |= reg_data[12];
++    /* Byte 13 */
++    sdcard.cid.Reserved1 |= (reg_data[13] & 0xF0) >> 4;
++    /* Byte 14 */
++    sdcard.cid.ManufactDate = (reg_data[13] & 0x0F) << 8;
++    /* Byte 15 */
++    sdcard.cid.ManufactDate |= reg_data[14];
++    /* Byte 16 */
++    sdcard.cid.CID_CRC   = (reg_data[15] & 0xFE) >> 1;
++
++    struct t_csdVer1 *csdv1 = (struct t_csdVer1 *)sdcard.csd;
++    struct t_csdVer2 *csdv2 = (struct t_csdVer2 *)sdcard.csd;
++
++    /* CSD v1 - SDSC */
++    if (csdv1->csd_structure == 0) {
++        unsigned int c_size_mult = (csdv1->c_size_multHi << 1) | csdv1->c_size_multLo;
++        unsigned int c_size      = (csdv1->c_sizeHi << 10) | (csdv1->c_sizeMd << 2) | csdv1->c_sizeLo;
++        unsigned int blockNr     = (c_size + 1) << (c_size_mult + 2);
++        unsigned int blockLen    = 1 << csdv1->read_bl_len;
++        unsigned int capacity    = blockNr * blockLen;
++
++        bd.sectorCount = capacity / 512;
++
++    /* CSD v2 - SDHC, SDXC */
++    } else if (csdv1->csd_structure == 1) {
++        unsigned int c_size = (csdv2->c_sizeHi << 16) | (csdv2->c_sizeMd << 8) | csdv2->c_sizeLo;
++        bd.sectorCount = (c_size + 1) * 1024;
++    }
++
++    M_PRINTF("%lu %u-byte logical blocks: (%luMB / %luMiB)\n", (u32)bd.sectorCount, bd.sectorSize, (u32)bd.sectorCount / ((1000 * 1000) / bd.sectorSize), (u32)bd.sectorCount / ((1024 * 1024) / bd.sectorSize));
++
++    return SPISD_RESULT_OK;
++}
++
++int spisd_recover()
++{
++    int rv;
++    /* flush 256 bytes */
++    for (int i = 0; i < 64; i++)
++        mx_sio2_rx_pio((void *)&rv, 4);
++
++    if (spisd_init_card() != SPISD_RESULT_OK) {
++        M_DEBUG("recovery failed to reinit card!\n");
++        return SPISD_RESULT_ERROR;
++    }
++
++    if (spisd_get_card_info() != SPISD_RESULT_OK) {
++        M_DEBUG("recovery failed to get card info!\n");
++        return SPISD_RESULT_ERROR;
++    }
++
++    return SPISD_RESULT_OK;
++}
++
++/* read functions */
++static int spisd_read_multi_begin(uint32_t sector)
++{
++    uint8_t results = SPISD_RESULT_ERROR;
++    /* get idle */
++    results = mx_sio2_wait_equal(0xFF, 4000);
++
++    if (results == SPISD_RESULT_OK) {
++        /* non SDHC/SDXC are addressed in 1-byte units */
++        if (sdcard.card_type != CARD_TYPE_SDV2HC) {
++            sector = sector << 9;
++        }
++
++        /* send CMD18 to being multi block read */
++        results = spisd_send_cmd(CMD18, sector);
++        if (results == SPISD_RESULT_OK) {
++            /* wait for first read token (0xFE) */
++            results = mx_sio2_wait_equal(0xFE, 100000);
++        }
++    }
++
++    return results;
++}
++
++static int spisd_read_multi_do(void *buffer, uint16_t count)
++{
++    /* setup DMA cmd struct */
++    cmd.buffer              = buffer;
++    cmd.sector_count        = count;
++    cmd.sectors_transferred = 0;
++    cmd.sectors_reversed    = 0;
++    cmd.response            = SPISD_RESULT_OK;
++    cmd.abort               = 0;
++
++    /* start first DMA transfer */
++    mx_sio2_start_rx_dma(buffer);
++
++    /* process events from DMA completion interrupt */
++    while (1) {
++        u32 resbits;
++
++        WaitEventFlag(sio2_event_flag, EF_SIO2_INTR_REVERSE | EF_SIO2_INTR_COMPLETE, 1, &resbits);
++
++        if (resbits & EF_SIO2_INTR_REVERSE) {
++            ClearEventFlag(sio2_event_flag, ~EF_SIO2_INTR_REVERSE);
++
++            while (cmd.sectors_reversed < cmd.sectors_transferred && cmd.abort == 0) {
++                void *buf = (uint32_t *)&cmd.buffer[cmd.sectors_reversed * SECTOR_SIZE];
++                reverse_buffer(buf, SECTOR_SIZE / 4);
++
++#ifdef CONFIG_USE_CRC16
++                uint16_t crc_a = crc16(buf, SECTOR_SIZE);
++                uint16_t crc_b = cmd.crc[cmd.sectors_reversed];
++                if (crc_a != crc_b) {
++                    // CRC mismatch:
++                    // - Signal ISR to stop reading
++                    // - Wait for complete event from ISR
++                    M_DEBUG("CRC mismatch on sector %i, got: 0x%x, exp 0x%x\n", cmd.sectors_reversed, crc_b, crc_a);
++                    cmd.abort = CMD_ERROR_CRC16_INVALID;
++                }
++#endif
++                if (cmd.abort == 0)
++                    cmd.sectors_reversed++;
++            }
++        }
++
++        if (resbits & EF_SIO2_INTR_COMPLETE) {
++            ClearEventFlag(sio2_event_flag, ~EF_SIO2_INTR_COMPLETE);
++            break;
++        }
++    }
++
++    return cmd.sectors_reversed;
++}
++
++static void spisd_read_multi_end()
++{
++    /* 0xFE token will be received in the ISR prior to this function being called
++     * ensuring the start of CMD12 is aligned with the end of 0xFE
++     * See 7.5.2.2 Stop Transmission Timing of the SD Physical Layer Specification
++     * for more details */
++    spisd_send_cmd(CMD12, 0);
++}
++
++/* write functions */
++static int spisd_write_multi_begin(uint32_t sector, uint16_t count)
++{
++    uint8_t results = SPISD_RESULT_ERROR;
++
++    /* get idle */
++    results = mx_sio2_wait_equal(0xFF, 4000);
++
++    if (results == SPISD_RESULT_OK) {
++        /* non SDHC/SDXC are addressed in 1-byte units */
++        if (sdcard.card_type != CARD_TYPE_SDV2HC) {
++            sector = sector << 9;
++        }
++
++        /* issue ACMD23 to pre-erase sectors on non MMC cards */
++        if (sdcard.card_type != CARD_TYPE_MMC) {
++            results = spisd_send_cmd(CMD55, 0);
++            results = spisd_send_cmd(ACMD23, count);
++        }
++
++        /* send CMD25 to begin multi block write */
++        results = spisd_send_cmd(CMD25, sector);
++    }
++
++    mx_sio2_write_dummy();
++    mx_sio2_write_dummy();
++    mx_sio2_write_dummy();
++
++    return results;
++}
++
++static int spisd_write_multi_do(void* buffer, uint16_t count)
++{
++    u32 resbits;
++
++    /* setup DMA cmd struct */
++    cmd.buffer              = buffer;
++    cmd.sector_count        = count;
++    cmd.sectors_transferred = 0;
++    cmd.sectors_reversed    = 0;
++    cmd.response            = SPISD_RESULT_OK;
++    cmd.abort               = 0;
++
++    /* send initial write token */
++    mx_sio2_write_byte(0xFC);
++
++    /* start transfer */
++    mx_sio2_start_tx_dma(buffer);
++
++    /* wait for transfer to complete */
++    WaitEventFlag(sio2_event_flag, EF_SIO2_INTR_COMPLETE, 1, &resbits);
++
++    if (resbits & EF_SIO2_INTR_COMPLETE) {
++        ClearEventFlag(sio2_event_flag, ~EF_SIO2_INTR_COMPLETE);
++    }
++
++    return cmd.sectors_transferred;
++}
++
++static int spisd_write_multi_end()
++{
++    uint8_t results = SPISD_RESULT_ERROR;
++
++    /* issue stop transmission token */
++    results = mx_sio2_write_byte(0xFD);
++    if (results != 0x0) {
++        mx_sio2_write_dummy();
++        mx_sio2_write_dummy();
++
++        /* give card time to finish programming */
++        results = mx_sio2_wait_equal(0xFF, 0x800000);
++        if (results == SPISD_RESULT_OK) {
++            mx_sio2_write_dummy();
++            mx_sio2_write_dummy();
++        }
++    } else {
++        M_DEBUG("ERROR: failed to end write, 0xFD response 0x%x\n", results);
++    }
++
++    mx_sio2_write_dummy();
++
++    return results;
++}
++
++/*
++ * BDM interface:
++ * - BDM -> "spisd" library
++ */
++int spisd_read(struct block_device *bd, uint64_t sector, void *buffer, uint16_t count)
++{
++    uint16_t sectors_left = count;
++    uint16_t results = 0;
++    uint16_t retries = 0;
++
++    (void)bd;
++
++    if (count == 0)
++        return 0;
++
++    M_DEBUG("%s: sector %i, count: %i \n", __FUNCTION__, (u32)sector, count);
++
++    mx_sio2_lock(INTR_RX);
++
++    while (sectors_left > 0 && retries < MAX_RETRIES) {
++
++        /* issue CMD18 to begin transfer */
++        results = spisd_read_multi_begin((uint32_t)sector);
++        if (results != SPISD_RESULT_OK) {
++            M_DEBUG("ERROR: failed to start multi-block read\n");
++            break;
++        }
++
++        /* start reading blocks */
++        results = spisd_read_multi_do(buffer, sectors_left);
++        sectors_left = sectors_left - results;
++
++        /* fail condition */
++        if (sectors_left > 0) {
++            buffer = (uint8_t *)buffer + (results * 512);
++            sector += results;
++            M_DEBUG("ERROR: failed to read all sectors, read:%i, abort:%i\n", sectors_left, cmd.abort);
++
++            if (cmd.abort == CMD_ABORT_NO_READ_TOKEN) {
++                /* this can only be resolved by resetting the card */
++                if (spisd_recover() != SPISD_RESULT_OK) {
++                    /* if recovery fails, do not try to continue  */
++                    break;
++                }
++            }
++        }
++        /* send CMD12, end transfer */
++        spisd_read_multi_end();
++
++        retries++;
++    }
++
++    sdcard.used = 1;
++
++    mx_sio2_unlock(INTR_RX);
++
++    return count - sectors_left;
++}
++
++int spisd_write(struct block_device *bd, uint64_t sector, const void *buffer, uint16_t count)
++{
++    (void)bd;
++
++    uint16_t sectors_left = count;
++    uint16_t results = 0;
++    uint16_t retries = 0;
++
++    if (count == 0)
++        return 0;
++
++    M_DEBUG("%s: sector %i, count: %i \n", __FUNCTION__, (u32)sector, count);
++
++    /* recast */
++    void *write_buffer = (uint32_t*)buffer;
++
++    /* pre-reverse the entire buffer */
++    reverse_buffer(write_buffer, ((count * SECTOR_SIZE) / 4));
++
++    mx_sio2_lock(INTR_TX);
++
++    while (sectors_left > 0 && retries < MAX_RETRIES) {
++
++        /* issue CMD25 to begin transfer */
++        results = spisd_write_multi_begin((uint32_t)sector, sectors_left);
++        if (results != SPISD_RESULT_OK) {
++            M_DEBUG("ERROR: failed to start multi-block write\n");
++            break;
++        }
++
++        /* start writing blocks */
++        results = spisd_write_multi_do(write_buffer, sectors_left);
++        sectors_left = sectors_left - results;
++
++        /* fail condition */
++        if (sectors_left > 0) {
++            write_buffer = (uint8_t *)write_buffer + (results * 512); /* update buffer for next attempt */
++            sector += results;
++            M_DEBUG("ERROR: failed to write all sectors, wrote: %i\n", results);
++        }
++
++        /* send 0xFD, end transfer */
++        results = spisd_write_multi_end();
++        if (results != SPISD_RESULT_OK) {
++            M_DEBUG("ERROR: failed to end multi-block write\n");
++            break;
++        }
++
++        retries++;
++    }
++
++    sdcard.used = 1;
++
++    mx_sio2_unlock(INTR_TX);
++
++    /* The BDM caller owns this buffer and may reuse it after success or failure. */
++    reverse_buffer((uint32_t *)buffer, ((count * SECTOR_SIZE) / 4));
++
++    return count - sectors_left;
++}
++
++void spisd_flush(struct block_device *bd)
++{
++    (void)bd;
++    return;
++}
++
++int spisd_stop(struct block_device *bd)
++{
++    (void)bd;
++    return 0;
++}
+diff --git a/modules/mx4sio_bd/src/spi_sdcard_driver.h b/modules/mx4sio_bd/src/spi_sdcard_driver.h
+new file mode 100644
+index 00000000..fe0a6ff0
+--- /dev/null
++++ b/modules/mx4sio_bd/src/spi_sdcard_driver.h
+@@ -0,0 +1,177 @@
++#ifndef SPI_SDCARD_DRIVER_H
++#define SPI_SDCARD_DRIVER_H
++
++#include <bdm.h>
++#include <stdint.h>
++
++#define READ_TOKEN_TIMEOUT     4000
++#define SECTOR_SIZE            512
++
++#define CMD_ABORT_NO_READ_TOKEN 0x1
++#define CMD_ABORT_CRC16_INVALID 0x2
++#define CMD_ABORT_WRITE_ERROR   0x3
++#define CMD_ABORT_UKNOWN_ERROR  0x7
++
++typedef enum card_type_e {
++    CARD_TYPE_MMC    = 0x00,
++    CARD_TYPE_SDV1   = 0x01,
++    CARD_TYPE_SDV2   = 0x02,
++    CARD_TYPE_SDV2HC = 0x04
++} card_type_t;
++
++typedef enum spisd_result_s {
++    SPISD_RESULT_OK = 0,
++    SPISD_RESULT_ERROR,
++    SPISD_RESULT_NO_CARD,
++    SPISD_RESULT_TIMEOUT,
++} spisd_result_t;
++
++/*
++ * START: structures copied from wisi's implementation
++ */
++struct t_csdVer1
++{
++    u8 reserved1          : 6;
++    u8 csd_structure      : 2;
++    u8 taac               : 8;
++    u8 nsac               : 8;
++    u8 tran_speed         : 8;
++
++    u16 cccHi             : 8;
++    u16 read_bl_len       : 4;
++    u16 cccLo             : 4;
++
++    u32 c_sizeHi          : 2;
++    u8 read_bl_partial    : 1;
++    u8 write_blk_misalign : 1;
++    u8 read_blk_misalign  : 1;
++    u8 dsr_imp            : 1;
++    u8 reserved2          : 2;
++
++    u32 c_sizeMd          : 8;
++
++    u32 c_sizeLo          : 2;
++    u8 vdd_r_curr_max     : 3;
++    u8 vdd_r_curr_min     : 3;
++
++    u8 c_size_multHi      : 2;
++    u8 vdd_w_curr_max     : 3;
++    u8 vdd_w_curr_min     : 3;
++
++    u8 c_size_multLo      : 1;
++    // XXX: The folowing are not fixed to correct endianness!
++    u8 erase_blk_en       : 1;
++    u8 sector_size_high   : 6;
++    u8 sector_size_low    : 1;
++    u8 wp_grp_size        : 7;
++    u8 ep_grp_enable      : 1;
++    u8 reserved5          : 2;
++    u8 r2w_factor         : 3;
++    u8 write_bl_len_high  : 2;
++    u8 write_bl_len_low   : 2;
++    u8 write_bl_partial   : 1;
++    u8 reserved6          : 5;
++    u8 file_format_group  : 1;
++    u8 copy               : 1;
++    u8 perm_write_protect : 1;
++    u8 tmp_write_protect  : 1;
++    u8 file_format        : 2;
++    u8 reserved7          : 2;
++    u8 crc                : 7;
++    u8 fixedTo1           : 1;
++} __attribute__((packed));
++
++struct t_csdVer2
++{
++    u8 reserved1          : 6;
++    u8 csd_structure      : 2;
++    u8 taac               : 8;
++    u8 nsac               : 8;
++    u8 tran_speed         : 8;
++
++    u16 cccHi             : 8;
++    u16 read_bl_len       : 4;
++    u16 cccLo             : 4;
++
++    // Not fixed!:
++    u8 read_bl_partial    : 1;
++    u8 write_blk_misalign : 1;
++    u8 read_blk_misalign  : 1;
++    u8 dsr_imp            : 1;
++    u8 reserved2          : 4;
++
++    // fixed:
++    u32 c_sizeHi          : 6;
++    u8 reserved3          : 2; // I give up - this is far too unaligned...
++    // 79:58
++    u32 c_sizeMd          : 8;
++    u32 c_sizeLo          : 8; // 16 22;
++
++    // Not fixed!:
++    u32 reserved4         : 1;
++    u8 erase_blk_en       : 1;
++    u8 sector_size_high   : 6;
++    u8 sector_size_low    : 1;
++    u8 wp_grp_size        : 7;
++    u8 ep_grp_enable      : 1;
++    u8 reserved5          : 2;
++    u8 r2w_factor         : 3;
++    u8 write_bl_len_high  : 2;
++    u8 write_bl_len_low   : 2;
++    u8 write_bl_partial   : 1;
++    u8 reserved6          : 5;
++    u8 file_format_group  : 1;
++    u8 copy               : 1;
++    u8 perm_write_protect : 1;
++    u8 tmp_write_protect  : 1;
++    u8 file_format        : 2;
++    u8 reserved7          : 2;
++    u8 crc                : 7;
++    u8 fixedTo1           : 1;
++} __attribute__((packed));
++/*
++ * END: structures copied from wisi's implementation
++ */
++
++typedef struct spisd_cid_t
++{                           /* Card Identification Data */
++    uint8_t ManufacturerID; /* ManufacturerID */
++    uint16_t OEM_AppliID;   /* OEM/Application ID */
++    uint32_t ProdName1;     /* Product Name part1 */
++    uint8_t ProdName2;      /* Product Name part2*/
++    uint8_t ProdRev;        /* Product Revision */
++    uint32_t ProdSN;        /* Product Serial Number */
++    uint8_t Reserved1;      /* Reserved1 */
++    uint16_t ManufactDate;  /* Manufacturing Date */
++    uint8_t CID_CRC;        /* CID CRC */
++}spisd_cid_t;
++
++/* global struct for everything sdcard */
++typedef struct spisd_t
++{
++    uint8_t csd[16];
++    spisd_cid_t cid;
++    card_type_t card_type;
++    uint8_t initialized;
++    uint8_t used;
++}spisd_t;
++
++/* globals */
++extern spisd_t sdcard;
++extern struct block_device bd;
++
++extern uint16_t spisd_read_status_register();
++
++/* init */
++extern int spisd_init_card();   /* bring card up from identification mode to data-transfer mode */
++extern int spisd_get_card_info(); /* get card info and reattach to bdm if card capacity changed */
++extern int spisd_recover();
++
++/* BDM functions */
++extern int spisd_read(struct block_device *bd, uint64_t sector, void *buffer, uint16_t count);
++extern int spisd_write(struct block_device *bd, uint64_t sector, const void *buffer, uint16_t count);
++extern void spisd_flush(struct block_device *bd);
++extern int spisd_stop(struct block_device *bd);
++
++
++#endif
+diff --git a/modules/mx4sio_bd/src/spi_sdcard_driver_config.h b/modules/mx4sio_bd/src/spi_sdcard_driver_config.h
+new file mode 100644
+index 00000000..0de5830a
+--- /dev/null
++++ b/modules/mx4sio_bd/src/spi_sdcard_driver_config.h
+@@ -0,0 +1,25 @@
++#ifndef __SPI_SDCARD_DRIVER_CONFIG_H__
++#define __SPI_SDCARD_DRIVER_CONFIG_H__
++
++/* Includes ------------------------------------------------------------------*/
++
++#include <stdio.h>
++#include <stdint.h>
++
++#define SPISD_ASSERT(cond) \
++    while (!cond) {};
++
++
++
++#define SD_CRC7_MODE_ROM_TABLE 1 /* Table in ROM, no need to generate it */
++#define SD_CRC7_MODE_RAM_TABLE 2 /* if you have no free 256B ROM or ROM is slow. Use crc7_generate_table() to init table */
++#define SD_CRC7_MODE_RUNTIME   3 /* if you have no free ROM and RAM, but it is slow */
++
++
++#if BUILD_BOOTLOADER == 1U
++#define SD_CRC7_MODE (SD_CRC7_MODE_RUNTIME)
++#else
++#define SD_CRC7_MODE (SD_CRC7_MODE_RAM_TABLE)
++#endif
++
++#endif //__SPI_SDCARD_DRIVER_CONFIG_H__
+diff --git a/modules/network/SMSTCPIP/include/lwipopts.h b/modules/network/SMSTCPIP/include/lwipopts.h
+index 3e84b123..841b5646 100644
+--- a/modules/network/SMSTCPIP/include/lwipopts.h
++++ b/modules/network/SMSTCPIP/include/lwipopts.h
+@@ -231,8 +231,31 @@ a lot of data that needs to be copied, this should be set high. */
+ 
+ /* IP reassembly and segmentation. These are orthogonal even
+    if they both deal with IP fragments */
++#ifdef INGAME_DRIVER
++/* In-game IOP memory (Kingdom Hearts II over SMB ran out: OPL-DualSense-BT
++   8bb581a), with the fragment path kept where it can still matter.
++
++   IP_FRAG 0: nothing the in-game stack sends can exceed the SMAP MTU of
++   1500. tcp_in.c caps a connection's segment size at min(peer MSS, TCP_MSS)
++   = 1460 bytes plus 40 of headers; raudp builds its 1472-byte telemetry
++   frames itself, below the stack; the RA discovery datagrams are under
++   200 bytes. ip_frag()'s 1500-byte static buffer was never used in a game.
++
++   IP_REASSEMBLY stays on, with its buffer cut from 5760 to 1536 bytes. A
++   hop between the SMB server and the console with an MTU under 1500, and a
++   server that does not set DF, still delivers the server's 1500-byte
++   segments as two fragments, and those must reassemble or SMB stalls. The
++   server never sends a datagram over 1500 bytes (it segments to our MSS),
++   so 1536 covers every datagram that can arrive over the game's session.
++   Together 5790 bytes of static buffers go back to the game.
++   .github/scripts/test_usbd_pad_pool.py holds these numbers to the code. */
++#define IP_REASSEMBLY    1
++#define IP_FRAG          0
++#define IP_REASS_BUFSIZE 1536 /* holds the 1480-byte payload of a full-MTU datagram */
++#else
+ #define IP_REASSEMBLY 1
+ #define IP_FRAG       1
++#endif
+ 
+ /* ---------- ICMP options ---------- */
+ #define ICMP_TTL 255
+diff --git a/modules/network/SMSTCPIP/ip_frag.c b/modules/network/SMSTCPIP/ip_frag.c
+index fe4661f2..9f9bbe61 100644
+--- a/modules/network/SMSTCPIP/ip_frag.c
++++ b/modules/network/SMSTCPIP/ip_frag.c
+@@ -52,6 +52,7 @@
+ 
+ #include "smsutils.h"
+ 
++#if IP_REASSEMBLY || IP_FRAG
+ /*
+  * Copy len bytes from offset in pbuf to buffer
+  *
+@@ -78,16 +79,22 @@ static struct pbuf *copy_from_pbuf(
+     return p;
+ 
+ } /* end copy_from_pbuf */
++#endif /* IP_REASSEMBLY || IP_FRAG */
+ 
++#if IP_REASSEMBLY
++#ifndef IP_REASS_BUFSIZE /* lwipopts.h sets a smaller one for the in-game build */
+ #define IP_REASS_BUFSIZE 5760
+-#define IP_REASS_MAXAGE  30
+-#define IP_REASS_TMO     250
++#endif
++#define IP_REASS_MAXAGE 30
++#define IP_REASS_TMO    250
+ 
+ static iop_sys_clock_t s_Clock = {
+     0x01194000, 0x00000000};
+ 
+ static u8_t ip_reassbuf[IP_HLEN + IP_REASS_BUFSIZE];
+-static u8_t ip_reassbitmap[IP_REASS_BUFSIZE / (8 * 8)];
++/* One byte past BUFSIZE / 64: a fragment may end exactly at IP_REASS_BUFSIZE, and the update and
++   the completeness check below both touch the byte that end falls in (upstream lwIP sizes it the same). */
++static u8_t ip_reassbitmap[IP_REASS_BUFSIZE / (8 * 8) + 1];
+ 
+ static const u8_t bitmap_bits[8] = {
+     0xFF, 0x7F, 0x3F, 0x1F,
+@@ -196,9 +203,10 @@ ip_reass(struct pbuf *p)
+        this by checking if we have the last fragment and if all bits
+        in the bitmap are set. */
+         if (ip_reassflags & IP_REASS_FLAG_LASTFRAG) {
+-            /* Check all bytes up to and including all but the last byte in
+-         the bitmap. */
+-            for (i = 0; i < ip_reasslen / (8 * 8) - 1; ++i) {
++            /* Check every byte before the last one in the bitmap: each must be
++         full. (The old bound, ip_reasslen / 64 - 1, skipped the byte before
++         the last, so a hole there passed as a complete datagram.) */
++            for (i = 0; i < ip_reasslen / (8 * 8); ++i) {
+                 if (ip_reassbitmap[i] != 0xff) {
+                     goto nullreturn;
+                 }
+@@ -245,7 +253,9 @@ nullreturn:
+     pbuf_free(p);
+     return NULL;
+ }
++#endif /* IP_REASSEMBLY */
+ 
++#if IP_FRAG
+ #define MAX_MTU 1500
+ static u8_t buf[MEM_ALIGN_SIZE(MAX_MTU)];
+ 
+@@ -324,3 +334,4 @@ err_t ip_frag(struct pbuf *p, struct netif *netif, struct ip_addr *dest)
+     pbuf_free(rambuf);
+     return ERR_OK;
+ }
++#endif /* IP_FRAG */
+diff --git a/src/menusys.c b/src/menusys.c
+index 296a5d54..fa1ffe09 100644
+--- a/src/menusys.c
++++ b/src/menusys.c
+@@ -3246,8 +3246,18 @@ void menuRenderAppMenu()
+     if (guiDrawBGSettings() == 0)
+         guiDrawBGPlasma();
+ 
+-    if (!appMenu)
++    if (!appMenu) {
++        guiSwitchScreen(GUI_SCREEN_MAIN);
+         return;
++    }
++
++    // The IO thread clears the apps list when it rereads it (a device plugged in, SMB coming up, a refresh), so
++    // the app this menu was opened for is gone. Go back to the list, as the game menu does when its device goes
++    // away, instead of dereferencing NULL here. (YAOPL c6fc06f, Roman Kelesidis)
++    if (selected_item == NULL || selected_item->item == NULL || selected_item->item->current == NULL) {
++        guiSwitchScreen(GUI_SCREEN_MAIN);
++        return;
++    }
+ 
+     // draw the animated menu
+     if (!appMenuCurrent)
+@@ -3342,8 +3352,12 @@ static void menuOpenSelectedVcdAchievements(void)
+ 
+ void menuHandleInputAppMenu()
+ {
+-    if (!appMenu)
++    // Same guard as the render path: the app list can be reread between frames, and the actions below
++    // dereference the selected row.
++    if (!appMenu || selected_item == NULL || selected_item->item == NULL || selected_item->item->current == NULL) {
++        guiSwitchScreen(GUI_SCREEN_MAIN);
+         return;
++    }
+ 
+     if (!appMenuCurrent)
+         appMenuCurrent = appMenu;
+diff --git a/src/supportbase.c b/src/supportbase.c
+index aae3ad78..7e06a298 100644
+--- a/src/supportbase.c
++++ b/src/supportbase.c
+@@ -1033,6 +1033,31 @@ int sbGetCompatModes(config_set_t *configSet)
+     return compatModes;
+ }
+ 
++// Titles that write past the end of the IOP buffers they allocate. The OPL core's CDVDMAN gives each of
++// their IOP allocations a pad sized to the overrun (IOPCORE_COMPAT_IOP_PAD); Neutrino applies its own p-membo2k to the
++// same games from its compat.toml.
++static const char *const sbIopPadTitles[] = {
++    "SLUS_202.67", // .hack//Infection (USA): hangs loading into "The World" (neutrino #92; upstream OPL #106, #752, #1256)
++    "SLES_522.37", // .hack//Infection (Europe)
++    "SLKA_250.80", // .hack//Infection (Korea)
++};
++
++static int sbNeedsIopPad(config_set_t *configSet)
++{
++    const char *startup = NULL;
++    unsigned int i;
++
++    if (configSet == NULL || !configGetStr(configSet, CONFIG_ITEM_STARTUP, &startup) || startup == NULL)
++        return 0;
++
++    for (i = 0; i < sizeof(sbIopPadTitles) / sizeof(sbIopPadTitles[0]); i++) {
++        if (!strcmp(startup, sbIopPadTitles[i]))
++            return 1;
++    }
++
++    return 0;
++}
++
+ static const struct cdvdman_settings_common cdvdman_settings_common_sample = CDVDMAN_SETTINGS_DEFAULT_COMMON;
+ 
+ // Translated text is data, not a format string: a .lng line arrives unvalidated, and a stray %n or
+@@ -1178,6 +1203,10 @@ int sbPrepare(base_game_info_t *game, config_set_t *configSet, int size_cdvdman,
+         settings->flags |= IOPCORE_ENABLE_POFF;
+     }
+ 
++    if (sbNeedsIopPad(configSet)) {
++        settings->flags |= IOPCORE_COMPAT_IOP_PAD;
++    }
++
+     settings->fakemodule_flags = 0;
+     settings->fakemodule_flags |= FAKE_MODULE_FLAG_CDVDFSV;
+     settings->fakemodule_flags |= FAKE_MODULE_FLAG_CDVDSTM;
+diff --git a/src/textures.c b/src/textures.c
+index 2fbfd1c5..e73fca73 100644
+--- a/src/textures.c
++++ b/src/textures.c
+@@ -183,7 +183,6 @@ typedef struct
+     png_bytep trans;
+ } png_texture_t;
+ 
+-static png_texture_t pngTexture;
+ static volatile int *gTexAbortFlag;
+ static int gTexAbortThreadId = -1;
+ 
+@@ -733,18 +732,20 @@ static int texStageExternalFileIntoMemory(int fd, void **buffer, u32 *stagedSize
+     return 0;
+ }
+ 
+-static void texPrepareClut(GSTEXTURE *texture, int clutEntries)
++// The palette state is per load: the GUI thread and the art/IO worker decode PNGs at the same time, and a
++// shared static could hand one load the other's palette (YAOPL 2380267, Roman Kelesidis).
++static void texPrepareClut(GSTEXTURE *texture, const png_texture_t *pngTexture, int clutEntries)
+ {
+     png_clut_t *clut = (png_clut_t *)texture->Clut;
+-    int paletteEntries = pngTexture.numPalette < clutEntries ? pngTexture.numPalette : clutEntries;
++    int paletteEntries = pngTexture->numPalette < clutEntries ? pngTexture->numPalette : clutEntries;
+ 
+     memset(&clut[paletteEntries], 0, (clutEntries - paletteEntries) * sizeof(clut[0]));
+ 
+     for (int i = 0; i < paletteEntries; i++) {
+-        clut[i].red = pngTexture.palette[i].red;
+-        clut[i].green = pngTexture.palette[i].green;
+-        clut[i].blue = pngTexture.palette[i].blue;
+-        clut[i].alpha = (i < pngTexture.numTrans) ? (pngTexture.trans[i] >> 1) : 0x80;
++        clut[i].red = pngTexture->palette[i].red;
++        clut[i].green = pngTexture->palette[i].green;
++        clut[i].blue = pngTexture->palette[i].blue;
++        clut[i].alpha = (i < pngTexture->numTrans) ? (pngTexture->trans[i] >> 1) : 0x80;
+     }
+ 
+     if (clutEntries == 256) {
+@@ -884,6 +885,7 @@ static int texReadData(GSTEXTURE *texture, png_structp pngPtr, png_infop infoPtr
+ 
+ static int texLoadAll(GSTEXTURE *texture, const char *filePath, int texId, const void *memBuf, u32 memSize)
+ {
++    png_texture_t pngTexture = {NULL, 0, 0, NULL}; // this load's palette, see texPrepareClut
+     int fd = -1;
+     int bitDepth, colorType, interlaceType;
+     int result;
+@@ -1034,6 +1036,9 @@ static int texLoadAll(GSTEXTURE *texture, const char *filePath, int texId, const
+         return texEnd(pngPtr, infoPtr, pFileBuffer, fd, aborted ? ERR_LOAD_ABORTED : ERR_SET_JMP);
+     }
+ 
++    // Let libpng refuse images larger than texSizeValidate() accepts when it reads the header, before it
++    // allocates rows for them (YAOPL 07c868d).
++    png_set_user_limits(pngPtr, 1024, 1024);
+     png_set_read_fn(pngPtr, readData, readFunction);
+     png_set_sig_bytes(pngPtr, 0);
+     png_read_info(pngPtr, infoPtr);
+@@ -1079,11 +1084,6 @@ static int texLoadAll(GSTEXTURE *texture, const char *filePath, int texId, const
+             texPngReadRow = &texReadPixels24Row;
+             break;
+         case PNG_COLOR_TYPE_PALETTE:
+-            pngTexture.palette = NULL;
+-            pngTexture.numPalette = 0;
+-            pngTexture.trans = NULL;
+-            pngTexture.numTrans = 0;
+-
+             png_get_PLTE(pngPtr, infoPtr, &pngTexture.palette, &pngTexture.numPalette);
+             png_get_tRNS(pngPtr, infoPtr, &pngTexture.trans, &pngTexture.numTrans, NULL);
+             texture->ClutPSM = GS_PSM_CT32;
+@@ -1094,7 +1094,7 @@ static int texLoadAll(GSTEXTURE *texture, const char *filePath, int texId, const
+                 if (texture->Clut == NULL)
+                     return texEnd(pngPtr, infoPtr, pFileBuffer, fd, ERR_FILE_IO); // Clut OOM: file present -> transient, not absent
+                 memset(texture->Clut, 0, gsKit_texture_size_ee(8, 2, GS_PSM_CT32));
+-                texPrepareClut(texture, 16);
++                texPrepareClut(texture, &pngTexture, 16);
+                 texPngReadRow = &texReadPixels4Row;
+             } else if (bitDepth == 8) {
+                 texture->PSM = GS_PSM_T8;
+@@ -1102,7 +1102,7 @@ static int texLoadAll(GSTEXTURE *texture, const char *filePath, int texId, const
+                 if (texture->Clut == NULL)
+                     return texEnd(pngPtr, infoPtr, pFileBuffer, fd, ERR_FILE_IO); // Clut OOM: file present -> transient, not absent
+                 memset(texture->Clut, 0, gsKit_texture_size_ee(16, 16, GS_PSM_CT32));
+-                texPrepareClut(texture, 256);
++                texPrepareClut(texture, &pngTexture, 256);
+                 texPngReadRow = &texReadPixels8Row;
+             } else
+                 return texEnd(pngPtr, infoPtr, pFileBuffer, fd, ERR_BAD_DEPTH);
