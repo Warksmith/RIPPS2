@@ -1,0 +1,14 @@
+psx-place bump for RIPPCSX2 in its thread. Paste from the [CENTER] line. The program is unchanged since the first post; this is its mark and its website.
+
+[CENTER][SPOILER="RIPPCSX2's mark"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPCSX2/rippcsx2/site/assets/rippcsx2-logo.png[/IMG][/SPOILER]
+
+[SIZE=5][B]RIPPCSX2: a mark of its own, and both PS2s measured from photos[/B][/SIZE]
+[URL='https://github.com/akilluminati47/RIPPCSX2/releases/latest']Download[/URL]  |  [URL='https://akilluminati47.github.io/RIPPCSX2/']Website[/URL]  |  [URL='https://github.com/akilluminati47/RIPPCSX2']GitHub[/URL][/CENTER]
+
+[LIST]
+[*][B]The mark:[/B] PCSX2's emblem at its own icon's angle, the glyph at its original size, standing in a pool of blood. It is the website's icon and the README's logo.
+[*][B]The website:[/B] both PS2s rebuilt in Blender from reference photos: the fat's back, bay, network adapter and feet, the whole slim, and the disc and sound logos on both lids on one line, evenly spaced, as on the real consoles. Take one apart or blow it up.
+[*][B]One link bar[/B] across the RIPPS2, BIBLE and RIPPCSX2 READMEs: each project's site and repo on their own.
+[/LIST]
+
+The Linux AppImage still has not been run on a Linux machine: if you try it, tell us how it goes.

@@ -1,0 +1,19 @@
+psx-place bump for BIBLE a060790 in BIBLE's thread. Paste from the [CENTER] line. The first post (psxplace-bible-post.bbcode) is updated in the same commit.
+
+[CENTER][SPOILER="BIBLE's splash"][IMG]https://raw.githubusercontent.com/akilluminati47/BIBLE/main/assets/readme/bible-splash.gif[/IMG][/SPOILER]
+
+[SIZE=5][B]BIBLE a060790: one settings file on a card, signed by akilluminati47[/B][/SIZE]
+[URL='https://github.com/akilluminati47/BIBLE/releases/latest']Signed builds and plain ELFs[/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2.elf (installs it for you)[/URL]  |  [URL='https://akilluminati47.github.io/BIBLE/']Website[/URL][/CENTER]
+
+[B]BIBLE has one release now, and it rolls.[/B] The links above always give the newest signed build, so the old release links in this thread are gone: use these.
+
+[LIST]
+[*][B]One settings file on a card.[/B] BIBLE reads PS2BBL.INI from this console's region folder first (mc?:/B?EXEC-SYSTEM), then the other regions', then SYS-CONF for a card set up before. A card that boots consoles of several regions keeps one copy, with boot.adp beside it.
+[*][B]The AUTO hang is fixed[/B] (from f5705eb): a missing file on an AUTO path, on a drive BIBLE loads a driver for, no longer leaves BIBLE on its splash. It moves on to the next path. That passed on a SCPH-39001 with an SD2PSX.
+[*][B]BIBLE no longer reads the boot sound into memory.[/B] It tells RIPPS2 the folder and RIPPS2 reads it: about 0.8 s sooner to the towers in the lab.
+[*][B]A new card icon[/B], remade in Blender, its PS2 logo in the splash's gradient.
+[/LIST]
+
+[B]With RIPPS2 1.5.7, nothing to download:[/B] Settings > General > Boot Loader > Manage installs a060790 the one-folder way and offers the update to a card with 3282396 or f5705eb. For KELFBinder, BIBLE-signed.zip; for consoles with no system update (many from ROM 2.30 on), BIBLE-ELF.zip and OpenTuna or FunTuna.
+
+a060790 itself has not been bound on a console yet. Tell us here or [URL='https://github.com/akilluminati47/RIPPS2/issues']open an issue[/URL] with your console model, ROM and card, PAL and Japanese consoles most of all.
