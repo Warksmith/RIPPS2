@@ -1111,9 +1111,6 @@ strings:
 - en: Cover downloads cannot run while UDPFS or UDPBD owns Ethernet. Add covers to the server's ART folder from a PC. For console downloads, disable UDPFS/UDPBD, save settings and restart, then use a local drive or SMB game list.
   in:
   - ripps2art.c
-- en: 'Cross: stop'
-  in:
-  - ripps2art.c
 - en: 'Download HD covers to MMCE (280 x 400)? START: Standard (140 x 200). Existing server covers are kept.'
   in:
   - ripps2art.c
