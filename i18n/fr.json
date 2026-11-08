@@ -87,10 +87,6 @@
   "en": "2bb78085b36f",
   "t": "| [Le Short de la build 88](https://www.youtube.com/shorts/Sqprz22tdtg) | Short | La build 88, sur Slideshow |"
  },
- "2c1c50e84927": {
-  "en": "2c1c50e84927",
-  "t": "> 1. **[Téléchargez RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (toujours la dernière version) (un seul fichier, 2 775 Ko), et le **[pack de thèmes](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** si vous voulez (Adapt, Adapt Rx, édition 136 : une configuration et une image chacun ; RIPGRID et RIPFLOW sont intégrés), et **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** pour avoir RIPPS2 dans votre langue (33 au total ; chaque version le fournit)."
- },
  "2f0ee80297df": {
   "en": "2f0ee80297df",
   "t": "- **MEMORY FILES** est un explorateur de fichiers intégré : copiez, déplacez et supprimez entre cartes mémoire, USB, MMCE et le HDD (chaque copie est relue et vérifiée) ; ouvrez les images de carte VMC d'OPL comme des dossiers ; exportez et importez des sauvegardes PSU ; éditez des fichiers texte ; ouvrez des images, lisez des vidéos AVI **en plein écran** avec des **commandes de lecteur** (Cross lecture/pause, Circle arrêt, L1/R1 sautent de 10 s, L2/R2 volume, START en boucle ; les indications s'estompent pendant la lecture et restent en pause) ([RIPPS2 Media Studio](tools/media-studio) transforme n'importe quelle vidéo, même le MP4 d'un téléphone, en un tel fichier), et lisez des fichiers `.mp3`, `.ogg` et `.wav`, ou cochez-en plusieurs et ouvrez-les ensemble pour les écouter comme un seul disque dans le lecteur CD de Launch Disc ; un **`.tar` est un dossier bleu** que vous pouvez ouvrir, dans lequel coller des images et dont copier les membres (build 125) ; Triangle sur un `.tar` y fusionne un autre `.tar` ART ([plus bas](#covers-from-one-file-art-pack)). Le **dossier ouvert est la première ligne**, avec son nombre d'entrées, le nombre coché, la taille totale et l'espace libre du lecteur ; Cross ou Square dessus coche tout (ou, si quelque chose est coché, rien). START ouvre ses réglages, où **SEARCH FILES** trouve n'importe quel fichier ou dossier par son nom sur tous les lecteurs démarrés et ouvre l'arborescence là où il est. Square sur une carte mémoire ouvre le **CARD MANAGER** (sauvegarder une carte dans un VMC, réécrire les sauvegardes d'un VMC sur une carte, effacer les sauvegardes de jeux, formater), et Square sur le HDD APA le **HDD MANAGER** (ses partitions, leurs tailles, et la suppression de l'une d'elles après une vérification complète de la table des partitions)."
@@ -106,10 +102,6 @@
  "324016ff9971": {
   "en": "324016ff9971",
   "t": "**L'étagère à elfes :** la vitrine de Storage. La planche de bois d'uOPL devant les tours, et dessus le logo de RIPPS2 dix fois : le chapeau de feutre d'un elfe mort posé à l'envers dans sa propre flaque de sang, un pour chaque Color Theme (RIPPS2, Ember, Blood, Ectoplasm, Amethyst, Bone, Tangerine, Flamingo, Turquoise, Moonlight). Trois s'affichent à la fois, comme RIPFLOW affiche les jaquettes : celui du milieu se tourne pour suivre le pointeur (plus il est proche, plus il tourne vite) et oscille sur son ressort, et Left / Right ou un toucher sur l'un des voisins fait tourner l'étagère. Elle s'arrête sur le chapeau bleu de RIPPS2. Appuyer sur un chapeau envoie son Color Theme à travers les tours (la matrice de couleurs de l'ELF lui-même, ainsi les tours ont l'air que leur donne ce thème) : un toucher est une rafale de couleur qui traverse le champ et revient au bleu de RIPPS2 ; maintenu, le thème reste sur tout le rendu jusqu'à ce qu'on le relâche."
- },
- "32675f221dd5": {
-  "en": "32675f221dd5",
-  "t": "> ### Rippez-le : RIPPS2 build 141, v1.4.1 bêta"
  },
  "376d12fba45e": {
   "en": "376d12fba45e",
@@ -371,10 +363,6 @@
   "en": "c2409d3b212c",
   "t": "| ✕ | Confirmer | `confirm.adp` | **Menu sound 5** |"
  },
- "c8222b627615": {
-  "en": "c8222b627615",
-  "t": "> [Nouveautés de la build 141](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.4.1-beta) | [Changelog](CHANGELOG.md) | **[Vidéos](#videos)** | [Toutes les versions](https://github.com/akilluminati47/RIPPS2/releases) | [En discuter sur psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
- },
  "c8eb072f3f8f": {
   "en": "c8eb072f3f8f",
   "t": "- **L'image là où votre télé la veut.** Settings > Interface > Screen : Video Mode (jusqu'au 720p et 1080i), Widescreen, et H-POS, V-POS et Overscan, qui depuis la build 124 sont gardés pour chaque mode vidéo, ainsi le 1080i et le 480i gardent chacun leur propre centrage."
@@ -467,6 +455,10 @@
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA) : la télémétrie RetroAchievements via le client [xeRAbora](https://github.com/hacan359/xerabora) sur votre PC (figé sur la [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), des badges sur les jeux suivis, le disque dans le tiroir, et **YOUR ACCOUNT**, chaque jeu vérifié avec ce que vous avez débloqué et, avec xeRAbora ouvert au réseau, **LEFT TO HUNT** : chaque succès verrouillé et comment l'obtenir."
  },
+ "f1197cf975f9": {
+  "en": "f1197cf975f9",
+  "t": "> ### Rippez-le : RIPPS2 build 157, v1.5.7 bêta"
+ },
  "f55efbafe641": {
   "en": "f55efbafe641",
   "t": "## Ripper un disque"
@@ -479,8 +471,16 @@
   "en": "fc11831770d3",
   "t": "- Le reel et le Short de la build 83 (sur YouTube) sont montés sur Details (x-Radar Portable, musique système de la PSP, Sony), Slideshow (Daytime) de Kazumi Totaka, de la News Channel de la Wii (Nintendo, 2006), et le propre thème Menu de la PS2 (Sony) ; le reel de la build 66 sur Slideshow (Daytime) ; la musique du reel de la build 55 est originale. Les jaquettes vues pendant les tests viennent de la base d'images OPL de la communauté et ne font pas partie de RIPPS2."
  },
+ "fe0434e51c69": {
+  "en": "fe0434e51c69",
+  "t": "> [Nouveautés de la build 157](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.5.7-beta) | [Changelog](CHANGELOG.md) | **[Vidéos](#videos)** | [Toutes les versions](https://github.com/akilluminati47/RIPPS2/releases) | [En discuter sur psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
+ },
  "fe207194059a": {
   "en": "fe207194059a",
   "t": "| `bgm_02 Details.ogg` | **Details** | x-Radar Portable, [musique système de la PSP](https://en.wikipedia.org/wiki/PlayStation_Portable_system_software) (Sony, 2010) : **la musique de fond des vidéos de RIPPS2 sur YouTube** avec Slideshow (le reel de la bêta s'ouvre dessus, ainsi que le reel et le Short de la build 83) | votre propre copie, convertie sur votre PC avec [RIPPS2 Media Studio](tools/media-studio) |"
+ },
+ "ff4356898812": {
+  "en": "ff4356898812",
+  "t": "> 1. **[Téléchargez RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (toujours la dernière version) (un seul fichier, 2 780 Ko), et le **[pack de thèmes](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** si vous voulez (Adapt, Adapt Rx, édition 136 : une configuration et une image chacun ; RIPGRID et RIPFLOW sont intégrés), et **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** pour avoir RIPPS2 dans votre langue (33 au total ; chaque version le fournit)."
  }
 }

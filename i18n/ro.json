@@ -87,10 +87,6 @@
   "en": "2bb78085b36f",
   "t": "| [Short-ul build-ului 88](https://www.youtube.com/shorts/Sqprz22tdtg) | Short | Build-ul 88, pe Slideshow |"
  },
- "2c1c50e84927": {
-  "en": "2c1c50e84927",
-  "t": "> 1. **[Descarcă RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (mereu cea mai nouă versiune) (un singur fișier, 2.775 KB), și **[pachetul de teme](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** dacă vrei (Adapt, Adapt Rx, ediția 136: câte o configurație și o imagine; RIPGRID și RIPFLOW sunt incluse), și **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** pentru RIPPS2 în limba ta (33 de limbi; fiecare versiune îl conține)."
- },
  "2f0ee80297df": {
   "en": "2f0ee80297df",
   "t": "- **MEMORY FILES** este un explorator de fișiere inclus: copiază, mută și șterge între carduri de memorie, USB, MMCE și HDD (fiecare copie e citită înapoi și verificată); deschide imaginile de card VMC ale OPL ca pe niște foldere; exportă și importă salvări PSU; editează fișiere text; deschide imagini, redă video AVI **pe tot ecranul** cu **comenzi de player** (Cross redă/pune pauză, Circle oprește, L1/R1 sar 10 s, L2/R2 volum, START repetă; indicațiile dispar în timpul redării și rămân în pauză) ([RIPPS2 Media Studio](tools/media-studio) transformă orice video, chiar și MP4-ul unui telefon, într-unul), și redă fișiere `.mp3`, `.ogg` și `.wav`, sau marchează mai multe și deschide-le împreună ca să le asculți ca pe un disc în playerul CD din Launch Disc; un **`.tar` este un folder albastru** pe care îl poți deschide, în care poți lipi imagini și din care poți copia membri (build 125); Triunghi pe un `.tar` îmbină în el un alt `.tar` ART ([mai jos](#covers-from-one-file-art-pack)). **Folderul deschis este primul rând**, cu numărul de intrări, numărul celor marcate, mărimea totală și spațiul liber al unității; Cross sau Square pe el marchează tot (sau, dacă e ceva marcat, nimic). START îi deschide setările, unde **SEARCH FILES** găsește orice fișier sau folder după nume pe fiecare unitate pornită și deschide arborele acolo unde se află. Square pe un card de memorie deschide **CARD MANAGER** (copie de rezervă a unui card într-un VMC, scrierea salvărilor unui VMC înapoi pe un card, ștergerea salvărilor de jocuri, formatare), iar Square pe HDD-ul APA **HDD MANAGER** (partițiile lui, mărimile lor și eliminarea uneia după o verificare completă a tabelei de partiții)."
@@ -106,10 +102,6 @@
  "324016ff9971": {
   "en": "324016ff9971",
   "t": "**Raftul cu elfi:** vitrina lui Storage. Scândura de lemn din uOPL în fața turnurilor, iar pe ea semnul RIPPS2 de zece ori: pălăria de fetru a unui elf mort, cu borul în jos în propria baltă de sânge, câte una pentru fiecare Color Theme (RIPPS2, Ember, Blood, Ectoplasm, Amethyst, Bone, Tangerine, Flamingo, Turquoise, Moonlight). Se văd trei odată, așa cum RIPFLOW arată coperți: cea din mijloc se întoarce să se uite la cursor (cu cât e mai aproape, cu atât se întoarce mai repede) și se leagănă pe arcul ei, iar Left / Right sau o atingere pe oricare vecină rotește raftul. Se oprește pe pălăria albastră RIPPS2. O pălărie apăsată își trimite Color Theme-ul peste turnuri (propria matrice de culoare a ELF-ului, așa că turnurile arată cum le face acea temă): o atingere e o rafală de culoare care traversează câmpul și se scurge înapoi în albastrul RIPPS2; ținută, tema rămâne peste toată randarea până îi dai drumul."
- },
- "32675f221dd5": {
-  "en": "32675f221dd5",
-  "t": "> ### Fă-i rip: RIPPS2 build 141, v1.4.1 beta"
  },
  "376d12fba45e": {
   "en": "376d12fba45e",
@@ -371,10 +363,6 @@
   "en": "c2409d3b212c",
   "t": "| ✕ | Confirmare | `confirm.adp` | **Menu sound 5** |"
  },
- "c8222b627615": {
-  "en": "c8222b627615",
-  "t": "> [Ce e nou în build-ul 141](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.4.1-beta) | [Changelog](CHANGELOG.md) | **[Videoclipuri](#videos)** | [Toate versiunile](https://github.com/akilluminati47/RIPPS2/releases) | [Discută despre el pe psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
- },
  "c8eb072f3f8f": {
   "en": "c8eb072f3f8f",
   "t": "- **Imaginea unde o vrea televizorul tău.** Settings > Interface > Screen: Video Mode (până la 720p și 1080i), Widescreen, și H-POS, V-POS și Overscan, care din build-ul 124 sunt păstrate pentru fiecare mod video, așa că 1080i și 480i își păstrează fiecare propria centrare."
@@ -467,6 +455,10 @@
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): telemetrie RetroAchievements prin clientul [xeRAbora](https://github.com/hacan359/xerabora) de pe PC-ul tău (fixat la [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), insigne pe jocurile urmărite, discul din tavă și **YOUR ACCOUNT**, fiecare joc pe care l-ai verificat cu ce ai deblocat și, cu xeRAbora deschis către rețea, **LEFT TO HUNT**: fiecare realizare blocată și cum o obții."
  },
+ "f1197cf975f9": {
+  "en": "f1197cf975f9",
+  "t": "> ### Fă-i rip: RIPPS2 build 157, v1.5.7 beta"
+ },
  "f55efbafe641": {
   "en": "f55efbafe641",
   "t": "## Fă rip unui disc"
@@ -479,8 +471,16 @@
   "en": "fc11831770d3",
   "t": "- Reel-ul și Short-ul build-ului 83 (pe YouTube) sunt puse pe Details (x-Radar Portable, muzică de sistem PSP, Sony), Slideshow (Daytime) de Kazumi Totaka, din News Channel de pe Wii (Nintendo, 2006), și pe propria temă Menu a PS2 (Sony); reel-ul build-ului 66 pe Slideshow (Daytime); muzica reel-ului build-ului 55 e originală. Imaginile de jocuri văzute la teste provin din baza comunitară de imagini OPL și nu fac parte din RIPPS2."
  },
+ "fe0434e51c69": {
+  "en": "fe0434e51c69",
+  "t": "> [Ce e nou în build-ul 157](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.5.7-beta) | [Changelog](CHANGELOG.md) | **[Videoclipuri](#videos)** | [Toate versiunile](https://github.com/akilluminati47/RIPPS2/releases) | [Discută despre el pe psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
+ },
  "fe207194059a": {
   "en": "fe207194059a",
   "t": "| `bgm_02 Details.ogg` | **Details** | x-Radar Portable, [muzică de sistem PSP](https://en.wikipedia.org/wiki/PlayStation_Portable_system_software) (Sony, 2010): **muzica de fundal a videoclipurilor RIPPS2 de pe YouTube** alături de Slideshow (reel-ul beta începe cu ea, la fel reel-ul și Short-ul build-ului 83) | propria ta copie, convertită pe PC cu [RIPPS2 Media Studio](tools/media-studio) |"
+ },
+ "ff4356898812": {
+  "en": "ff4356898812",
+  "t": "> 1. **[Descarcă RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (mereu cea mai nouă versiune) (un singur fișier, 2.780 KB), și **[pachetul de teme](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** dacă vrei (Adapt, Adapt Rx, ediția 136: câte o configurație și o imagine; RIPGRID și RIPFLOW sunt incluse), și **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** pentru RIPPS2 în limba ta (33 de limbi; fiecare versiune îl conține)."
  }
 }

@@ -87,10 +87,6 @@
   "en": "2bb78085b36f",
   "t": "| [Short сборки 88](https://www.youtube.com/shorts/Sqprz22tdtg) | Short | Сборка 88 под Slideshow |"
  },
- "2c1c50e84927": {
-  "en": "2c1c50e84927",
-  "t": "> 1. **[Скачай RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (всегда самый новый выпуск) (один файл, 2775 КБ), а если хочешь, ещё **[пакет тем](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** (Adapt, Adapt Rx, выпуск 136: по одной конфигурации и одной картинке; RIPGRID и RIPFLOW встроены) и **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** для RIPPS2 на твоём языке (33 языка; есть в каждом выпуске)."
- },
  "2f0ee80297df": {
   "en": "2f0ee80297df",
   "t": "- **MEMORY FILES** представляет собой встроенный файловый браузер: копируй, перемещай и удаляй между картами памяти, USB, MMCE и HDD (каждая копия читается обратно и проверяется); открывай образы карт VMC из OPL как папки; экспортируй и импортируй сохранения PSU; редактируй текстовые файлы; открывай картинки, смотри видео AVI **на весь экран** с **кнопками плеера** (Cross: пуск/пауза, Circle: стоп, L1/R1: прыжок на 10 с, L2/R2: громкость, START: повтор; подсказки гаснут во время воспроизведения и остаются на паузе) ([RIPPS2 Media Studio](tools/media-studio) превращает в такое любое видео, даже MP4 с телефона), и слушай файлы `.mp3`, `.ogg` и `.wav`, или отметь несколько и открой их вместе, чтобы играть как один диск в CD-плеере Launch Disc; **`.tar` становится синей папкой**, которую можно открыть, вставить в неё картинки и скопировать из неё содержимое (сборка 125); Треугольник на `.tar` сливает с ним другой `.tar` с ART ([ниже](#covers-from-one-file-art-pack)). **Открытая папка стоит первой строкой**: в ней число записей, число отмеченных, общий размер и свободное место на накопителе; Cross или Square на ней отмечает всё (или, если что-то отмечено, ничего). START открывает её настройки, где **SEARCH FILES** находит любой файл или папку по имени на каждом запущенном накопителе и открывает дерево там, где он лежит. Square на карте памяти открывает **CARD MANAGER** (резервная копия карты в VMC, запись сохранений из VMC обратно на карту, удаление сохранений игр, форматирование), а Square на APA HDD открывает **HDD MANAGER** (его разделы, их размеры и удаление раздела после полной проверки таблицы разделов)."
@@ -106,10 +102,6 @@
  "324016ff9971": {
   "en": "324016ff9971",
   "t": "**Полка с эльфами:** витрина Storage. Деревянная доска из uOPL перед башнями, а на ней знак RIPPS2 десять раз: фетровая шляпа мёртвого эльфа, стоящая полями вниз в собственной луже крови, по одной на каждую Color Theme (RIPPS2, Ember, Blood, Ectoplasm, Amethyst, Bone, Tangerine, Flamingo, Turquoise, Moonlight). Видно сразу три, как RIPFLOW показывает обложки: средняя поворачивается следом за указателем (чем ближе он, тем быстрее она поворачивается) и покачивается на пружине, а Left / Right или касание любой из соседних поворачивает полку. Она останавливается на синей шляпе RIPPS2. Нажатая шляпа посылает свою Color Theme через башни (собственная цветовая матрица ELF, поэтому башни выглядят так, как их делает эта тема): касание вызывает вспышку цвета, которая проходит через поле и стекает обратно в синий RIPPS2; если держать, тема остаётся над всей сценой, пока не отпустишь."
- },
- "32675f221dd5": {
-  "en": "32675f221dd5",
-  "t": "> ### Рипни его: RIPPS2 сборка 141, v1.4.1 бета"
  },
  "376d12fba45e": {
   "en": "376d12fba45e",
@@ -371,10 +363,6 @@
   "en": "c2409d3b212c",
   "t": "| ✕ | Подтверждение | `confirm.adp` | **Menu sound 5** |"
  },
- "c8222b627615": {
-  "en": "c8222b627615",
-  "t": "> [Что нового в сборке 141](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.4.1-beta) | [Changelog](CHANGELOG.md) | **[Видео](#videos)** | [Все выпуски](https://github.com/akilluminati47/RIPPS2/releases) | [Обсудить на psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
- },
  "c8eb072f3f8f": {
   "en": "c8eb072f3f8f",
   "t": "- **Картинка там, где её хочет твой телевизор.** Settings > Interface > Screen: Video Mode (до 720p и 1080i), Widescreen, а также H-POS, V-POS и Overscan, которые начиная со сборки 124 хранятся для каждого видеорежима отдельно, поэтому у 1080i и 480i своё центрирование."
@@ -467,6 +455,10 @@
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): телеметрия RetroAchievements через клиент [xeRAbora](https://github.com/hacan359/xerabora) на твоём ПК (закреплён на [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), значки на отслеживаемых играх, диск в лотке и **YOUR ACCOUNT**: каждая проверенная игра с тем, что ты открыл, а когда xeRAbora открыт в сеть, **LEFT TO HUNT**: каждое закрытое достижение и как его получить."
  },
+ "f1197cf975f9": {
+  "en": "f1197cf975f9",
+  "t": "> ### Рипни его: RIPPS2 сборка 157, v1.5.7 бета"
+ },
  "f55efbafe641": {
   "en": "f55efbafe641",
   "t": "## Рипни диск"
@@ -479,8 +471,16 @@
   "en": "fc11831770d3",
   "t": "- Ролик и Short сборки 83 (на YouTube) идут под Details (x-Radar Portable, системная музыка PSP, Sony), Slideshow (Daytime) Кадзуми Тотаки из News Channel на Wii (Nintendo, 2006) и родную тему Menu с PS2 (Sony); ролик сборки 66 идёт под Slideshow (Daytime); музыка ролика сборки 55 оригинальная. Обложки игр, которые видны в тестах, взяты из общей базы обложек OPL и не входят в RIPPS2."
  },
+ "fe0434e51c69": {
+  "en": "fe0434e51c69",
+  "t": "> [Что нового в сборке 157](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.5.7-beta) | [Changelog](CHANGELOG.md) | **[Видео](#videos)** | [Все выпуски](https://github.com/akilluminati47/RIPPS2/releases) | [Обсудить на psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
+ },
  "fe207194059a": {
   "en": "fe207194059a",
   "t": "| `bgm_02 Details.ogg` | **Details** | x-Radar Portable, [системная музыка PSP](https://en.wikipedia.org/wiki/PlayStation_Portable_system_software) (Sony, 2010): **фоновая музыка видео RIPPS2 на YouTube** вместе со Slideshow (с неё начинается ролик беты, а также ролик и Short сборки 83) | твоя собственная копия, сконвертированная на ПК в [RIPPS2 Media Studio](tools/media-studio) |"
+ },
+ "ff4356898812": {
+  "en": "ff4356898812",
+  "t": "> 1. **[Скачай RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (всегда самый новый выпуск) (один файл, 2780 КБ), а если хочешь, ещё **[пакет тем](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** (Adapt, Adapt Rx, выпуск 136: по одной конфигурации и одной картинке; RIPGRID и RIPFLOW встроены) и **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** для RIPPS2 на твоём языке (33 языка; есть в каждом выпуске)."
  }
 }

@@ -87,10 +87,6 @@
   "en": "2bb78085b36f",
   "t": "| [مقطع Short للإصدار 88](https://www.youtube.com/shorts/Sqprz22tdtg) | Short | الإصدار 88 على أنغام Slideshow |"
  },
- "2c1c50e84927": {
-  "en": "2c1c50e84927",
-  "t": "> 1. **[نزّل RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (دائمًا أحدث إصدار) (ملف واحد، 2.775 KB)، و**[حزمة السمات](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** إن شئت (Adapt وAdapt Rx، الإصدار 136: إعداد واحد وصورة واحدة لكل منهما؛ RIPGRID وRIPFLOW مدمجتان)، و**[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** ليظهر RIPPS2 بلغتك (33 لغة؛ يأتي مع كل إصدار)."
- },
  "2f0ee80297df": {
   "en": "2f0ee80297df",
   "t": "- **MEMORY FILES** متصفح ملفات مدمج: انسخ وانقل واحذف بين بطاقات الذاكرة وUSB وMMCE والقرص الصلب (كل نسخة تُقرأ مرة أخرى وتُفحص)؛ افتح صور بطاقات VMC الخاصة بـ OPL كأنها مجلدات؛ صدّر حفظات PSU واستوردها؛ حرّر الملفات النصية؛ افتح الصور، وشغّل فيديو AVI **بملء الشاشة** مع **أزرار المشغّل** (Cross للتشغيل والإيقاف المؤقت، وCircle للإيقاف، وL1/R1 للقفز 10 ثوانٍ، وL2/R2 للصوت، وSTART للتكرار؛ تتلاشى التلميحات أثناء التشغيل وتبقى عند الإيقاف المؤقت) (يحوّل [RIPPS2 Media Studio](tools/media-studio) أي فيديو إلى ملف كهذا، حتى MP4 من الهاتف)، وشغّل ملفات `.mp3` و`.ogg` و`.wav`، أو حدّد عدة ملفات وافتحها معًا لتشغيلها كقرص واحد في مشغّل CD الخاص بـ Launch Disc؛ وملف **`.tar` مجلد أزرق** يمكنك فتحه ولصق الصور فيه ونسخ محتوياته منه (الإصدار 125)؛ والمثلث على ملف `.tar` يدمج فيه ملف `.tar` آخر من ART ([أدناه](#covers-from-one-file-art-pack)). **المجلد المفتوح هو الصف الأول**، ويعرض عدد عناصره وعدد المحدد منها والحجم الكلي والمساحة الحرة في المحرّك؛ وCross أو Square عليه يحدد الكل (أو لا شيء إن كان شيء محددًا). START يفتح إعداداته، حيث يجد **SEARCH FILES** أي ملف أو مجلد بالاسم على كل محرّك مشغَّل ويفتح الشجرة حيث يوجد. وSquare على بطاقة ذاكرة يفتح **CARD MANAGER** (نسخ احتياطي للبطاقة إلى VMC، وإعادة كتابة حفظات VMC إلى بطاقة، ومسح حفظات الألعاب، والتهيئة)، وSquare على قرص APA HDD يفتح **HDD MANAGER** (أقسامه وأحجامها وإزالة قسم بعد فحص كامل لجدول الأقسام)."
@@ -106,10 +102,6 @@
  "324016ff9971": {
   "en": "324016ff9971",
   "t": "**رف الأقزام:** واجهة عرض Storage. لوح خشب uOPL أمام الأبراج، وعليه علامة RIPPS2 عشر مرات: قبعة لبّاد لقزم ميت تقف وحافتها إلى الأسفل في بركة دمه، واحدة لكل Color Theme (RIPPS2 وEmber وBlood وEctoplasm وAmethyst وBone وTangerine وFlamingo وTurquoise وMoonlight). تظهر ثلاث منها في كل مرة، كما يعرض RIPFLOW الأغلفة: تلتفت الوسطى لتنظر إلى المؤشر (كلما اقترب، التفتت أسرع) وتتمايل على نابضها، وLeft / Right أو لمسة على أي من الجارتين تدير الرف. ويستقر على قبعة RIPPS2 الزرقاء. والقبعة التي تُضغط ترسل Color Theme الخاص بها عبر الأبراج (مصفوفة ألوان ملف ELF نفسه، فتبدو الأبراج كما تصنعها تلك السمة): اللمسة دفقة لون تعبر الساحة وتعود إلى أزرق RIPPS2؛ ومع الضغط المطوّل تبقى السمة فوق كامل العرض حتى تفلتها."
- },
- "32675f221dd5": {
-  "en": "32675f221dd5",
-  "t": "> ### اسحبه: RIPPS2 الإصدار 141، v1.4.1 بيتا"
  },
  "376d12fba45e": {
   "en": "376d12fba45e",
@@ -371,10 +363,6 @@
   "en": "c2409d3b212c",
   "t": "| ✕ | التأكيد | `confirm.adp` | **Menu sound 5** |"
  },
- "c8222b627615": {
-  "en": "c8222b627615",
-  "t": "> [الجديد في الإصدار 141](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.4.1-beta) | [Changelog](CHANGELOG.md) | **[الفيديوهات](#videos)** | [كل الإصدارات](https://github.com/akilluminati47/RIPPS2/releases) | [تحدّث عنه في psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
- },
  "c8eb072f3f8f": {
   "en": "c8eb072f3f8f",
   "t": "- **الصورة حيث يريدها تلفازك.** Settings > Interface > Screen: Video Mode (حتى 720p و1080i)، وWidescreen، وH-POS وV-POS وOverscan، التي تُحفظ منذ الإصدار 124 لكل وضع فيديو على حدة، فيحتفظ 1080i و480i كلٌّ بتوسيطه الخاص."
@@ -467,6 +455,10 @@
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): قياسات RetroAchievements عبر برنامج [xeRAbora](https://github.com/hacan359/xerabora) على حاسوبك (مثبّت على [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18))، وشارات على الألعاب المتابَعة، والقرص في الدرج، و**YOUR ACCOUNT**: كل لعبة فحصتها مع ما فتحته، ومع xeRAbora مفتوحًا على الشبكة، **LEFT TO HUNT**: كل إنجاز مقفل وكيف تكسبه."
  },
+ "f1197cf975f9": {
+  "en": "f1197cf975f9",
+  "t": "> ### اسحبه: RIPPS2 الإصدار 157، v1.5.7 بيتا"
+ },
  "f55efbafe641": {
   "en": "f55efbafe641",
   "t": "## اسحب قرصًا"
@@ -479,8 +471,16 @@
   "en": "fc11831770d3",
   "t": "- عرض الإصدار 83 ومقطعه القصير (على YouTube) على أنغام Details (x-Radar Portable، موسيقى نظام PSP، Sony)، وSlideshow (Daytime) لكازومي توتاكا من News Channel على Wii (Nintendo، 2006)، وسمة Menu الخاصة بـ PS2 نفسه (Sony)؛ وعرض الإصدار 66 على أنغام Slideshow (Daytime)؛ وموسيقى عرض الإصدار 55 أصلية. صور الألعاب التي ظهرت أثناء الاختبار مأخوذة من قاعدة صور OPL المجتمعية وليست جزءًا من RIPPS2."
  },
+ "fe0434e51c69": {
+  "en": "fe0434e51c69",
+  "t": "> [الجديد في الإصدار 157](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.5.7-beta) | [Changelog](CHANGELOG.md) | **[الفيديوهات](#videos)** | [كل الإصدارات](https://github.com/akilluminati47/RIPPS2/releases) | [تحدّث عنه في psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
+ },
  "fe207194059a": {
   "en": "fe207194059a",
   "t": "| `bgm_02 Details.ogg` | **Details** | x-Radar Portable، [موسيقى نظام PSP](https://en.wikipedia.org/wiki/PlayStation_Portable_system_software) (Sony، 2010): **موسيقى خلفية فيديوهات RIPPS2 على YouTube** إلى جانب Slideshow (يبدأ بها عرض البيتا، وعرض الإصدار 83 ومقطعه القصير) | نسختك الخاصة، محوّلة على حاسوبك بـ [RIPPS2 Media Studio](tools/media-studio) |"
+ },
+ "ff4356898812": {
+  "en": "ff4356898812",
+  "t": "> 1. **[نزّل RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (دائمًا أحدث إصدار) (ملف واحد، 2.780 KB)، و**[حزمة السمات](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** إن شئت (Adapt وAdapt Rx، الإصدار 136: إعداد واحد وصورة واحدة لكل منهما؛ RIPGRID وRIPFLOW مدمجتان)، و**[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** ليظهر RIPPS2 بلغتك (33 لغة؛ يأتي مع كل إصدار)."
  }
 }

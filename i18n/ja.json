@@ -87,10 +87,6 @@
   "en": "2bb78085b36f",
   "t": "| [ビルド 88 ショート](https://www.youtube.com/shorts/Sqprz22tdtg) | Short | Slideshow に合わせたビルド 88 |"
  },
- "2c1c50e84927": {
-  "en": "2c1c50e84927",
-  "t": "> 1. **[RIPPS2.elf をダウンロード](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (常に最新リリース) (ファイル 1 つ、2,775 KB)、必要なら **[テーマパック](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** (Adapt と Adapt Rx、エディション 136: それぞれ設定 1 つと画像 1 枚。RIPGRID と RIPFLOW は内蔵)、そして RIPPS2 を自分の言語で使うための **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** (33 言語。毎リリースに同梱)。"
- },
  "2f0ee80297df": {
   "en": "2f0ee80297df",
   "t": "- **MEMORY FILES** は内蔵ファイルブラウザーです: メモリーカード、USB、MMCE、HDD の間でコピー、移動、削除 (コピーはすべて読み直して確認)。OPL の VMC カードイメージをフォルダーとして開く。PSU セーブのエクスポートとインポート。テキストファイルの編集。画像を開き、AVI 動画を**全画面**で**プレイヤー操作**付きで再生 (Cross 再生/一時停止、Circle 停止、L1/R1 10 秒スキップ、L2/R2 音量、START リピート。ガイドは再生中にフェードし、一時停止中は残ります) ([RIPPS2 Media Studio](tools/media-studio) はスマホの MP4 を含むどんな動画もこの形式に変換します)、`.mp3`、`.ogg`、`.wav` を再生、または複数に印を付けてまとめて開けば Launch Disc の CD プレイヤーでディスクのように再生できます。**`.tar` は青いフォルダー**で、開いて画像を貼り付けたり中身をコピーして取り出したりできます (ビルド 125)。`.tar` 上の三角で別の ART の `.tar` をマージします ([下記](#covers-from-one-file-art-pack))。**開いているフォルダーが最初の行**で、項目数、印を付けた数、合計サイズ、ドライブの空きを表示します。そこで Cross か Square を押すとすべてに印を付けます (何かに印があれば外します)。START で設定を開き、そこの **SEARCH FILES** は開始済みのどのドライブでもファイルやフォルダーを名前で探し、その場でツリーを開きます。メモリーカード上の Square で **CARD MANAGER** (カードを VMC にバックアップ、VMC のセーブをカードに書き込み、ゲームのセーブを消去、フォーマット)、APA HDD 上の Square で **HDD MANAGER** (パーティション、そのサイズ、パーティションテーブルを全部確認してからの削除) を開きます。"
@@ -106,10 +102,6 @@
  "324016ff9971": {
   "en": "324016ff9971",
   "t": "**エルフの棚:** Storage の陳列棚。塔の前の uOPL の木の板、その上に RIPPS2 のマークが 10 個: 死んだエルフのフェルト帽が、つばを下にして自分の血だまりに立っています。Color Theme ごとに 1 つ (RIPPS2、Ember、Blood、Ectoplasm、Amethyst、Bone、Tangerine、Flamingo、Turquoise、Moonlight)。RIPFLOW がカバーを見せるように一度に 3 つが見え、中央の帽子はカーソルの方を向き (近いほど速く回ります)、バネで揺れます。Left / Right か隣をタップすると棚が回ります。青い RIPPS2 の帽子で止まります。押した帽子は自分の Color Theme を塔に送ります (ELF 自身のカラーマトリクスなので、塔はそのテーマで描かれるとおりに見えます): タップならフィールドを横切る色の噴出で、RIPPS2 の青に戻ります。押し続ければ、離すまでテーマが画面全体に残ります。"
- },
- "32675f221dd5": {
-  "en": "32675f221dd5",
-  "t": "> ### リップしよう: RIPPS2 ビルド 141、v1.4.1 ベータ"
  },
  "376d12fba45e": {
   "en": "376d12fba45e",
@@ -371,10 +363,6 @@
   "en": "c2409d3b212c",
   "t": "| ✕ | 決定 | `confirm.adp` | **Menu sound 5** |"
  },
- "c8222b627615": {
-  "en": "c8222b627615",
-  "t": "> [ビルド 141 の新機能](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.4.1-beta) | [Changelog](CHANGELOG.md) | **[動画](#videos)** | [すべてのリリース](https://github.com/akilluminati47/RIPPS2/releases) | [psx-place で話そう](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
- },
  "c8eb072f3f8f": {
   "en": "c8eb072f3f8f",
   "t": "- **テレビが求める位置に映像を。** Settings > Interface > Screen: Video Mode (720p と 1080i まで)、Widescreen、H-POS、V-POS、Overscan。ビルド 124 からビデオモードごとに保存されるので、1080i と 480i はそれぞれ自分の位置合わせを持ちます。"
@@ -467,6 +455,10 @@
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): PC の [xeRAbora](https://github.com/hacan359/xerabora) クライアント経由の RetroAchievements テレメトリー ([v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18) に固定)、追跡中のゲームのバッジ、トレイのディスク、そして **YOUR ACCOUNT**: 確認したすべてのゲームと解除したもの。xeRAbora がネットワークに開いているときは **LEFT TO HUNT**: ロック中の実績すべてとその取り方。"
  },
+ "f1197cf975f9": {
+  "en": "f1197cf975f9",
+  "t": "> ### リップしよう: RIPPS2 ビルド 157、v1.5.7 ベータ"
+ },
  "f55efbafe641": {
   "en": "f55efbafe641",
   "t": "## ディスクをリップする"
@@ -479,8 +471,16 @@
   "en": "fc11831770d3",
   "t": "- ビルド 83 の紹介リールとショート (YouTube) は、Details (x-Radar Portable、PSP のシステム音楽、Sony)、Wii のニュースチャンネルの戸高一生による Slideshow (Daytime) (Nintendo、2006)、PS2 自身の Menu テーマ (Sony) に合わせて作られています。ビルド 66 の紹介リールは Slideshow (Daytime) に合わせて。ビルド 55 の紹介リールの音楽はオリジナルです。テストに映るゲームの画像はコミュニティの OPL 画像データベースのもので、RIPPS2 の一部ではありません。"
  },
+ "fe0434e51c69": {
+  "en": "fe0434e51c69",
+  "t": "> [ビルド 157 の新機能](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.5.7-beta) | [Changelog](CHANGELOG.md) | **[動画](#videos)** | [すべてのリリース](https://github.com/akilluminati47/RIPPS2/releases) | [psx-place で話そう](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
+ },
  "fe207194059a": {
   "en": "fe207194059a",
   "t": "| `bgm_02 Details.ogg` | **Details** | x-Radar Portable、[PSP のシステム音楽](https://en.wikipedia.org/wiki/PlayStation_Portable_system_software) (Sony、2010): Slideshow とともに **RIPPS2 の YouTube 動画の BGM** (ベータ紹介リールはこれで始まり、ビルド 83 の紹介リールとショートも) | 自分で持っている音源を、PC 上で [RIPPS2 Media Studio](tools/media-studio) で変換 |"
+ },
+ "ff4356898812": {
+  "en": "ff4356898812",
+  "t": "> 1. **[RIPPS2.elf をダウンロード](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (常に最新リリース) (ファイル 1 つ、2,780 KB)、必要なら **[テーマパック](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** (Adapt と Adapt Rx、エディション 136: それぞれ設定 1 つと画像 1 枚。RIPGRID と RIPFLOW は内蔵)、そして RIPPS2 を自分の言語で使うための **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** (33 言語。毎リリースに同梱)。"
  }
 }

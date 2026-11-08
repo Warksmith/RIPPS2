@@ -87,10 +87,6 @@
   "en": "2bb78085b36f",
   "t": "| [Build 88 Short](https://www.youtube.com/shorts/Sqprz22tdtg) | Short | Ang build 88 uban sa Slideshow |"
  },
- "2c1c50e84927": {
-  "en": "2c1c50e84927",
-  "t": "> 1. **[I-download ang RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (kanunay ang pinakabag-ong release) (usa ka file, 2,775 KB), ug kon gusto nimo ang **[theme pack](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** (Adapt ug Adapt Rx, edisyon 136: tag-usa ka config ug usa ka hulagway; built in na ang RIPGRID ug RIPFLOW), ug ang **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** para sa RIPPS2 sa imong kaugalingong pinulongan (33 ka pinulongan; kauban sa matag release)."
- },
  "2f0ee80297df": {
   "en": "2f0ee80297df",
   "t": "- Ang **MEMORY FILES** usa ka built-in nga file browser: kopya, balhin, ug papas tali sa memory card, USB, MMCE, ug HDD (basahon pag-usab ang matag kopya aron masusi); ablihi ang mga VMC card image sa OPL isip folder; i-export ug i-import ang mga PSU save; usba ang mga text file; ablihi ang mga hulagway, patugtoga ang AVI video **sa full screen** nga adunay **kontrol sa player** (Cross play/pause, Circle stop, L1/R1 laktaw og 10 segundos, L2/R2 volume, START usba; mawala ang mga giya samtang nagtugtog ug magpabilin kon naka-pause) (gi-convert sa [RIPPS2 Media Studio](tools/media-studio) ang bisan unsang video, apil ang MP4 sa telepono, ngadto sa ingon nga file), ug patugtoga ang mga file nga `.mp3`, `.ogg`, ug `.wav`, o markahi ang pipila ug ablihi dungan aron motugtog sama sa usa ka disc sa CD player sa Launch Disc; **ang `.tar` usa ka asul nga folder** nga imong maablihan, mabutangan og hulagway, ug makopyahan og sulod pagawas (build 125); gisagol sa Triangle sa usa ka `.tar` ang laing ART `.tar` niini ([sa ubos](#covers-from-one-file-art-pack)). **Ang abli nga folder mao ang unang laray**, uban ang ihap sa entry, ihap sa namarkahan, kinatibuk-ang gidak-on, ug libre nga espasyo sa drive; markahan sa Cross o Square niini ang tanan (o wala, kon aduna nay namarkahan). Giablihan sa START ang mga setting niini, diin gipangita sa **SEARCH FILES** ang bisan unsang file o folder pinaagi sa ngalan sa matag nasugdang drive ug giablihan ang tree didto mismo. Giablihan sa Square sa memory card ang **CARD MANAGER** (i-back up ang card ngadto sa VMC, isulat ang mga save sa VMC ngadto sa card, papasa ang mga save sa dula, i-format), ug giablihan sa Square sa APA HDD ang **HDD MANAGER** (ang mga partition niini, ang gidak-on niini, ug ang pagpapas sa usa human sa bug-os nga pagsusi sa partition table)."
@@ -106,10 +102,6 @@
  "324016ff9971": {
   "en": "324016ff9971",
   "t": "**Ang estante sa duwende:** ang display case sa Storage. Ang tabla nga kahoy sa uOPL atubangan sa mga torre, ug ibabaw niini ang RIPPS2 mark napulo ka higayon: ang felt nga kalo sa patay nga duwende, nakataob ang ngilit sa kaugalingong linaw sa dugo, usa para sa matag Color Theme (RIPPS2, Ember, Blood, Ectoplasm, Amethyst, Bone, Tangerine, Flamingo, Turquoise, Moonlight). Tulo ang makita dungan, sama sa pagpakita sa RIPFLOW sa mga cover: moliko ang tunga nga kalo aron motan-aw sa cursor (mas duol, mas paspas moliko) ug mokiay-kiay sa spring niini, ug paliko-on sa Left / Right o pag-tap sa silingan ang estante. Mohunong kini sa asul nga kalo sa RIPPS2. Ipadala sa napislit nga kalo ang Color Theme niini ngadto sa mga torre (ang kaugalingong color matrix sa ELF, busa morag sama sa pagdrowing sa maong theme ang mga torre): ang tap usa ka buto sa kolor nga motabok sa field ug mobalik sa asul sa RIPPS2; kon pugngan, magpabilin ang theme sa tibuok hulagway hangtod imong buhian."
- },
- "32675f221dd5": {
-  "en": "32675f221dd5",
-  "t": "> ### I-rip na: RIPPS2 build 141, v1.4.1 beta"
  },
  "376d12fba45e": {
   "en": "376d12fba45e",
@@ -371,10 +363,6 @@
   "en": "c2409d3b212c",
   "t": "| ✕ | Kumpirmaha | `confirm.adp` | **Menu sound 5** |"
  },
- "c8222b627615": {
-  "en": "c8222b627615",
-  "t": "> [Unsay bag-o sa build 141](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.4.1-beta) | [Changelog](CHANGELOG.md) | **[Mga video](#videos)** | [Tanang release](https://github.com/akilluminati47/RIPPS2/releases) | [Hisgoti sa psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
- },
  "c8eb072f3f8f": {
   "en": "c8eb072f3f8f",
   "t": "- **Ang hulagway diin kini gusto sa imong TV.** Settings > Interface > Screen: Video Mode (hangtod 720p ug 1080i), Widescreen, ug H-POS, V-POS, ug Overscan, nga sukad sa build 124 gitipigan nga lahi para sa matag video mode, busa ang 1080i ug 480i adunay kaugalingong pagsentro."
@@ -467,6 +455,10 @@
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): RetroAchievements telemetry pinaagi sa [xeRAbora](https://github.com/hacan359/xerabora) client sa imong PC (naka-pin sa [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), mga badge sa mga gisubay nga dula, ang disc sa tray, ug **YOUR ACCOUNT**: matag dula nga imong gisusi uban sa imong na-unlock, ug kon abli sa network ang xeRAbora, **LEFT TO HUNT**: matag naka-lock nga achievement ug unsaon pagkuha niini."
  },
+ "f1197cf975f9": {
+  "en": "f1197cf975f9",
+  "t": "> ### I-rip na: RIPPS2 build 157, v1.5.7 beta"
+ },
  "f55efbafe641": {
   "en": "f55efbafe641",
   "t": "## Pag-rip og disc"
@@ -479,8 +471,16 @@
   "en": "fc11831770d3",
   "t": "- Gihimo ang build 83 reel ug Short (sa YouTube) uban sa Details (x-Radar Portable, system music sa PSP, Sony), Slideshow (Daytime) ni Kazumi Totaka gikan sa News Channel sa Wii (Nintendo, 2006), ug ang kaugalingong Menu theme sa PS2 (Sony); ang build 66 reel uban sa Slideshow (Daytime); orihinal ang musika sa build 55 reel. Gikan sa OPL art database sa komunidad ang game art nga makita sa mga pagsulay ug dili bahin sa RIPPS2."
  },
+ "fe0434e51c69": {
+  "en": "fe0434e51c69",
+  "t": "> [Unsay bag-o sa build 157](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.5.7-beta) | [Changelog](CHANGELOG.md) | **[Mga video](#videos)** | [Tanang release](https://github.com/akilluminati47/RIPPS2/releases) | [Hisgoti sa psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
+ },
  "fe207194059a": {
   "en": "fe207194059a",
   "t": "| `bgm_02 Details.ogg` | **Details** | x-Radar Portable, [system music sa PSP](https://en.wikipedia.org/wiki/PlayStation_Portable_system_software) (Sony, 2010): **ang background music sa mga video sa RIPPS2 sa YouTube** uban sa Slideshow (niini nagsugod ang beta reel, ug ang build 83 reel ug Short) | Imong kaugalingong kopya, gi-convert sa imong PC gamit ang [RIPPS2 Media Studio](tools/media-studio) |"
+ },
+ "ff4356898812": {
+  "en": "ff4356898812",
+  "t": "> 1. **[I-download ang RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (kanunay ang pinakabag-ong release) (usa ka file, 2,780 KB), ug kon gusto nimo ang **[theme pack](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** (Adapt ug Adapt Rx, edisyon 136: tag-usa ka config ug usa ka hulagway; built in na ang RIPGRID ug RIPFLOW), ug ang **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** para sa RIPPS2 sa imong kaugalingong pinulongan (33 ka pinulongan; kauban sa matag release)."
  }
 }

@@ -87,10 +87,6 @@
   "en": "2bb78085b36f",
   "t": "| [Short ບິວ 88](https://www.youtube.com/shorts/Sqprz22tdtg) | Short | ບິວ 88 ຕາມ Slideshow |"
  },
- "2c1c50e84927": {
-  "en": "2c1c50e84927",
-  "t": "> 1. **[ດາວໂຫຼດ RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (ລຸ້ນໃໝ່ລ່າສຸດສະເໝີ) (ໄຟລ໌ດຽວ, 2.775 KB), ຖ້າຕ້ອງການກໍ **[ຊຸດທີມ](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** (Adapt ແລະ Adapt Rx, ສະບັບ 136: ແຕ່ລະອັນມີການຕັ້ງຄ່າໜຶ່ງ ແລະ ຮູບໜຶ່ງ; RIPGRID ແລະ RIPFLOW ມີຢູ່ໃນຕົວ), ແລະ **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** ເພື່ອໃຊ້ RIPPS2 ເປັນພາສາຂອງເຈົ້າ (33 ພາສາ; ມາພ້ອມທຸກລຸ້ນ)."
- },
  "2f0ee80297df": {
   "en": "2f0ee80297df",
   "t": "- **MEMORY FILES** ແມ່ນຕົວທ່ອງໄຟລ໌ໃນຕົວ: ສຳເນົາ, ຍ້າຍ ແລະ ລຶບລະຫວ່າງບັດຄວາມຈຳ, USB, MMCE ແລະ HDD (ທຸກການສຳເນົາຖືກອ່ານຄືນເພື່ອກວດສອບ); ເປີດອິມເມຈບັດ VMC ຂອງ OPL ເປັນໂຟນເດີ; ສົ່ງອອກ ແລະ ນຳເຂົ້າເຊບ PSU; ແກ້ໄຂໄຟລ໌ຂໍ້ຄວາມ; ເປີດຮູບ, ຫຼິ້ນວິດີໂອ AVI **ເຕັມຈໍ** ພ້ອມ**ການຄວບຄຸມເຄື່ອງຫຼິ້ນ** (Cross ຫຼິ້ນ/ຢຸດຊົ່ວຄາວ, Circle ຢຸດ, L1/R1 ຂ້າມ 10 ວິນາທີ, L2/R2 ລະດັບສຽງ, START ຫຼິ້ນຊ້ຳ; ຄຳແນະນຳຈາງໄປໃນຂະນະຫຼິ້ນ ແລະ ຍັງຢູ່ເມື່ອຢຸດຊົ່ວຄາວ) ([RIPPS2 Media Studio](tools/media-studio) ປ່ຽນວິດີໂອໃດກໍໄດ້, ລວມທັງ MP4 ຈາກໂທລະສັບ, ເປັນໄຟລ໌ແບບນີ້), ແລະ ຫຼິ້ນໄຟລ໌ `.mp3`, `.ogg` ແລະ `.wav`, ຫຼື ໝາຍຫຼາຍອັນແລ້ວເປີດພ້ອມກັນ ເພື່ອໃຫ້ຫຼິ້ນຄືແຜ່ນໜຶ່ງໃນເຄື່ອງຫຼິ້ນ CD ຂອງ Launch Disc; **`.tar` ແມ່ນໂຟນເດີສີຟ້າ** ທີ່ເຈົ້າເປີດໄດ້, ວາງຮູບເຂົ້າໄປ ແລະ ສຳເນົາສະມາຊິກອອກມາ (ບິວ 125); ສາມຫຼ່ຽມເທິງ `.tar` ລວມ `.tar` ART ອີກອັນເຂົ້າໄປ ([ຂ້າງລຸ່ມ](#covers-from-one-file-art-pack)). **ໂຟນເດີທີ່ເປີດຢູ່ແມ່ນແຖວທຳອິດ**, ພ້ອມຈຳນວນລາຍການ, ຈຳນວນທີ່ໝາຍ, ຂະໜາດລວມ ແລະ ພື້ນທີ່ວ່າງຂອງໄດຣຟ໌; Cross ຫຼື Square ເທິງມັນໝາຍທັງໝົດ (ຫຼື ຍົກເລີກທັງໝົດຖ້າມີອັນໃດໝາຍຢູ່ແລ້ວ). START ເປີດການຕັ້ງຄ່າຂອງມັນ, ບ່ອນທີ່ **SEARCH FILES** ຊອກຫາໄຟລ໌ ຫຼື ໂຟນເດີໃດກໍໄດ້ຕາມຊື່ໃນທຸກໄດຣຟ໌ທີ່ເລີ່ມແລ້ວ ແລະ ເປີດຕົ້ນໄມ້ຢູ່ບ່ອນນັ້ນ. Square ເທິງບັດຄວາມຈຳເປີດ **CARD MANAGER** (ສຳຮອງບັດເປັນ VMC, ຂຽນເຊບຂອງ VMC ໃສ່ບັດ, ລຶບເຊບເກມ, ຟໍແມັດ), ແລະ Square ເທິງ APA HDD ເປີດ **HDD MANAGER** (ພາທິຊັນຂອງມັນ, ຂະໜາດ, ແລະ ລຶບອັນໜຶ່ງຫຼັງຈາກກວດຕາຕະລາງພາທິຊັນທັງໝົດ)."
@@ -106,10 +102,6 @@
  "324016ff9971": {
   "en": "324016ff9971",
   "t": "**ຊັ້ນວາງເອວຟ໌:** ຕູ້ສະແດງຂອງ Storage. ແຜ່ນໄມ້ uOPL ຢູ່ໜ້າຫໍຄອຍ, ແລະ ເທິງນັ້ນມີເຄື່ອງໝາຍ RIPPS2 ສິບເທື່ອ: ໝວກສັກຫຼາດຂອງເອວຟ໌ທີ່ຕາຍແລ້ວ, ປີກໝວກຄວ່ຳລົງໃນແອ່ງເລືອດຂອງມັນເອງ, ໜຶ່ງອັນຕໍ່ Color Theme (RIPPS2, Ember, Blood, Ectoplasm, Amethyst, Bone, Tangerine, Flamingo, Turquoise, Moonlight). ເຫັນສາມອັນພ້ອມກັນ, ຄືກັບທີ່ RIPFLOW ສະແດງໜ້າປົກ: ໝວກກາງໝຸນໄປເບິ່ງເຄີເຊີ (ຍິ່ງໃກ້ຍິ່ງໝຸນໄວ) ແລະ ແກວ່ງເທິງສະປິງຂອງມັນ, ແລະ Left / Right ຫຼື ແຕະອັນຂ້າງໆຈະໝຸນຊັ້ນວາງ. ມັນຢຸດທີ່ໝວກສີຟ້າ RIPPS2. ໝວກທີ່ຖືກກົດສົ່ງ Color Theme ຂອງມັນໄປຫໍຄອຍ (ມາຕຣິກສີຂອງ ELF ເອງ, ດັ່ງນັ້ນຫໍຄອຍເບິ່ງຄືທີ່ທີມນັ້ນແຕ້ມພວກມັນ): ແຕະເປັນການພຸ່ງຂອງສີຂ້າມເດີ່ນ ແລ້ວກັບຄືນສີຟ້າ RIPPS2; ກົດຄ້າງ ແລ້ວທີມຢູ່ທົ່ວພາບຈົນເຈົ້າປ່ອຍ."
- },
- "32675f221dd5": {
-  "en": "32675f221dd5",
-  "t": "> ### ມາຣິບກັນ: RIPPS2 ບິວ 141, v1.4.1 ເບຕ້າ"
  },
  "376d12fba45e": {
   "en": "376d12fba45e",
@@ -371,10 +363,6 @@
   "en": "c2409d3b212c",
   "t": "| ✕ | ຢືນຢັນ | `confirm.adp` | **Menu sound 5** |"
  },
- "c8222b627615": {
-  "en": "c8222b627615",
-  "t": "> [ມີຫຍັງໃໝ່ໃນບິວ 141](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.4.1-beta) | [Changelog](CHANGELOG.md) | **[ວິດີໂອ](#videos)** | [ທຸກລຸ້ນ](https://github.com/akilluminati47/RIPPS2/releases) | [ສົນທະນາໃນ psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
- },
  "c8eb072f3f8f": {
   "en": "c8eb072f3f8f",
   "t": "- **ພາບຢູ່ບ່ອນທີ່ໂທລະທັດຂອງເຈົ້າຕ້ອງການ.** Settings > Interface > Screen: Video Mode (ສູງສຸດ 720p ແລະ 1080i), Widescreen, ແລະ H-POS, V-POS ແລະ Overscan, ຕັ້ງແຕ່ບິວ 124 ເກັບແຍກຕາມໂໝດວິດີໂອ, ດັ່ງນັ້ນ 1080i ແລະ 480i ແຕ່ລະອັນມີການຈັດກາງຂອງມັນເອງ."
@@ -467,6 +455,10 @@
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): ເທເລເມຕຣີ RetroAchievements ຜ່ານໄຄລເອັນ [xeRAbora](https://github.com/hacan359/xerabora) ເທິງຄອມພິວເຕີຂອງເຈົ້າ (ລັອກໄວ້ທີ່ [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), ປ້າຍເທິງເກມທີ່ຕິດຕາມ, ແຜ່ນໃນຖາດ, ແລະ **YOUR ACCOUNT**: ທຸກເກມທີ່ເຈົ້າກວດແລ້ວພ້ອມສິ່ງທີ່ປົດລັອກ, ແລະ ເມື່ອ xeRAbora ເປີດສູ່ເຄືອຂ່າຍ, **LEFT TO HUNT**: ທຸກຜົນງານທີ່ຍັງລັອກ ແລະ ວິທີໄດ້ມັນ."
  },
+ "f1197cf975f9": {
+  "en": "f1197cf975f9",
+  "t": "> ### ມາຣິບກັນ: RIPPS2 ບິວ 157, v1.5.7 ເບຕ້າ"
+ },
  "f55efbafe641": {
   "en": "f55efbafe641",
   "t": "## ຣິບແຜ່ນ"
@@ -479,8 +471,16 @@
   "en": "fc11831770d3",
   "t": "- ວິດີໂອແນະນຳ ແລະ Short ບິວ 83 (ໃນ YouTube) ຖືກຕັດຕາມ Details (x-Radar Portable, ເພງລະບົບ PSP, Sony), Slideshow (Daytime) ຂອງ Kazumi Totaka ຈາກ News Channel ຂອງ Wii (Nintendo, 2006), ແລະ ທີມ Menu ຂອງ PS2 ເອງ (Sony); ວິດີໂອແນະນຳບິວ 66 ຕາມ Slideshow (Daytime); ເພງຂອງວິດີໂອແນະນຳບິວ 55 ເປັນຕົ້ນສະບັບ. ຮູບເກມທີ່ເຫັນໃນການທົດສອບມາຈາກຖານຂໍ້ມູນຮູບ OPL ຂອງຊຸມຊົນ ແລະ ບໍ່ແມ່ນສ່ວນໜຶ່ງຂອງ RIPPS2."
  },
+ "fe0434e51c69": {
+  "en": "fe0434e51c69",
+  "t": "> [ມີຫຍັງໃໝ່ໃນບິວ 157](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.5.7-beta) | [Changelog](CHANGELOG.md) | **[ວິດີໂອ](#videos)** | [ທຸກລຸ້ນ](https://github.com/akilluminati47/RIPPS2/releases) | [ສົນທະນາໃນ psx-place](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
+ },
  "fe207194059a": {
   "en": "fe207194059a",
   "t": "| `bgm_02 Details.ogg` | **Details** | x-Radar Portable, [ເພງລະບົບ PSP](https://en.wikipedia.org/wiki/PlayStation_Portable_system_software) (Sony, 2010): **ເພງປະກອບວິດີໂອ YouTube ຂອງ RIPPS2** ພ້ອມ Slideshow (ວິດີໂອແນະນຳເບຕ້າເປີດດ້ວຍມັນ, ແລະ ວິດີໂອແນະນຳ ແລະ Short ບິວ 83) | ສຳເນົາຂອງເຈົ້າເອງ, ແປງເທິງຄອມພິວເຕີດ້ວຍ [RIPPS2 Media Studio](tools/media-studio) |"
+ },
+ "ff4356898812": {
+  "en": "ff4356898812",
+  "t": "> 1. **[ດາວໂຫຼດ RIPPS2.elf](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (ລຸ້ນໃໝ່ລ່າສຸດສະເໝີ) (ໄຟລ໌ດຽວ, 2.780 KB), ຖ້າຕ້ອງການກໍ **[ຊຸດທີມ](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** (Adapt ແລະ Adapt Rx, ສະບັບ 136: ແຕ່ລະອັນມີການຕັ້ງຄ່າໜຶ່ງ ແລະ ຮູບໜຶ່ງ; RIPGRID ແລະ RIPFLOW ມີຢູ່ໃນຕົວ), ແລະ **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** ເພື່ອໃຊ້ RIPPS2 ເປັນພາສາຂອງເຈົ້າ (33 ພາສາ; ມາພ້ອມທຸກລຸ້ນ)."
  }
 }

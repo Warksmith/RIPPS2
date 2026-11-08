@@ -87,10 +87,6 @@
   "en": "2bb78085b36f",
   "t": "| [A 88-as build Shortja](https://www.youtube.com/shorts/Sqprz22tdtg) | Short | A 88-as build, Slideshow-ra |"
  },
- "2c1c50e84927": {
-  "en": "2c1c50e84927",
-  "t": "> 1. **[Töltsd le a RIPPS2.elf fájlt](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (mindig a legújabb kiadás) (egyetlen fájl, 2775 KB), és ha szeretnéd, a **[témacsomagot](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** (Adapt, Adapt Rx, 136-as kiadás: egy-egy konfiguráció és kép; a RIPGRID és a RIPFLOW beépített), és a **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** csomagot, hogy a RIPPS2 a te nyelveden szóljon (33 nyelv; minden kiadás tartalmazza)."
- },
  "2f0ee80297df": {
   "en": "2f0ee80297df",
   "t": "- A **MEMORY FILES** beépített fájlböngésző: másolás, áthelyezés és törlés memóriakártyák, USB, MMCE és a HDD között (minden másolatot visszaolvas és ellenőriz); az OPL VMC kártyaképeit mappaként nyitja meg; PSU-mentéseket exportál és importál; szöveges fájlokat szerkeszt; képeket nyit meg, AVI-videót játszik le **teljes képernyőn** **lejátszógombokkal** (a Cross lejátszás/szünet, a Circle leállítás, az L1/R1 10 mp-es ugrás, az L2/R2 hangerő, a START ismétlés; a súgók lejátszás közben elhalványulnak, szünetben megmaradnak) (a [RIPPS2 Media Studio](tools/media-studio) bármilyen videót, egy telefon MP4-ét is ilyenné alakítja), és `.mp3`, `.ogg` meg `.wav` fájlokat játszik le, vagy jelölj ki többet és nyisd meg együtt, hogy egy lemezként szóljanak a Launch Disc CD-lejátszójában; egy **`.tar` kék mappa**, amelyet megnyithatsz, képeket illeszthetsz bele és elemeket másolhatsz ki belőle (125-ös build); a Háromszög egy `.tar` fájlon egy másik ART `.tar` fájlt olvaszt bele ([lent](#covers-from-one-file-art-pack)). A **megnyitott mappa az első sor**, benne a bejegyzések száma, a kijelöltek száma, a teljes méret és a meghajtó szabad helye; a Cross vagy a Square rajta mindent kijelöl (vagy, ha van kijelölt, semmit). A START megnyitja a beállításait, ahol a **SEARCH FILES** név szerint megtalál bármely fájlt vagy mappát minden elindított meghajtón, és ott nyitja meg a fát, ahol van. A Square egy memóriakártyán megnyitja a **CARD MANAGER** eszközt (kártya mentése VMC-be, egy VMC mentéseinek visszaírása kártyára, a játékmentések törlése, formázás), a Square az APA HDD-n pedig a **HDD MANAGER** eszközt (a partíciói, méreteik, és egy partíció eltávolítása a partíciós tábla teljes ellenőrzése után)."
@@ -106,10 +102,6 @@
  "324016ff9971": {
   "en": "324016ff9971",
   "t": "**Manópolc:** a Storage kirakata. Az uOPL fapallója a tornyok előtt, rajta a RIPPS2-jel tízszer: egy halott manó filckalapja, karimával lefelé a saját vértócsájában, minden Color Theme-hez egy (RIPPS2, Ember, Blood, Ectoplasm, Amethyst, Bone, Tangerine, Flamingo, Turquoise, Moonlight). Egyszerre három látszik, ahogy a RIPFLOW a borítókat mutatja: a középső a mutató felé fordul (minél közelebb van, annál gyorsabban fordul), és rugózik a rugóján, a Left / Right vagy egy érintés valamelyik szomszédon pedig elforgatja a polcot. A kék RIPPS2-kalapon áll meg. Egy megnyomott kalap a Color Theme-jét küldi végig a tornyokon (az ELF saját színmátrixa, így a tornyok úgy néznek ki, ahogy az a téma teszi őket): egy koppintás színlöket, amely átsöpör a mezőn, és visszamossa a RIPPS2 kékjét; nyomva tartva a téma az egész kép fölött marad, amíg el nem engeded."
- },
- "32675f221dd5": {
-  "en": "32675f221dd5",
-  "t": "> ### Rippeld: RIPPS2 build 141, v1.4.1 béta"
  },
  "376d12fba45e": {
   "en": "376d12fba45e",
@@ -371,10 +363,6 @@
   "en": "c2409d3b212c",
   "t": "| ✕ | Megerősítés | `confirm.adp` | **Menu sound 5** |"
  },
- "c8222b627615": {
-  "en": "c8222b627615",
-  "t": "> [Újdonságok a 141-ös buildben](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.4.1-beta) | [Changelog](CHANGELOG.md) | **[Videók](#videos)** | [Minden kiadás](https://github.com/akilluminati47/RIPPS2/releases) | [Beszélgess róla a psx-place-en](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
- },
  "c8eb072f3f8f": {
   "en": "c8eb072f3f8f",
   "t": "- **A kép ott, ahol a tévéd szeretné.** Settings > Interface > Screen: Video Mode (720p-ig és 1080i-ig), Widescreen, valamint a H-POS, a V-POS és az Overscan, amelyeket a 124-es buildtől videómódonként külön tárol, így az 1080i és a 480i is megtartja a saját középre igazítását."
@@ -467,6 +455,10 @@
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): RetroAchievements-telemetria a [xeRAbora](https://github.com/hacan359/xerabora) kliensen keresztül a gépeden (a [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18) verzióhoz rögzítve), jelvények a követett játékokon, a tálcán lévő lemez, és a **YOUR ACCOUNT**, minden ellenőrzött játék azzal, amit feloldottál, és ha a xeRAbora nyitva van a hálózat felé, a **LEFT TO HUNT**: minden zárolt teljesítmény, és hogyan szerezheted meg."
  },
+ "f1197cf975f9": {
+  "en": "f1197cf975f9",
+  "t": "> ### Rippeld: RIPPS2 build 157, v1.5.7 béta"
+ },
  "f55efbafe641": {
   "en": "f55efbafe641",
   "t": "## Rippelj egy lemezt"
@@ -479,8 +471,16 @@
   "en": "fc11831770d3",
   "t": "- A 83-as build reelje és Shortja (YouTube-on) a Details (x-Radar Portable, PSP rendszerzene, Sony), Kazumi Totaka Slideshow (Daytime) darabja a Wii News Channel csatornájáról (Nintendo, 2006) és a PS2 saját Menu témája (Sony) alá készült; a 66-os build reelje a Slideshow (Daytime) alá; az 55-ös build reeljének zenéje eredeti. A tesztekben látható játékképek a közösségi OPL-képadatbázisból származnak, és nem részei a RIPPS2-nek."
  },
+ "fe0434e51c69": {
+  "en": "fe0434e51c69",
+  "t": "> [Újdonságok a 157-ös buildben](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.5.7-beta) | [Changelog](CHANGELOG.md) | **[Videók](#videos)** | [Minden kiadás](https://github.com/akilluminati47/RIPPS2/releases) | [Beszélgess róla a psx-place-en](https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/)<br>"
+ },
  "fe207194059a": {
   "en": "fe207194059a",
   "t": "| `bgm_02 Details.ogg` | **Details** | x-Radar Portable, [PSP rendszerzene](https://en.wikipedia.org/wiki/PlayStation_Portable_system_software) (Sony, 2010): **a RIPPS2 YouTube-videóinak háttérzenéje** a Slideshow-val együtt (a béta reelje ezzel nyit, akárcsak a 83-as build reelje és Shortja) | a saját példányod, a gépeden átalakítva a [RIPPS2 Media Studióval](tools/media-studio) |"
+ },
+ "ff4356898812": {
+  "en": "ff4356898812",
+  "t": "> 1. **[Töltsd le a RIPPS2.elf fájlt](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf)** (mindig a legújabb kiadás) (egyetlen fájl, 2780 KB), és ha szeretnéd, a **[témacsomagot](https://github.com/akilluminati47/RIPPS2-themes/releases/latest)** (Adapt, Adapt Rx, 136-as kiadás: egy-egy konfiguráció és kép; a RIPGRID és a RIPFLOW beépített), és a **[RIPPS2-languages.zip](https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2-languages.zip)** csomagot, hogy a RIPPS2 a te nyelveden szóljon (33 nyelv; minden kiadás tartalmazza)."
  }
 }
