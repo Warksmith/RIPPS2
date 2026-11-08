@@ -8,8 +8,8 @@
 [SIZE=7][B]BIBLE[/B][/SIZE]
 [I]The boot loader RIPPS2 sets up. Signed, bound, and starting real PS2s.[/I]
 
-[URL='https://github.com/akilluminati47/BIBLE/releases/latest'][B]Signed builds and plain ELFs[/B][/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2.elf (installs it for you)[/URL]  |  [URL='https://github.com/akilluminati47/BIBLE#readme']Every setting[/URL]  |  [URL='https://github.com/akilluminati47/BIBLE']Source (GPL-3)[/URL]  |  [URL='https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/']RIPPS2's thread[/URL]
-[SIZE=2]Current: BIBLE 3282396, carried by RIPPS2 v1.4.1 beta[/SIZE][/CENTER]
+[URL='https://github.com/akilluminati47/BIBLE/releases/latest'][B]Signed builds and plain ELFs[/B][/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2.elf (installs it for you)[/URL]  |  [URL='https://akilluminati47.github.io/BIBLE/']Website[/URL]  |  [URL='https://github.com/akilluminati47/BIBLE#readme']Every setting[/URL]  |  [URL='https://github.com/akilluminati47/BIBLE']Source (GPL-3)[/URL]  |  [URL='https://www.psx-place.com/threads/ripps2-a-ps2-front-end-in-one-elf-launch-disc-storage-memory-files.51316/']RIPPS2's thread[/URL]
+[SIZE=2]Current: BIBLE a060790, carried by RIPPS2 v1.5.7 beta[/SIZE][/CENTER]
 
 [SIZE=3]BIBLE is akilluminati47's boot loader: a fork of saildot4k's [URL='https://github.com/saildot4k/PlayStation2-Basic-BootLoader-Extended']PS2BBL Extended[/URL], itself built on El Isra's [URL='https://github.com/israpps/PlayStation2-Basic-BootLoader']PS2BBL[/URL]. It sits on your memory card as the console's system update (or in the internal HDD's boot area) and, at power on, starts what you chose, RIPPS2 first. [B]Every build is signed by akilluminati47[/B], with kelftool on their own PC: nobody else's keys, nobody else's signing.[/SIZE]
 
@@ -49,7 +49,7 @@ Hold [B]TRIANGLE + CROSS[/B] at power on for the video mode page. It always open
 
 [SIZE=5][B]Made to start RIPPS2[/B][/SIZE]
 [LIST]
-[*][LEFT][B]The boot sound, primed[/B]: with RIPPS2's Boot Sound On (fast), boot.adp sits beside BIBLE's settings on the card and is read before any drive starts. No sound file is the fastest boot.[/LEFT]
+[*][LEFT][B]The boot sound, read first[/B]: with RIPPS2's Boot Sound On (fast), boot.adp sits beside BIBLE's settings on the card and is read before any drive starts. No sound file is the fastest boot.[/LEFT]
 [*][LEFT][B]Video modes up to 1080i[/B]: AUTO (RIPPS2's own mode), NTSC, PAL, 480p, 576p, 720p and 1080i, with widescreen for the 4:3 ones.[/LEFT]
 [*][LEFT][B]Four builds[/B]: memory card (memory cards and USB), MMCE (SD2PSX and MemCard PRO 2), MX4SIO, and the internal HDD's boot area.[/LEFT]
 [/LIST]
@@ -68,7 +68,7 @@ Hold [B]TRIANGLE + CROSS[/B] at power on for the video mode page. It always open
 [SIZE=2]A memory card KELF only starts once a console has bound it to that card: Manage and KELFBinder do this as they install it. Copying the file onto a card by hand does not make it boot. The binding is the console's own MechaCon at work; RIPPS2 boots KELFBinder's IOPRP image for that step and holds no keys.[/SIZE]
 
 [SIZE=5][B]Its settings[/B][/SIZE]
-One text file on the card, [B]mc?:/SYS-CONF/PS2BBL.INI[/B] (read first; else PS2BBL/CONFIG.INI on a card, USB, MMCE or the HDD). RIPPS2's Manage writes it and its BIBLE menu changes it, one line at a time, keeping your notes; Memory Files opens it as text. Lines starting with # are notes, and every key is optional.
+One text file on the card, [B]PS2BBL.INI[/B] in the card's system folder for this console's region (mc?:/B?EXEC-SYSTEM), read first; then the other regions' system folders, then [B]mc?:/SYS-CONF/PS2BBL.INI[/B] for a card set up before; else PS2BBL/CONFIG.INI on a card, USB, MMCE or the HDD. RIPPS2's Manage writes it and its BIBLE menu changes it, one line at a time, keeping your notes; Memory Files opens it as text. Lines starting with # are notes, and every key is optional.
 [TABLE]
 [TR][TH]Key[/TH][TH]In RIPPS2's menu[/TH][TH]What it does[/TH][/TR]
 [TR][TD]KEY_READ_WAIT_TIME[/TD][TD]Power-on Wait[/TD][TD]How long (ms) a button held at power on can pick its entry; 0 is allowed[/TD][/TR]
@@ -89,6 +89,8 @@ One text file on the card, [B]mc?:/SYS-CONF/PS2BBL.INI[/B] (read first; else PS2
 [TR][TD]SCPH-39001 (USA, fat)[/TD][TD]SD2PSX BOOT card, slot 0[/TD][TD]MMCE build a1ffb0b, bound by KELFBinder[/TD][TD]BIBLE's splash, then RIPPS2[/TD][/TR]
 [TR][TD]the same[/TD][TD]the same[/TD][TD]a1ffb0b, bound by RIPPS2 1.3.8's Manage[/TD][TD]BIBLE's splash, then RIPPS2[/TD][/TR]
 [TR][TD]the same[/TD][TD]the same[/TD][TD]3282396, bound over it by RIPPS2 1.3.9's UPDATE BIBLE[/TD][TD]BIBLE's splash, then RIPPS2[/TD][/TR]
+[TR][TD]the same[/TD][TD]the same[/TD][TD]f5705eb, bound by RIPPS2's Manage; an AUTO path to a missing file[/TD][TD]Bound on the first try; BIBLE went on to the next path[/TD][/TR]
+[TR][TD]Not yet[/TD][TD][/TD][TD]a060790, the current build (it differs from f5705eb only in where it reads its settings)[/TD][TD]Your reports count[/TD][/TR]
 [TR][TD]the same[/TD][TD]the same[/TD][TD]Power-on Wait 0 ms, Button Glyphs None and Background Black set from the BIBLE menu[/TD][TD]Written to the settings file[/TD][/TR]
 [/TABLE]
 [B]Wanted most[/B]: a genuine Sony memory card, a MemCard PRO 2, MX4SIO, the HDD build, slims, PAL and Japanese consoles. Tell us here or [URL='https://github.com/akilluminati47/RIPPS2/issues']open an issue[/URL] with your console model, your card and a photo of anything odd.
@@ -103,6 +105,8 @@ One text file on the card, [B]mc?:/SYS-CONF/PS2BBL.INI[/B] (read first; else PS2
 [/LIST]
 
 [SPOILER="Changes"]
+[B]a060790[/B] (with RIPPS2 1.5.7): one settings file on a card, read from this console's region folder first, then the other regions', then SYS-CONF; a new card icon, remade in Blender. BIBLE now has one release that rolls: [URL='https://github.com/akilluminati47/BIBLE/releases/latest']releases/latest[/URL].
+[B]f5705eb[/B] (never released on its own; a060790 carries its fixes): a missing file on an AUTO path no longer stops the boot on the splash; BIBLE no longer reads boot.adp into memory (RIPPS2 reads it), about 0.8 s faster to the towers.
 [B]3282396[/B] (with RIPPS2 1.3.9): BIBLE_BACKGROUND, boot.adp beside BIBLE's settings (its hand-off to RIPPS2 in memory has passed in the lab only), RIPPS2 first in the built-in defaults, RIPPS2's settings read from mc?:/RIPPS2 when RIPPS2 lives on an SD2PSX, USB or the HDD.
 [B]a1ffb0b[/B] (with RIPPS2 1.3.8): the MMCE and MX4SIO builds start again (f31c8d5's waited on a memory card driver that never loaded: a black screen at power on).
 [B]f31c8d5[/B] (with RIPPS2 1.3.4): the first signed BIBLE: its splash, the launch keys and video mode pages, the HD modes and widescreen.
