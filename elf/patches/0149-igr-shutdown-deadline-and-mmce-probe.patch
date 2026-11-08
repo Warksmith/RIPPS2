@@ -1,0 +1,189 @@
+diff --git a/.github/scripts/test_neutrino_argv_budget.py b/.github/scripts/test_neutrino_argv_budget.py
+index d4b24e9..ea02521 100644
+--- a/.github/scripts/test_neutrino_argv_budget.py
++++ b/.github/scripts/test_neutrino_argv_budget.py
+@@ -103,6 +103,7 @@ static int convertCompatmaskToModes(int mask) { return mask; }
+ static const char *_l(int id) { lastWarning = id; return ""; }
+ static void guiWarning(const char *msg, int secs) { (void)msg; (void)secs; }
+ static void launchDiagRefuse(int reason) { (void)reason; refuses++; }
++static void ripps2DiagBeforeLaunch(void) {}
+ static void ripps2Diag(const char *fmt, ...) { (void)fmt; } /* RIPPS2 build 115: the hardware log */
+ static void launchDiagMark(int stage) { (void)stage; }
+ static int sysLoadELFKeepIOP(const char *path, const char *args, int argc, char **argv)
+diff --git a/ee_core/src/cd_igr_rpc.c b/ee_core/src/cd_igr_rpc.c
+index 252681d..2ede8b3 100644
+--- a/ee_core/src/cd_igr_rpc.c
++++ b/ee_core/src/cd_igr_rpc.c
+@@ -5,21 +5,45 @@
+ 
+ #include "cd_igr_rpc.h"
+ 
++/* These must outlive a timed-out request: SIF can still complete it while
++ * the caller begins the IOP reset. Never leave its client on a dead stack. */
++static SifRpcClientData_t igrClient __attribute__((aligned(64)));
++static s32 igrPoweroff __attribute__((aligned(64)));
++
++static u32 igrTicks(void)
++{
++    u32 ticks;
++    __asm__ __volatile__("mfc0 %0, $9"
++                         : "=r"(ticks));
++    return ticks;
++}
++
++static int igrWait(u32 start)
++{
++    do {
++        /* COP0 Count keeps running with the game threads/interrupts stopped. */
++        if ((u32)(igrTicks() - start) >= 2 * 294912000u)
++            return -1;
++    } while (SifCheckStatRpc(&igrClient));
++    return 0;
++}
++
+ int oplIGRShutdown(int poff)
+ {
+-    SifRpcClientData_t _igr_cd __attribute__((aligned(64)));
++    u32 start = igrTicks();
+     int r;
+-    s32 poffData __attribute__((aligned(64)));
+-
+-    _igr_cd.server = NULL;
+-    while ((r = SifBindRpc(&_igr_cd, 0x80000598, 0)) >= 0 && (!_igr_cd.server))
+-        nopdelay();
+ 
+-    if (r < 0)
+-        return -E_SIF_RPC_BIND;
++    igrClient.server = NULL;
++    do {
++        r = SifBindRpc(&igrClient, 0x80000598, SIF_RPC_M_NOWAIT);
++        if (r < 0 || igrWait(start) < 0)
++            return -E_SIF_RPC_BIND;
++    } while (!igrClient.server);
+ 
+-    *(s32 *)UNCACHED_SEG(&poffData) = poff;
+-    if (SifCallRpc(&_igr_cd, 1, SIF_RPC_M_NOWBDC, &poffData, sizeof(poffData), NULL, 0, NULL, NULL) < 0)
++    *(s32 *)UNCACHED_SEG(&igrPoweroff) = poff;
++    if (SifCallRpc(&igrClient, 1, SIF_RPC_M_NOWAIT | SIF_RPC_M_NOWBDC,
++                   &igrPoweroff, sizeof(igrPoweroff), NULL, 0, NULL, NULL) < 0 ||
++        igrWait(start) < 0)
+         return -E_SIF_RPC_CALL;
+ 
+     return 0;
+diff --git a/src/mmcesupport.c b/src/mmcesupport.c
+index 0773ab9..7ab1e91 100644
+--- a/src/mmcesupport.c
++++ b/src/mmcesupport.c
+@@ -160,13 +160,28 @@ void mmceReturnArgs(char *args)
+     }
+ }
+ 
++static int mmceGameIDPresent(const char *device)
++{
++    // Launch-time pad/file traffic can lose one ping just as it can during
++    // refresh. Do not silently disarm restoration on that single reply.
++    for (int probe = 0; probe < MMCE_PRESENCE_PROBE_MAX; probe++) {
++        if (fileXioDevctl(device, 0x1, NULL, 0, NULL, 0) >= 0)
++            return 1;
++        if (probe + 1 < MMCE_PRESENCE_PROBE_MAX)
++            DelayThread(MMCE_PRESENCE_RETRY_US);
++    }
++    return 0;
++}
++
+ int mmceGameIDSlot(int vmcSlotMask)
+ {
+     char preferred[8];
+     const char *candidates[3];
+     int tried = 0, i;
+-    if (!gMMCEEnableGameID || !mmceModLoaded)
++    if (!gMMCEEnableGameID || !mmceModLoaded) {
++        ripps2Diag("IGR: MMCE slot unavailable: GameID=%d, transport=%d", gMMCEEnableGameID, mmceModLoaded);
+         return -1;
++    }
+     mmceGetDeviceRoot(preferred, sizeof(preferred));
+     candidates[0] = preferred;
+     candidates[1] = "mmce0:/";
+@@ -179,9 +194,10 @@ int mmceGameIDSlot(int vmcSlotMask)
+         if (slot < 0 || slot > 1 || ((tried | vmcSlotMask) & (1 << slot)))
+             continue;
+         tried |= 1 << slot;
+-        if (fileXioDevctl(candidates[i], 0x1, NULL, 0, NULL, 0) >= 0)
++        if (mmceGameIDPresent(candidates[i]))
+             return slot;
+     }
++    ripps2Diag("IGR: no responding MMCE slot; VMC mask=%d", vmcSlotMask);
+     return -1;
+ }
+ 
+@@ -235,7 +251,7 @@ int mmceSendGameID(const char *startup, const char *protectMcPath, int vmcSlotMa
+                 LOG("MMCE GameID: slot %d covered by a -mc%d VMC arg -- not switching that card\n", slot, slot);
+                 continue;
+             }
+-            if (fileXioDevctl(cands[c], 0x1, NULL, 0, NULL, 0) != -1) {
++            if (mmceGameIDPresent(cands[c])) {
+                 if (cands[c] != mmceDevice)
+                     snprintf(mmceDevice, sizeof(mmceDevice), "%s", cands[c]);
+                 found = 1;
+@@ -280,6 +296,7 @@ int mmceSendGameID(const char *startup, const char *protectMcPath, int vmcSlotMa
+                  exact ? previousCard : 0, exact ? previousChannel : 0);
+         memcpy(mmcePrevious + 1 + (mmceDevice[4] - '0') * MMCE_RETURN_SLOT_SIZE,
+                record, MMCE_RETURN_SLOT_SIZE);
++        ripps2Diag("IGR: native %s restore record=%s", mmceDevice, record);
+     }
+ 
+     // Remember the slot this send actually targeted -- mmceGameIdSettle() (the MX4SIO pre-launch
+@@ -1648,6 +1665,8 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
+     // paths (bdm/hdd/eth) send it too, with the same wait.
+ 
+     if (gAutoLaunchBDMGame == NULL) {
++        ripps2Diag("IGR: native restore armed=%d, capture=%s, explicit slots=%d", mmceReturnNeeded(), mmcePrevious, gMMCEIGRSlot);
++        ripps2DiagBeforeLaunch();
+         deinit(NO_EXCEPTION, MMCE_MODE); // CAREFUL: deinit will call mmceCleanUp, so mmceGames/game will be freed
+     }
+ 
+diff --git a/src/system.c b/src/system.c
+index d8638ff..1719eec 100644
+--- a/src/system.c
++++ b/src/system.c
+@@ -2447,6 +2447,8 @@ static void sysPrepareNeutrinoIgr(const char *path, const char *startup, int com
+     sysIgrDeferred = 0;
+     snprintf(sysIgrForPath, sizeof(sysIgrForPath), "%s", path);
+     snprintf(sysIgrForGame, sizeof(sysIgrForGame), "%s", startup ? startup : "");
++    ripps2Diag("IGR: Neutrino supports return=%d, MMCE restore=%d; Mode 6=%d",
++               sysNeutrinoTakes(path, NF_IGR), sysNeutrinoTakes(path, NF_MMCE_GAMEID), !!(compatmask & COMPAT_MODE_6));
+     if ((compatmask & COMPAT_MODE_6) || !sysNeutrinoTakes(path, NF_IGR))
+         return;
+ 
+@@ -2471,8 +2473,10 @@ static void sysPrepareNeutrinoIgr(const char *path, const char *startup, int com
+         sysIgrDeferred = 1;
+         return;
+     }
+-    if (!sysStartupShapeOk(startup))
++    if (!sysStartupShapeOk(startup)) {
++        ripps2Diag("IGR: MMCE handoff skipped: invalid startup ID");
+         return;
++    }
+     if (vmc != NULL)
+         vmcMask = (vmc->arg[0][0] ? 1 : 0) | (vmc->arg[1][0] ? 2 : 0);
+     // Raw VMC arguments must protect their physical slots as well.
+@@ -2485,6 +2489,7 @@ static void sysPrepareNeutrinoIgr(const char *path, const char *startup, int com
+         return;
+     snprintf(sysIgrGameArg, sizeof(sysIgrGameArg), "-mmce_gameid=%d:%s", slot, startup);
+     sysIgrDeferred = 1;
++    ripps2Diag("IGR: Neutrino armed %s", sysIgrGameArg);
+ }
+ 
+ static int sysRunNeutrinoLaunch(const char *driver, const char *path, const char *startup, int compatmask, int EnablePS2Logo, const char *neutrinoPath, const char *extraArgs, int neutrinoVideo, int neutrinoGsmComp, int neutrinoBsdfs, int bdDevNr, const neutrino_vmc_args_t *vmcArgs, int checkOnly)
+@@ -2794,8 +2799,10 @@ static int sysRunNeutrinoLaunch(const char *driver, const char *path, const char
+         }
+     }
+ 
+-    if (checkOnly)
++    if (checkOnly) {
++        ripps2DiagBeforeLaunch(); // persist the IGR decision before any card switch or teardown
+         return sysNeutrinoConfirmArgv(argc, argv) ? 0 : NEUTRINO_LAUNCH_DECLINED;
++    }
+ 
+     // Log the FULL argv (not just bsd/dvd/compat) so the VMC -mc args are verifiable on hardware (#47).
+     LOG("[NEUTRINO] elf=%s argc=%d\n", neutrinoPath, argc);

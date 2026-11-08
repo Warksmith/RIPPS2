@@ -1,0 +1,237 @@
+diff --git a/src/udpfslist.c b/src/udpfslist.c
+--- a/src/udpfslist.c
++++ b/src/udpfslist.c
+@@ -1,6 +1,8 @@
+ #include "include/opl.h"
+ #include "include/udpfslist.h"
+ #include "include/folderbrowse.h"
++#include "include/ioman.h"
++#include "include/ripps2.h"
+ #include <errno.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -9,6 +11,158 @@
+ 
+ int ioScanCancelled(void);
+ 
++/* A hint cache, never a saved catalogue: always enumerate the server and check
++   DREAD's exact path, 64-bit size and timestamp before reusing an ID. Keeping it
++   on the share scopes it to that library, including auto-discovered servers.
++   Separate from OPL's games.bin and RIPPS2.LST, which cannot store exact paths. */
++#define UDPFS_ID_CACHE "RIPPS2.UID"
++#define UDPFS_ID_MAGIC "RIPUID01"
++#define UDPFS_ID_MAX 4096
++
++typedef struct
++{
++    udpfs_game_file_t file;
++    char startup[GAME_STARTUP_MAX + 1];
++} udpfs_id_entry_t;
++
++typedef struct
++{
++    char magic[8];
++    unsigned int count, entrySize, checksum;
++} udpfs_id_header_t;
++
++static unsigned int udpfsIdChecksum(const void *data, size_t bytes)
++{
++    const unsigned char *p = data;
++    unsigned int sum = 2166136261u;
++    while (bytes--)
++        sum = (sum ^ *p++) * 16777619u;
++    return sum;
++}
++
++static int udpfsIdCompare(const void *a, const void *b)
++{
++    const udpfs_id_entry_t *left = a, *right = b;
++    return strcmp(left->file.path, right->file.path);
++}
++
++static int udpfsIdPath(const char *prefix, char *path, int size)
++{
++    int n = snprintf(path, size, "%s%s", prefix, UDPFS_ID_CACHE);
++    return n >= 0 && n < size;
++}
++
++static udpfs_id_entry_t *udpfsLoadIds(const char *prefix, int *count)
++{
++    char path[256];
++    udpfs_id_header_t header;
++    udpfs_id_entry_t *entries = NULL;
++    FILE *file;
++    unsigned int i;
++    int ok = 0;
++    *count = 0;
++    if (!gRipps2FastCache || !udpfsIdPath(prefix, path, sizeof(path)))
++        return NULL;
++    file = fopen(path, "rb");
++    if (file == NULL)
++        return NULL;
++    if (fread(&header, sizeof(header), 1, file) != 1 ||
++        memcmp(header.magic, UDPFS_ID_MAGIC, sizeof(header.magic)) ||
++        header.entrySize != sizeof(*entries) || !header.count || header.count > UDPFS_ID_MAX)
++        goto done;
++    entries = malloc(header.count * sizeof(*entries));
++    if (entries == NULL || fread(entries, sizeof(*entries), header.count, file) != header.count ||
++        fgetc(file) != EOF || ferror(file) ||
++        udpfsIdChecksum(entries, header.count * sizeof(*entries)) != header.checksum)
++        goto done;
++    for (i = 0; i < header.count; i++) {
++        if (!entries[i].file.path[0] || !memchr(entries[i].file.path, 0, sizeof(entries[i].file.path)) ||
++            !entries[i].startup[0] || !memchr(entries[i].startup, 0, sizeof(entries[i].startup)))
++            goto done;
++    }
++    qsort(entries, header.count, sizeof(*entries), udpfsIdCompare);
++    for (i = 1; i < header.count; i++)
++        if (!strcmp(entries[i - 1].file.path, entries[i].file.path))
++            goto done;
++    ok = 1;
++done:
++    if (fclose(file) != 0)
++        ok = 0;
++    if (!ok) {
++        free(entries);
++        return NULL;
++    }
++    *count = header.count;
++    return entries;
++}
++
++static const char *udpfsFindId(const udpfs_id_entry_t *entries, int count,
++                               const udpfs_game_file_t *file)
++{
++    int low = 0, high = count;
++    /* Unknown timestamps/sizes cannot establish that an image is unchanged. */
++    if (!file->bytes || !file->modified)
++        return NULL;
++    while (low < high) {
++        int mid = low + (high - low) / 2;
++        int cmp = strcmp(file->path, entries[mid].file.path);
++        if (!cmp)
++            return file->bytes == entries[mid].file.bytes && file->modified == entries[mid].file.modified
++                       ? entries[mid].startup : NULL;
++        if (cmp < 0)
++            high = mid;
++        else
++            low = mid + 1;
++    }
++    return NULL;
++}
++
++static void udpfsSaveIds(const char *prefix, const base_game_info_t *games,
++                         const udpfs_game_file_t *files, int count,
++                         const udpfs_id_entry_t *old, int oldCount)
++{
++    char path[256];
++    udpfs_id_header_t header = {0};
++    udpfs_id_entry_t *entries;
++    FILE *file;
++    int i, used = 0;
++    if (!gRipps2FastCache || !gEnableWrite || ioScanCancelled() || count <= 0 || count > UDPFS_ID_MAX ||
++        !udpfsIdPath(prefix, path, sizeof(path)))
++        return;
++    entries = calloc(count, sizeof(*entries));
++    if (entries == NULL)
++        return; // cache failures must never prevent publishing a good scan
++    for (i = 0; i < count; i++) {
++        if (games[i].format != GAME_FORMAT_ISO || !files[i].bytes || !files[i].modified)
++            continue; // legacy filenames already contain the ID; never cache folders
++        strcpy(entries[used].file.path, files[i].path);
++        entries[used].file.bytes = files[i].bytes;
++        entries[used].file.modified = files[i].modified;
++        strcpy(entries[used++].startup, games[i].startup);
++    }
++    qsort(entries, used, sizeof(*entries), udpfsIdCompare);
++    if (!used || (used == oldCount && !memcmp(entries, old, used * sizeof(*entries))))
++        goto done;
++    if (!ioWriteBegin())
++        goto done;
++    memcpy(header.magic, UDPFS_ID_MAGIC, sizeof(header.magic));
++    header.count = used;
++    header.entrySize = sizeof(*entries);
++    header.checksum = udpfsIdChecksum(entries, used * sizeof(*entries));
++    /* UDPFS has no rename operation. A truncated/interrupted write is rejected
++       by exact length and checksum on the next load; images remain authoritative.
++       No negative IDs are saved, so unreadable images are always tried again. */
++    file = fopen(path, "wb");
++    if (file != NULL) {
++        if (fwrite(&header, sizeof(header), 1, file) == 1)
++            (void)fwrite(entries, sizeof(*entries), used, file);
++        fclose(file);
++    }
++    ioWriteEnd();
++done:
++    free(entries);
++}
++
+ typedef struct
+ {
+     unsigned long long bytes, modified;
+@@ -87,6 +241,8 @@
+     udpfs_scan_dir_t *directories;
+     const base_game_info_t *oldGames;
+     const udpfs_game_file_t *oldFiles;
++    const udpfs_id_entry_t *ids;
++    int idCount;
+     int oldCount, count, browse;
+     const char *sub;
+ } udpfs_scan_t;
+@@ -149,6 +305,7 @@
+         if (legacy) {
+             memcpy(node->game.startup, name, GAME_STARTUP_MAX - 1);
+         } else {
++            const char *cached;
+             for (i = 0; i < scan->oldCount; i++)
+                 if (!strcmp(scan->oldFiles[i].path, path) &&
+                     scan->oldFiles[i].bytes == node->file.bytes &&
+@@ -157,6 +314,8 @@
+                     break;
+             if (i < scan->oldCount)
+                 strcpy(node->game.startup, scan->oldGames[i].startup);
++            else if ((cached = udpfsFindId(scan->ids, scan->idCount, &node->file)) != NULL)
++                strcpy(node->game.startup, cached);
+             else if (!sbIsoStartup(path, node->game.startup, sizeof(node->game.startup))) {
+                 free(node);
+                 return 0; // not a PS2 disc
+@@ -277,12 +436,15 @@
+     base_game_info_t *newGames = NULL;
+     udpfs_game_file_t *newFiles = NULL;
+     udpfs_scan_node_t *node;
++    udpfs_id_entry_t *ids;
+     int result, i = 0;
+     scan.oldGames = *games;
+     scan.oldFiles = *files;
+     scan.oldCount = *count;
+     scan.browse = browse;
+     scan.sub = browse && sub != NULL ? sub : "";
++    ids = udpfsLoadIds(prefix, &scan.idCount);
++    scan.ids = ids;
+ 
+     if (scan.sub[0]) {
+         char path[256];
+@@ -300,6 +462,8 @@
+     } else {
+         result = udpfsScanDirectory(&scan, prefix, SCECdPS2DVD, 0, 1, 0);
+     }
++    if (ioScanCancelled())
++        result = -1;
+     if (result == 0 && scan.count > 0) {
+         newGames = malloc(scan.count * sizeof(*newGames));
+         newFiles = malloc(scan.count * sizeof(*newFiles));
+@@ -318,8 +482,14 @@
+         free(newGames);
+         free(newFiles);
+         udpfsFreeDirectories(scan.directories);
++        free(ids);
+         return -1;
+     }
++    // A folder view is only a subset of the share. It can reuse IDs, but must
++    // not replace the complete cache with that subset.
++    if (!browse)
++        udpfsSaveIds(prefix, newGames, newFiles, scan.count, ids, scan.idCount);
++    free(ids);
+     udpfsListReset();
+     udpfsDirectories = scan.directories;
+     free(*games);

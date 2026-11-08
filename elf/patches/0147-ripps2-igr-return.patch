@@ -1,0 +1,853 @@
+diff --git a/.github/scripts/test_neutrino_argv_budget.py b/.github/scripts/test_neutrino_argv_budget.py
+index dafb5a2..cf045b0 100644
+--- a/.github/scripts/test_neutrino_argv_budget.py
++++ b/.github/scripts/test_neutrino_argv_budget.py
+@@ -37,6 +37,13 @@ functions = "\n\n".join(function(sig) for sig in (
+ probe = source[source.index("#define NF_CFG"):source.index("// The -bsdfs Neutrino will actually run with")]
+ functions = probe + "\n\n" + functions
+ 
++# IGR is now part of the actual launch argument composition. Keep its real
++# contract in this harness so the budget includes both return arguments.
++igr = source[source.index("static char sysIgrArg"):source.index("static int sysRunNeutrinoLaunch(")]
++functions = functions.replace("static int sysRunNeutrinoLaunch(",
++                              function("static int neutrinoArgActiveValue(") + "\n" + igr +
++                              "static int sysRunNeutrinoLaunch(", 1)
++
+ declined = re.search(r"^#define NEUTRINO_LAUNCH_DECLINED .*$", source, re.M)
+ assert declined is not None, "missing NEUTRINO_LAUNCH_DECLINED"
+ functions = declined.group(0) + "\n\n" + functions
+@@ -68,6 +75,10 @@ harness = r'''
+ typedef struct { char arg[NEUTRINO_VMC_SLOTS][160]; } neutrino_vmc_args_t;
+ 
+ static char gNeutrinoArgs[256];
++static char gExitPath[256];
++#define COMPAT_MODE_6 32
++static int ripps2GetBootPath(char *p, int n) { snprintf(p, n, "mmce0:/RIPPS2.ELF"); return 1; }
++static int mmceGameIDSlot(int mask) { return (mask & 1) ? -1 : 0; }
+ #ifdef RETROACHIEVEMENTS
+ static char sysNeutrinoRAArg[336], sysNeutrinoRAStartup[32];
+ #endif
+@@ -323,6 +334,22 @@ int main(void)
+     }
+     gNeutrinoArgs[0] = 0;
+ #endif
++    /* The two automatically generated LUNA options are included in the same
++       preview and budget as the final handoff, never appended after validation. */
++    snprintf(sysNeutrinoFlagsFor, sizeof(sysNeutrinoFlagsFor), "mass0:/NEUTRINO/neutrino.elf");
++    sysNeutrinoFlagSet = NF_ALL | NF_IGR | NF_MMCE_GAMEID;
++    gNeutrinoArgs[0] = 0;
++    failures += check("LUNA IGR options", "", "", NULL, 0);
++    sysRunNeutrinoLaunch("usb", "mass0:/DVD/SLUS_123.45.iso", "SLUS_123.45", 0, 0,
++                         "mass0:/NEUTRINO/neutrino.elf", "", 0, 0, 0, 0, NULL, 0);
++    int igrFound = 0, gameidFound = 0;
++    for (int i = 0; i < lastArgc; i++) {
++        igrFound |= !strcmp(lastArgs[i], "-igr=hdd");
++        gameidFound |= !strcmp(lastArgs[i], "-mmce_gameid=0:SLUS_123.45");
++    }
++    if (!igrFound || !gameidFound) failures++;
++    failures += check("LUNA IGR entry count", "-a -b -c -d -e -f -g", "", NULL, -1);
++    failures += check("LUNA IGR byte pool", longArg, "", NULL, -1);
+     return failures ? 1 : 0;
+ }
+ '''
+diff --git a/Makefile b/Makefile
+index e65e609..b61991c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -535,6 +535,7 @@ clean:	download_lwNBD
+ 	$(MAKE) -C modules/iopcore/cdvdfsv clean
+ 	echo " -resetspu"
+ 	$(MAKE) -C modules/iopcore/resetspu clean
++	$(MAKE) -C modules/iopcore/mmceigr clean
+ 	$(MAKE) -C modules/iopcore/freezediag clean
+ 	echo "  -patches"
+ 	echo "   -iremsnd"
+@@ -690,7 +691,10 @@ $(EE_ASM_DIR)mmceman.c: $(MMCE_ASSETS_DIR)/mmceman.irx | $(EE_ASM_DIR)
+ $(EE_ASM_DIR)mmcedrv.c: $(MMCE_ASSETS_DIR)/mmcedrv.irx | $(EE_ASM_DIR)
+ 	$(BIN2C) $< $@ $(*F)_irx
+ 
+-$(EE_ASM_DIR)mmceigr.c: $(MMCE_ASSETS_DIR)/mmceigr.irx | $(EE_ASM_DIR)
++modules/iopcore/mmceigr/mmceigr.irx: modules/iopcore/mmceigr/mmceigr.c modules/iopcore/mmceigr/sio2regs.h
++	$(MAKE) -C modules/iopcore/mmceigr
++
++$(EE_ASM_DIR)mmceigr.c: modules/iopcore/mmceigr/mmceigr.irx | $(EE_ASM_DIR)
+ 	$(BIN2C) $< $@ $(*F)_irx
+ 
+ modules/iopcore/imgdrv/imgdrv.irx: modules/iopcore/imgdrv
+diff --git a/ee_core/include/coreconfig.h b/ee_core/include/coreconfig.h
+index 7d13b4e..ae6d6c1 100644
+--- a/ee_core/include/coreconfig.h
++++ b/ee_core/include/coreconfig.h
+@@ -2,6 +2,7 @@
+ #define EE_CORE_CONFIG_H_
+ 
+ #include <osd_config.h>
++#include "../../include/mmcereturn.h"
+ #define CORE_EXIT_PATH_MAX_LEN      (256)
+ #define CORE_GAME_MODE_DESC_MAX_LEN (16)
+ #define CORE_GAME_ID_MAX_LEN        (16)
+@@ -144,6 +145,8 @@ struct EECoreConfig_t
+        PadMacroSettings, then the launcher's PAD_BLOCK_SIZE-byte block (src/padfile.c), after the modules for the whole
+        game. NULL: no profiles, PADEMU gets its 8 bytes as before. APPENDED, like the above. */
+     char *PadEmuArgs;
++
++    char MmceReturnArgs[MMCE_RETURN_ARG_SIZE];
+ };
+ 
+ #define IGR_MENU_STACK_SIZE (4 * 1024)
+diff --git a/ee_core/src/padhook.c b/ee_core/src/padhook.c
+index cc724c7..23ddc4b 100644
+--- a/ee_core/src/padhook.c
++++ b/ee_core/src/padhook.c
+@@ -181,6 +181,10 @@ static void t_loadElf(void)
+     if (EnableDebug)
+         DBGCOL(0x000080, LOADELF, "Patch prefix check");
+ 
++    SifInitIopHeap();
++    LoadFileInit();
++    sbv_patch_enable_lmb();
++
+     // Apply Sbv patches
+     sbv_patch_disable_prefix_check();
+ 
+@@ -190,6 +194,7 @@ static void t_loadElf(void)
+     // Load basic modules
+     LoadModule("rom0:SIO2MAN", 0, NULL);
+     LoadModule("rom0:MCMAN", 0, NULL);
++    LoadModule("rom0:MCSERV", 0, NULL);
+ 
+     if (config->ExitPath[1] == 'a') { // ie mass:
+         ret = LoadModule("mc0:SYS-CONF/USBD.IRX", 0, NULL);
+@@ -227,7 +232,7 @@ static void t_loadElf(void)
+             DBGCOL(0x0080FF, LOADELF, "ExecPS2() begins");
+ 
+         // Execute BOOT.ELF
+-        ExecPS2((void *)elf.epc, (void *)elf.gp, 1, argv);
++        CleanExecPS2((void *)elf.epc, (void *)elf.gp, 1, argv);
+     }
+ 
+     if (EnableDebug) {
+@@ -538,16 +543,10 @@ static void IGR_Thread(void *arg)
+         LoadOPLModule(OPL_MODULE_ID_RESETSPU, 0, 0, NULL);
+ 
+         if (config->MMCEIGRSettings != 0) {
+-            // Trigger switch to bootcard on MMCE's
+-            char slots[3] = "00";
+-            if ((config->MMCEIGRSettings & 1))
+-                slots[0] = '1';
+-
+-            if ((config->MMCEIGRSettings & 2))
+-                slots[1] = '1';
+-
+-            LoadOPLModule(OPL_MODULE_ID_MMCEDRV, 0, 0, NULL);
+-            LoadOPLModule(OPL_MODULE_ID_MMCEIGR, 0, sizeof(slots), slots);
++            // No MCMAN or game I/O is alive on this clean IOP. Restore the
++            // pre-GameID selection before the boot loader probes the card.
++            LoadOPLModule(OPL_MODULE_ID_MMCEIGR, 0,
++                          sizeof(config->MmceReturnArgs), config->MmceReturnArgs);
+         }
+ 
+ #ifdef IGS
+diff --git a/include/mmcereturn.h b/include/mmcereturn.h
+new file mode 100644
+index 0000000..3837f8b
+--- /dev/null
++++ b/include/mmcereturn.h
+@@ -0,0 +1,8 @@
++#ifndef MMCE_RETURN_H
++#define MMCE_RETURN_H
++/* R + two (mode, four hex card digits, four hex channel digits) + NUL.
++ * Mode 0: untouched, 1: boot card, 2: numbered card/channel. */
++#define MMCE_RETURN_ARG_SIZE 20
++#define MMCE_RETURN_SLOT_SIZE 9
++#define MMCE_RETURN_EMPTY "R000000000000000000"
++#endif
+diff --git a/include/mmcesupport.h b/include/mmcesupport.h
+index f4f6428..87e8427 100644
+--- a/include/mmcesupport.h
++++ b/include/mmcesupport.h
+@@ -3,6 +3,7 @@
+ 
+ #include "include/iosupport.h"
+ #include "include/mcemu.h"
++#include "include/mmcereturn.h"
+ 
+ #define MMCE_MODE_UPDATE_DELAY MENU_UPD_DELAY_GENREFRESH
+ 
+@@ -37,6 +38,10 @@ int mmceCardBusy(void);
+ int mmceModulesLoaded(void);
+ // Arm the GameID transport at menu/settings time (idempotent; no-op when the feature is off).
+ void mmceArmGameIDTransport(void);
++// Probe only; uses the same slot order as mmceSendGameID. -1: no eligible card.
++int mmceGameIDSlot(int vmcSlotMask);
++int mmceReturnNeeded(void);
++void mmceReturnArgs(char *args);
+ // Reset present MMCE cards (SD2PSX/MemCard PRO2) to default channel (Card 1 / Channel 1) and clear GameID.
+ // Called on non-game launches (Apps / Favorites) so homebrew doesn't inherit a per-game VMC.
+ int mmceReset(void);
+diff --git a/include/system.h b/include/system.h
+index ae7f253..8fcecbc 100644
+--- a/include/system.h
++++ b/include/system.h
+@@ -59,6 +59,7 @@ int sysNeutrinoPreflight(const char *driver, const char *neutrinoPath, int neutr
+ // RIPPS2 build 115: the version tag of the Neutrino the last preflight read ("v1.8.0"; "" for one older than 1.8)
+ const char *sysNeutrinoVersionOf(const char *neutrinoPath);
+ void sysNeutrinoWarnPadEmu(config_set_t *configSet);
++int sysNeutrinoDefersGameID(const char *path, const char *startup);
+ 
+ // Compose the exact launch argv while the GUI is still live. Refuses a launch that would exceed
+ // the 14-entry or 256-byte ExecPS2 budget, with a visible warning instead of dropping arguments.
+diff --git a/modules/iopcore/mmceigr/LICENSE b/modules/iopcore/mmceigr/LICENSE
+new file mode 100644
+index 0000000..72a2f07
+--- /dev/null
++++ b/modules/iopcore/mmceigr/LICENSE
+@@ -0,0 +1,21 @@
++MIT License
++
++Copyright (c) 2024 MMCE Authors
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in all
++copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++SOFTWARE.
+diff --git a/modules/iopcore/mmceigr/Makefile b/modules/iopcore/mmceigr/Makefile
+new file mode 100644
+index 0000000..48d1aea
+--- /dev/null
++++ b/modules/iopcore/mmceigr/Makefile
+@@ -0,0 +1,5 @@
++IOP_BIN = mmceigr.irx
++IOP_OBJS = mmceigr.o
++include $(PS2SDK)/Defs.make
++include ../../Rules.bin.make
++include $(PS2SDK)/samples/Makefile.iopglobal
+diff --git a/modules/iopcore/mmceigr/mmceigr.c b/modules/iopcore/mmceigr/mmceigr.c
+new file mode 100644
+index 0000000..3e5256d
+--- /dev/null
++++ b/modules/iopcore/mmceigr/mmceigr.c
+@@ -0,0 +1,156 @@
++/* RIPPS2 MMCE return. PIO transport adapted from ps2-mmce/mmceman
++ * de28936fdf45fe445554cfa0b8f058b05fa8212f, MIT, Copyright 2024 MMCE Authors.
++ * See LICENSE. Register definitions retain their PS2SDK AFL-2.0 notice. */
++#ifndef MMCE_IGR_HOST_TEST
++#include <tamtypes.h>
++#include <irx.h>
++#include <loadcore.h>
++#include "sio2regs.h"
++static inline void delay_us(int us)
++{
++    for (int i = 0; i < us; i++) {
++        for (int j = 0; j < 36; j++) {
++            asm volatile("nop");
++        }
++    }
++}
++
++static int mmce_sio2_tx_rx_pio(int port, u8 tx_size, u8 rx_size, u8 *tx_buf, u8 *rx_buf)
++{
++    //Reset SIO2 + FIFO pointers, disable interrupts
++    inl_sio2_ctrl_set(0xBC);
++
++    //Add transfer to queue
++    inl_sio2_regN_set(0,
++                        TR_CTRL_PORT_NR(port)       |
++                        TR_CTRL_PAUSE(0)            |
++                        TR_CTRL_TX_MODE_PIO_DMA(0)  |
++                        TR_CTRL_RX_MODE_PIO_DMA(0)  |
++                        TR_CTRL_NORMAL_TR(1)        |
++                        TR_CTRL_SPECIAL_TR(0)       |
++                        TR_CTRL_BAUD_DIV(0)         |
++                        TR_CTRL_WAIT_ACK_FOREVER(0) |
++                        TR_CTRL_TX_DATA_SZ(tx_size) |
++                        TR_CTRL_RX_DATA_SZ(rx_size));
++
++    inl_sio2_regN_set(1, 0);
++
++    //Copy data to TX FIFO
++    for (int i = 0; i < tx_size; i++) {
++        inl_sio2_data_out(tx_buf[i]);
++    }
++
++    //Start transfer
++    inl_sio2_ctrl_set(0xB1);
++
++    // A missing/stuck card must not hang IGR indefinitely.
++    int polls = 200000;
++    while ((inl_sio2_stat6c_get() & (1 << 12)) == 0) {
++        if (--polls == 0)
++            return -1;
++        //Polling stat6c too frequently on FATs can cause the SIO2 freeze
++        delay_us(5);
++    }
++
++    //Timeout detected
++    if ((inl_sio2_stat6c_get() & 0x8000) != 0)
++        return -1;
++
++    //Copy data out of RX FIFO
++    for (int i = 0; i < rx_size; i++) {
++        rx_buf[i] = inl_sio2_data_in();
++    }
++
++    return 0;
++}
++
++#endif
++
++static int command(int port, u8 *tx, int txlen, u8 *rx, int rxlen)
++{
++    return mmce_sio2_tx_rx_pio(port, txlen, rxlen, tx, rx) < 0 || rx[1] != 0xaa ? -1 : 0;
++}
++
++// Wait at least two seconds for a deferred switch to start; then require
++// a full second of valid idle replies. Errors never count as "not busy".
++static int settle(int port)
++{
++    u8 tx[3] = {0x8b, 2, 0xff}, rx[6];
++    int i, idle = 0;
++    for (i = 0; i < 120; i++) {
++        delay_us(500000);
++        if (command(port, tx, sizeof(tx), rx, sizeof(rx)) == 0 && rx[3] == 0 && !(rx[4] & 1)) {
++            if (++idle >= 2 && i >= 3)
++                return 0;
++        } else
++            idle = 0;
++    }
++    return -1;
++}
++
++static int hex4(const char *p)
++{
++    int n = 0, i, digit;
++    for (i = 0; i < 4; i++) {
++        digit = p[i] >= '0' && p[i] <= '9' ? p[i] - '0' :
++                p[i] >= 'a' && p[i] <= 'f' ? p[i] - 'a' + 10 : -1;
++        if (digit < 0)
++            return -1;
++        n = (n << 4) | digit;
++    }
++    return n;
++}
++
++static int restore(int port, const char *record)
++{
++    int card = hex4(record + 1), channel = hex4(record + 5);
++    u8 rx[2];
++    u8 tx[8] = {0x8b, 4, 0xff, 0, 0, 0, 0, 0xff};
++    u8 ch[7] = {0x8b, 6, 0xff, 0, 0, 0, 0xff};
++    if (record[0] == '0')
++        return 0;
++    if (card < 0 || channel < 0 || (record[0] != '1' && record[0] != '2'))
++        return -1;
++    if (record[0] == '2' && (card == 0 || card == 0xffff || channel == 0))
++        return -1;
++    tx[3] = record[0] == '1';
++    tx[5] = card >> 8;
++    tx[6] = card;
++    if (command(port, tx, sizeof(tx), rx, sizeof(rx)) < 0 || settle(port) < 0)
++        return -1;
++    if (record[0] == '1')
++        return 0; // boot card chooses its own channel
++    // Use baseline 0x4 + 0x6, not the optional newer combined 0xA command.
++    // SET_CARD resets the channel, so it must settle BEFORE SET_CHANNEL.
++    ch[4] = channel >> 8;
++    ch[5] = channel;
++    return command(port, ch, sizeof(ch), rx, sizeof(rx)) < 0 ? -1 : settle(port);
++}
++
++#ifndef MMCE_IGR_HOST_TEST
++int _start(int argc, char *argv[])
++{
++    u32 state, ctrl1, ctrl2;
++    int i;
++    if (argc < 2 || argv[1] == 0)
++        return MODULE_NO_RESIDENT_END;
++    // Validate the whole fixed-size string before indexing either record.
++    for (i = 0; i < 19 && argv[1][i]; i++) {}
++    if (i != 19 || argv[1][19] != 0 || argv[1][0] != 'R')
++        return MODULE_NO_RESIDENT_END;
++    state = inl_sio2_ctrl_get();
++    for (i = 0; i < 2; i++) {
++        if (argv[1][1 + i * 9] == '0')
++            continue;
++        ctrl1 = inl_sio2_portN_ctrl1_get(i + 2);
++        ctrl2 = inl_sio2_portN_ctrl2_get(i + 2);
++        inl_sio2_portN_ctrl1_set(i + 2, PCTRL0_ATT_LOW_PER(5) | PCTRL0_BAUD0_DIV(2) | PCTRL0_BAUD1_DIV(0xff));
++        inl_sio2_portN_ctrl2_set(i + 2, PCTRL1_ACK_TIMEOUT_AFTER(0xffff) | PCTRL1_WAIT_CYCLES_AFTER_ACK_LOW(5));
++        restore(i + 2, argv[1] + 1 + i * 9);
++        inl_sio2_portN_ctrl1_set(i + 2, ctrl1);
++        inl_sio2_portN_ctrl2_set(i + 2, ctrl2);
++    }
++    inl_sio2_ctrl_set(state | 0xc);
++    return MODULE_NO_RESIDENT_END;
++}
++#endif
+diff --git a/modules/iopcore/mmceigr/sio2regs.h b/modules/iopcore/mmceigr/sio2regs.h
+new file mode 100644
+index 0000000..0c12e3c
+--- /dev/null
++++ b/modules/iopcore/mmceigr/sio2regs.h
+@@ -0,0 +1,202 @@
++/*
++# _____     ___ ____     ___ ____
++#  ____|   |    ____|   |        | |____|
++# |     ___|   |____ ___|    ____| |    \    PS2DEV Open Source Project.
++#-----------------------------------------------------------------------
++# Copyright 2001-2009, ps2dev - http://www.ps2dev.org
++# Licenced under Academic Free License version 2.0
++# Review ps2sdk README & LICENSE files for further details.
++#
++# taken from MX4SIO driver for simplicity.
++# all credits go to maximus32 and qnox
++*/
++#ifndef SIO2REGS_H
++#define SIO2REGS_H
++
++
++// SIO2 registers:
++
++#define SIO2_REL_BASE 0x1F808000
++#define SIO2_SEG      0xA0000000 // Uncached
++#define SIO2_BASE     (SIO2_REL_BASE + SIO2_SEG)
++
++#define SIO2_REG_BASE        (SIO2_BASE + 0x200)
++#define SIO2_REG_PORT0_CTRL1 (SIO2_BASE + 0x240)
++#define SIO2_REG_PORT0_CTRL2 (SIO2_BASE + 0x244)
++#define SIO2_REG_DATA_OUT    (SIO2_BASE + 0x260)
++#define SIO2_REG_DATA_IN     (SIO2_BASE + 0x264)
++#define SIO2_REG_CTRL        (SIO2_BASE + 0x268)
++#define SIO2_REG_STAT6C      (SIO2_BASE + 0x26C)
++#define SIO2_REG_STAT70      (SIO2_BASE + 0x270)
++#define SIO2_REG_STAT74      (SIO2_BASE + 0x274)
++#define SIO2_REG_UNKN78      (SIO2_BASE + 0x278)
++#define SIO2_REG_UNKN7C      (SIO2_BASE + 0x27C)
++#define SIO2_REG_STAT        (SIO2_BASE + 0x280)
++
++#define SIO2_A_QUEUE       (SIO2_BASE + 0x200)
++#define SIO2_A_PORT0_CTRL1 (SIO2_BASE + 0x240)
++#define SIO2_A_PORT0_CTRL2 (SIO2_BASE + 0x244)
++#define SIO2_A_DATA_OUT    (SIO2_BASE + 0x260)
++#define SIO2_A_DATA_IN     (SIO2_BASE + 0x264)
++#define SIO2_A_CTRL        (SIO2_BASE + 0x268)
++#define SIO2_A_STAT6C      (SIO2_BASE + 0x26C)
++#define SIO2_A_CONN_STAT70 (SIO2_BASE + 0x270)
++#define SIO2_A_FIFO_STAT74 (SIO2_BASE + 0x274)
++#define SIO2_A_TX_FIFO_PT  (SIO2_BASE + 0x278)
++#define SIO2_A_RX_FIFO_PT  (SIO2_BASE + 0x27C)
++#define SIO2_A_INTR_STAT   (SIO2_BASE + 0x280)
++
++// Bit-field definitions:
++
++/* /ATT (/CS) HIGH between 2 transfers in the SIO2 transfer queue
++* This value is patched to 0x60 on PS2's w/ PPC-IOPs */
++#define PCTRL0_ATT_LOW_PER(x)      ((((u32)(x)) << 0) & 0xFF)
++#define PCTRL0_ATT_MIN_HIGH_PER(x) ((((u32)(x)) << 8) & 0xFF00)
++#define PCTRL0_BAUD0_DIV(x)        ((((u32)(x)) << 16) & 0xFF0000)
++#define PCTRL0_BAUD1_DIV(x)        ((((u32)(x)) << 24) & 0xFF000000)
++
++/* If CTRL_USE_ACK_WAIT_TIMEOUT is 1, this determines how many clock cycles
++ * the SIO2 will wait for an occurence of /ACK low before aborting the current transfer
++
++ * Ex: Clock of 24MHz, period of ~41ns, PCTRL1_ACK_TIMEOUT_AFTER of 50 =
++    41ns * 50 = 2050ns, The SIO2 will wait 2050ns for /ACK low before timing out */
++#define PCTRL1_ACK_TIMEOUT_AFTER(x)  ((((u32)(x)) << 0) & 0xFFFF)
++
++/* Note: PCTRL1_WAIT_CYCLES_AFTER_ACK_LOW:
++ * The time between /ACK falling edge -> next /CLK falling edge in clock cycles.
++ * FATs appear to have a ~120ns delay between the rising edge of
++ * the last clock to the start of /ACK low sampling, making the total
++ * time between 2 bytes closer to ~120ns + (WAIT_CYCLES_AFTER_ACK_LOW * clock cycles)
++ *
++ * PS2's w/ PPC-IOPs appear to start /ACK low sampling after 41ns (or 1 * 24MHz clock cycle)
++ * but seem to have a minimum time between the /ACK falling edge -> next /CLK falling edge */
++#define PCTRL1_WAIT_CYCLES_AFTER_ACK_LOW(x)   ((((u32)(x)) << 16) & 0xFF0000)
++#define PCTRL1_UNK24(x)            ((((u32)(x))&1) << 24)
++#define PCTRL1_IF_MODE_SPI_DIFF(x) ((((u32)(x))&1) << 25)
++
++#define TR_CTRL_PORT_NR(x)          ((((u32)(x))&0x3) << 0)
++#define TR_CTRL_PAUSE(x)            ((((u32)(x))&1) << 2)
++#define TR_CTRL_UNK03(x)            ((((u32)(x))&1) << 3)
++// Each of the folowing is 0 for PIO transfer in the given direction. to select DMA, set to 1.
++#define TR_CTRL_TX_MODE_PIO_DMA(x)  ((((u32)(x))&1) << 4)
++#define TR_CTRL_RX_MODE_PIO_DMA(x)  ((((u32)(x))&1) << 5)
++/*
++normal    special
++0            0                no transfer done(???)
++1            0                normal transfer - usually used
++0            1                "special" transfer (not known to have been ever used by anything, no known difference from normal).
++1            1                no transfer takes place
++*/
++#define TR_CTRL_NORMAL_TR(x)        (((u32)((x))&1) << 6)
++#define TR_CTRL_SPECIAL_TR(x)       (((u32)((x))&1) << 7)
++// In bytes 0 - 0x100:
++#define TR_CTRL_TX_DATA_SZ(x)       ((((u32)(x))&0x1FF) << 8)
++#define TR_CTRL_UNK17(x)            ((((u32)(x))&1) << 17)
++#define TR_CTRL_RX_DATA_SZ(x)       ((((u32)(x))&0x1FF) << 18)
++#define TR_CTRL_UNK27(x)            ((((u32)(x))&1) << 27)
++// 28 and 29 can't be set
++#define TR_CTRL_UNK28(x)            ((((u32)(x))&1) << 28)
++#define TR_CTRL_UNK29(x)            ((((u32)(x))&1) << 29)
++// selects between baud rate divisors 0 and 1
++#define TR_CTRL_BAUD_DIV(x)         ((((u32)(x))&1) << 30)
++#define TR_CTRL_WAIT_ACK_FOREVER(x) ((((u32)(x))&1) << 31)
++
++// 8268 SIO2 (main) CTRL register.
++#define CTRL_TR_START(x)             ((((u32)(x))&1) << 0)
++#define CTRL_TR_RESUME_PAUSED(x)     ((((u32)(x))&1) << 1)
++#define CTRL_RESET_STATE(x)          ((((u32)(x))&1) << 2)
++#define CTRL_RESET_FIFOS(x)          ((((u32)(x))&1) << 3)
++#define CTRL_USE_ACK_WAIT_TIMEOUT(x) ((((u32)(x))&1) << 4)
++#define CTRL_NO_MISSING_ACK_ERR(x)   ((((u32)(x))&1) << 5)
++// bit6 unknonw r/o, 0
++#define CTRL_UNK06(x)                ((((u32)(x))&1) << 6)
++// bit7 unknonw r/w, usually set to 1 by software
++#define CTRL_UNK07(x)                ((((u32)(x))&1) << 7)
++#define CTRL_ERROR_INTR_EN(x)        ((((u32)(x))&1) << 8)
++#define CTRL_TR_COMP_INTR_EN(x)      ((((u32)(x))&1) << 9)
++// bits 10, 11 unknonw r/w, usually set to 0 by software
++#define CTRL_UNK10(x)                ((((u32)(x))&1) << 10)
++#define CTRL_UNK11(x)                ((((u32)(x))&1) << 11)
++// Unknown r/o, 0:
++#define CTRL_UNK2912(x)              ((((u32)(x))&0x3FFFF) << 12)
++#define CTRL_PS1_MODE_EN(x)          ((((u32)(x))&1) << 30)
++#define CTRL_SLAVE_MODE_EN(x)        ((((u32)(x))&1) << 31)
++
++// 826C SIO2 (main) STAT register. (read-only)
++#define STAT_UNK0300(x)              ((((u32)(x)) >> 0) & 0xF)
++// Needs more data through DMA to complete transfer:
++#define STAT_NEED_DMA_DATA_TX(x)     ((((u32)(x)) >> 4) & 1)
++#define STAT_NEED_DMA_DATA_RX(x)     ((((u32)(x)) >> 5) & 1)
++#define STAT_UNK0706(x)              ((((u32)(x)) >> 6) & 3)
++// Queue slot number that is going to be processed next (0-15):
++#define STAT_QUEUE_SLOT_PROC(x)      ((((u32)(x)) >> 8) & 0xF)
++// Kept clear only while tranfer is running, and set while idle. 1 can also signify transfer completion:
++#define STAT_TR_IDLE(x)              ((((u32)(x)) >> 12) & 1)
++// FIFO underflow / overflow errors: (I am not sure if they really correspond to the TX and RX FIFOs)
++#define STAT_ERR_TX_FIFO_UOFLOW(x)   ((((u32)(x)) >> 13) & 1)
++#define STAT_ERR_RX_FIFO_UOFLOW(x)   ((((u32)(x)) >> 14) & 1)
++#define STAT_ERR_ACK_MISSING(x)      ((((u32)(x)) >> 15) & 1)
++// Flags used to determine the transfers of which queue slots triggered erroirs. Slot = 0 - 15:
++#define STAT_ERR_QUEUE_SLOT(x, slot) ((((u32)(x)) >> (slot + 16)) & 1)
++
++// 8270 SIO2 Device connected detection status register. (read-only)
++// For ports 0-3. Only SAS0 and SAS1 are actually connected to the physical port and only on early PS2 models (~ SCPH-30000).
++#define CONN_STAT_CDC0(x) ((((u32)(x)) >> 0) & 1)
++#define CONN_STAT_CDC1(x) ((((u32)(x)) >> 1) & 1)
++#define CONN_STAT_CDC2(x) ((((u32)(x)) >> 2) & 1)
++#define CONN_STAT_CDC3(x) ((((u32)(x)) >> 3) & 1)
++#define CONN_STAT_SAS0(x) ((((u32)(x)) >> 4) & 1)
++#define CONN_STAT_SAS1(x) ((((u32)(x)) >> 5) & 1)
++#define CONN_STAT_SAS2(x) ((((u32)(x)) >> 6) & 1)
++#define CONN_STAT_SAS3(x) ((((u32)(x)) >> 7) & 1)
++
++// 8274 SIO2 FIFO status register. (read-only)
++// values 0 - 0x100 bytes:
++#define FSTAT_TX_SZ(x)        ((((u32)(x)) >> 0) & 0x1FF)
++#define FSTAT_TX_UNK09(x)     ((((u32)(x)) >> 9) & 1)
++#define FSTAT_TX_OVERFLOW(x)  ((((u32)(x)) >> 10) & 1)
++#define FSTAT_TX_UNDERFLOW(x) ((((u32)(x)) >> 11) & 1)
++#define FSTAT_UNK1512(x)      ((((u32)(x)) >> 12) & 0xF)
++#define FSTAT_RX_SZ(x)        ((((u32)(x)) >> 16) & 0x1FF)
++#define FSTAT_RX_UNK09(x)     ((((u32)(x)) >> 25) & 1)
++#define FSTAT_RX_OVERFLOW(x)  ((((u32)(x)) >> 26) & 1)
++#define FSTAT_RX_UNDERFLOW(x) ((((u32)(x)) >> 27) & 1)
++#define FSTAT_UNK3128(x)      ((((u32)(x)) >> 28) & 0xF)
++
++// 8278 SIO2_REG_UNKN78    TX FIFO pointers. (read/write)
++// #define GET_TXFPNTS_HEAD(x) ((((u32)(x)) >> 0) & 0xFF)
++// #define SET_TXFPNTS_HEAD(x) ((((u32)(x)) >> 0) & 0xFF)
++//...
++// Better not add the FIFO pointers, as to change only one of them would require more complex macros.
++// 827C SIO2_REG_UNKN7C    RX FIFO pointers.
++
++// 8280    SIO2_REG_STAT    u32 Interrupt status. Writing 1 to an interrupt flag clears it.
++#define GET_ISTAT_TR_COMP(x) ((((u32)(x)) >> 0) & 1)
++// Any error:
++#define GET_ISTAT_TR_ERR(x)  ((((u32)(x)) >> 1) & 1)
++
++// Inline (faster) versions of sio2_* functions
++/* 04 */ static inline void inl_sio2_ctrl_set(u32 val) { _sw(val, SIO2_REG_CTRL); }
++/* 05 */ static inline u32 inl_sio2_ctrl_get() { return _lw(SIO2_REG_CTRL); }
++/* 06 */ static inline u32 inl_sio2_stat6c_get() { return _lw(SIO2_REG_STAT6C); }
++/* 07 */ static inline void inl_sio2_portN_ctrl1_set(int N, u32 val) { _sw(val, SIO2_REG_PORT0_CTRL1 + (N * 8)); }
++/* 08 */ static inline u32 inl_sio2_portN_ctrl1_get(int N) { return _lw(SIO2_REG_PORT0_CTRL1 + (N * 8)); }
++/* 09 */ static inline void inl_sio2_portN_ctrl2_set(int N, u32 val) { _sw(val, SIO2_REG_PORT0_CTRL2 + (N * 8)); }
++/* 10 */ static inline u32 inl_sio2_portN_ctrl2_get(int N) { return _lw(SIO2_REG_PORT0_CTRL2 + (N * 8)); }
++/* 11 */ static inline u32 inl_sio2_stat70_get() { return _lw(SIO2_REG_STAT70); }
++/* 12 */ static inline void inl_sio2_regN_set(int N, u32 val) { _sw(val, SIO2_REG_BASE + (N * 4)); }
++/* 13 */ static inline u32 inl_sio2_regN_get(int N) { return _lw(SIO2_REG_BASE + (N * 4)); }
++/* 14 */ static inline u32 inl_sio2_stat74_get() { return _lw(SIO2_REG_STAT74); }
++/* 15 */ static inline void inl_sio2_unkn78_set(u32 val) { _sw(val, SIO2_REG_UNKN78); }
++/* 16 */ static inline u32 inl_sio2_unkn78_get() { return _lw(SIO2_REG_UNKN78); }
++/* 17 */ static inline void inl_sio2_unkn7c_set(u32 val) { _sw(val, SIO2_REG_UNKN7C); }
++/* 18 */ static inline u32 inl_sio2_unkn7c_get() { return _lw(SIO2_REG_UNKN7C); }
++/* 19 */ static inline void inl_sio2_data_out(u8 val) { _sb(val, SIO2_REG_DATA_OUT); }
++/* 20 */ static inline u8 inl_sio2_data_in() { return _lb(SIO2_REG_DATA_IN); }
++/* 21 */ static inline void inl_sio2_stat_set(u32 val) { _sw(val, SIO2_REG_STAT); }
++/* 22 */ static inline u32 inl_sio2_stat_get() { return _lw(SIO2_REG_STAT); }
++
++static inline u16 inl_sio2_data_inh() { return _lh(SIO2_REG_DATA_IN); }
++static inline u32 inl_sio2_data_inw() { return _lw(SIO2_REG_DATA_IN); }
++
++#endif
+diff --git a/src/mmcesupport.c b/src/mmcesupport.c
+index 0abcc82..0773ab9 100644
+--- a/src/mmcesupport.c
++++ b/src/mmcesupport.c
+@@ -140,12 +140,64 @@ int mmceModulesLoaded(void) // build 126
+     return mmceModLoaded;
+ }
+ 
++// Retained only after a successful GameID send. A failed/declined next launch
++// cannot reuse an older launch's card identity.
++static char mmcePrevious[MMCE_RETURN_ARG_SIZE] = MMCE_RETURN_EMPTY;
++
++int mmceReturnNeeded(void)
++{
++    return gMMCEIGRSlot || mmcePrevious[1] != '0' || mmcePrevious[10] != '0';
++}
++
++void mmceReturnArgs(char *args)
++{
++    int slot;
++    memcpy(args, mmcePrevious, sizeof(mmcePrevious));
++    for (slot = 0; slot < 2; slot++) {
++        int at = 1 + slot * MMCE_RETURN_SLOT_SIZE;
++        if (args[at] == '0' && (gMMCEIGRSlot & (1 << slot)))
++            args[at] = '1'; // preserve the explicit IGR boot-card setting
++    }
++}
++
++int mmceGameIDSlot(int vmcSlotMask)
++{
++    char preferred[8];
++    const char *candidates[3];
++    int tried = 0, i;
++    if (!gMMCEEnableGameID || !mmceModLoaded)
++        return -1;
++    mmceGetDeviceRoot(preferred, sizeof(preferred));
++    candidates[0] = preferred;
++    candidates[1] = "mmce0:/";
++    candidates[2] = "mmce1:/";
++    for (i = 0; i < 3; i++) {
++        int slot;
++        if (strlen(candidates[i]) < 5)
++            continue;
++        slot = candidates[i][4] - '0';
++        if (slot < 0 || slot > 1 || ((tried | vmcSlotMask) & (1 << slot)))
++            continue;
++        tried |= 1 << slot;
++        if (fileXioDevctl(candidates[i], 0x1, NULL, 0, NULL, 0) >= 0)
++            return slot;
++    }
++    return -1;
++}
++
+ int mmceSendGameID(const char *startup, const char *protectMcPath, int vmcSlotMask)
+ {
+     char mmceDevice[sizeof(mmcePrefix)];
++    int previousCard, previousChannel;
+ 
++    memcpy(mmcePrevious, MMCE_RETURN_EMPTY, sizeof(mmcePrevious));
+     mmceGameIdTarget[0] = '\0'; // no stale target: only a send made by THIS call may be settled against
+ 
++    // Neutrino LUNA switches only after reading its runtime, and arms its IGR
++    // boot-card restore in the same operation. Never switch it here first.
++    if (sysNeutrinoDefersGameID(protectMcPath, startup))
++        return 0;
++
+     if (!gMMCEEnableGameID || startup == NULL || startup[0] == '\0')
+         return 0;
+ 
+@@ -213,9 +265,23 @@ int mmceSendGameID(const char *startup, const char *protectMcPath, int vmcSlotMa
+         }
+     }
+ 
++    // Read before 0x8: GET_CARD/GET_CHANNEL refer to the card currently mounted.
++    // Card zero is ambiguous (boot/named/GameID) on SD2PSX-family firmware.
++    previousCard = fileXioDevctl(mmceDevice, 0x3, NULL, 0, NULL, 0);
++    previousChannel = fileXioDevctl(mmceDevice, 0x5, NULL, 0, NULL, 0);
+     if (fileXioDevctl(mmceDevice, 0x8, (void *)startup, (strlen(startup) + 1), NULL, 0) < 0)
+         return 0;
+ 
++    {
++        char record[MMCE_RETURN_SLOT_SIZE + 1];
++        int exact = previousCard > 0 && previousCard < 0xffff &&
++                    previousChannel > 0 && previousChannel <= 0xffff;
++        snprintf(record, sizeof(record), "%c%04x%04x", exact ? '2' : '1',
++                 exact ? previousCard : 0, exact ? previousChannel : 0);
++        memcpy(mmcePrevious + 1 + (mmceDevice[4] - '0') * MMCE_RETURN_SLOT_SIZE,
++               record, MMCE_RETURN_SLOT_SIZE);
++    }
++
+     // Remember the slot this send actually targeted -- mmceGameIdSettle() (the MX4SIO pre-launch
+     // gate, batch S7) must poll the SAME device, not a guess.
+     snprintf(mmceGameIdTarget, sizeof(mmceGameIdTarget), "%s", mmceDevice);
+diff --git a/src/system.c b/src/system.c
+index f62b482..b06374d 100644
+--- a/src/system.c
++++ b/src/system.c
+@@ -1021,7 +1021,7 @@ static unsigned int sendIrxKernelRAM(const char *startup, const char *mode_str,
+ #endif
+ 
+     //Load MMCEIGR module (~1.4KB) on reset if bootcard switch is enabled for either slot
+-    if (gMMCEIGRSlot != 0) {
++    if (mmceReturnNeeded()) {
+         irxptr_tab[modcount].info = size_mmceigr_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_MMCEIGR);
+         irxptr_tab[modcount++].ptr = (void *)&mmceigr_irx;
+     }
+@@ -1455,7 +1455,9 @@ static int neutrinoArgHasActiveFlag(const char *args, const char *flag)
+ #define NF_MC    0x080
+ #define NF_ELF   0x100
+ #define NF_GC    0x200
+-#define NF_ALL   0x3ff
++#define NF_ALL   0x3ff // stock options only: unknown/packed ELFs must not acquire fork flags
++#define NF_IGR   0x400
++#define NF_MMCE_GAMEID 0x800
+ static unsigned int sysNeutrinoFlagSet = NF_ALL;
+ static char sysNeutrinoFlagsFor[256] = "";
+ static char sysNeutrinoVersion[32] = "";
+@@ -1495,7 +1497,7 @@ static int sysNeutrinoProbeElf(const char *neutrinoPath, unsigned int *flags)
+         const char *lit;
+         unsigned int bit;
+     } opts[] = {{"-cfg=", NF_CFG}, {"-dbc", NF_DBC}, {"-logo", NF_LOGO}, {"-bsdfs=", NF_BSDFS}, {"-cwd=", NF_CWD},
+-                {"-qb", NF_QB}, {"-gsm=", NF_GSM}, {"-mc0=", NF_MC}, {"-elf=", NF_ELF}, {"-gc=", NF_GC}};
++                {"-qb", NF_QB}, {"-gsm=", NF_GSM}, {"-mc0=", NF_MC}, {"-elf=", NF_ELF}, {"-gc=", NF_GC}, {"-igr=", NF_IGR}, {"-mmce_gameid=", NF_MMCE_GAMEID}};
+     unsigned char *buf;
+     unsigned int found = 0;
+     int fd, got, keep = 0, total = 0, dvd = 0, i, j;
+@@ -1580,6 +1582,10 @@ static void sysNeutrinoReadFlags(const char *neutrinoPath)
+         if (sscanf(line[0] == 'v' ? line + 1 : line, "%d.%d", &major, &minor) == 2) {
+             snprintf(sysNeutrinoVersion, sizeof(sysNeutrinoVersion), "%s", line);
+             sysNeutrinoFlagSet = sysNeutrinoFlagsOf(major, minor);
++            // LUNA retains the upstream version number. Read its parser literals too;
++            // a version.txt alone cannot advertise IGR or deferred MMCE switching.
++            if (sysNeutrinoProbeElf(neutrinoPath, &flags))
++                sysNeutrinoFlagSet |= flags & (NF_IGR | NF_MMCE_GAMEID);
+             LOG("[NEUTRINO] %s: %s (version.txt), options 0x%03x\n", neutrinoPath, line, sysNeutrinoFlagSet);
+             return;
+         }
+@@ -1612,7 +1618,7 @@ static void sysNeutrinoReadFlags(const char *neutrinoPath)
+ static int sysNeutrinoTakes(const char *neutrinoPath, unsigned int bit)
+ {
+     if (neutrinoPath == NULL || strcmp(neutrinoPath, sysNeutrinoFlagsFor) != 0)
+-        return 1;
++        return (bit & (NF_IGR | NF_MMCE_GAMEID)) == 0;
+     return (sysNeutrinoFlagSet & bit) != 0;
+ }
+ 
+@@ -2398,6 +2404,74 @@ static int sysNeutrinoConfirmArgv(int argc, char *const *argv)
+     return guiMsgBox(text, 1, NULL);
+ }
+ 
++// LUNA IGR (neutrino-luna 3a60180). "hdd" is its OSDSYS/boot-loader
++// route, also used when RIPPS2 lives on the MMCE SD and the boot card starts it.
++static char sysIgrArg[272], sysIgrGameArg[64];
++static char sysIgrForPath[256], sysIgrForGame[32];
++static int sysIgrDeferred;
++
++int sysNeutrinoDefersGameID(const char *path, const char *startup)
++{
++    return sysIgrDeferred && path != NULL && startup != NULL &&
++           !strcmp(path, sysIgrForPath) && !strcmp(startup, sysIgrForGame);
++}
++
++static int sysNeutrinoIgrTarget(const char *target)
++{
++    return !strcmp(target, "hdd") ||
++           ((!strncmp(target, "mc0:/", 5) || !strncmp(target, "mc1:/", 5)) && target[5]);
++}
++
++static void sysPrepareNeutrinoIgr(const char *path, const char *startup, int compatmask,
++                                  const char *extraArgs, const neutrino_vmc_args_t *vmc)
++{
++    char target[256], own[256], supplied[64];
++    int slot, vmcMask = 0;
++
++    sysIgrArg[0] = sysIgrGameArg[0] = '\0';
++    sysIgrDeferred = 0;
++    snprintf(sysIgrForPath, sizeof(sysIgrForPath), "%s", path);
++    snprintf(sysIgrForGame, sizeof(sysIgrForGame), "%s", startup ? startup : "");
++    if ((compatmask & COMPAT_MODE_6) || !sysNeutrinoTakes(path, NF_IGR))
++        return;
++
++    if (!neutrinoArgActiveValue(extraArgs, "-igr=", target, sizeof(target))) {
++        // Honour an explicit memory-card return path. Otherwise use RIPPS2's
++        // own memory-card ELF, or the console boot chain for SD/USB/HDD/network.
++        const char *chosen = "hdd";
++        if (gExitPath[0]) {
++            if (sysNeutrinoIgrTarget(gExitPath))
++                chosen = gExitPath;
++        } else if (ripps2GetBootPath(own, sizeof(own)) && sysNeutrinoIgrTarget(own))
++            chosen = own;
++        snprintf(target, sizeof(target), "%s", chosen);
++        snprintf(sysIgrArg, sizeof(sysIgrArg), "-igr=%s", target);
++    }
++    if (!sysNeutrinoIgrTarget(target) || !sysNeutrinoTakes(path, NF_MMCE_GAMEID))
++        return;
++
++    // Explicit arguments remain the user's choice. Suppress the front-end send
++    // too: otherwise the card switches twice and Neutrino snapshots the wrong state.
++    if (neutrinoArgActiveValue(extraArgs, "-mmce_gameid=", supplied, sizeof(supplied))) {
++        sysIgrDeferred = 1;
++        return;
++    }
++    if (!sysStartupShapeOk(startup))
++        return;
++    if (vmc != NULL)
++        vmcMask = (vmc->arg[0][0] ? 1 : 0) | (vmc->arg[1][0] ? 2 : 0);
++    // Raw VMC arguments must protect their physical slots as well.
++    if (neutrinoArgHasActiveFlag(gNeutrinoArgs, "-mc0=") || neutrinoArgHasActiveFlag(extraArgs, "-mc0="))
++        vmcMask |= 1;
++    if (neutrinoArgHasActiveFlag(gNeutrinoArgs, "-mc1=") || neutrinoArgHasActiveFlag(extraArgs, "-mc1="))
++        vmcMask |= 2;
++    slot = mmceGameIDSlot(vmcMask);
++    if (slot < 0)
++        return;
++    snprintf(sysIgrGameArg, sizeof(sysIgrGameArg), "-mmce_gameid=%d:%s", slot, startup);
++    sysIgrDeferred = 1;
++}
++
+ static int sysRunNeutrinoLaunch(const char *driver, const char *path, const char *startup, int compatmask, int EnablePS2Logo, const char *neutrinoPath, const char *extraArgs, int neutrinoVideo, int neutrinoGsmComp, int neutrinoBsdfs, int bdDevNr, const neutrino_vmc_args_t *vmcArgs, int checkOnly)
+ {
+     if (neutrinoPath == NULL || driver == NULL || path == NULL) {
+@@ -2576,6 +2650,14 @@ static int sysRunNeutrinoLaunch(const char *driver, const char *path, const char
+             argv[argc++] = compatModes;
+     }
+ 
++    if (checkOnly)
++        sysPrepareNeutrinoIgr(neutrinoPath, startup, compatmask, extraArgs, vmcArgs);
++    int igrPrepared = startup != NULL && !strcmp(neutrinoPath, sysIgrForPath) && !strcmp(startup, sysIgrForGame);
++    if (igrPrepared && sysIgrArg[0] && argc < argvMax)
++        argv[argc++] = sysIgrArg;
++    if (igrPrepared && sysIgrGameArg[0] && argc < argvMax)
++        argv[argc++] = sysIgrGameArg;
++
+     // Global toggles auto-emit -dbc/-logo; the per-game/global args screens now carry them as
+     // structured bools too (forwarded via the tokenizer below), so suppress the auto-emit when the
+     // user's args already hold an active (non-$-disabled) copy -- one flag, emitted once.
+@@ -3123,7 +3205,8 @@ void sysLaunchLoaderElf(const char *filename, const char *mode_str, int size_cdv
+     config->_CompatMask = compatflags;
+ 
+     //MMCEIGR Settings
+-    config->MMCEIGRSettings = gMMCEIGRSlot;
++    config->MMCEIGRSettings = mmceReturnNeeded();
++    mmceReturnArgs(config->MmceReturnArgs);
+ 
+     // RIPPS2 build 87: the in-game menu, and its Achievements page's numbers as YOUR ACCOUNT has them
+     config->IgrMenu = gRipps2IgrMenu && igrStack != NULL; // build 108: the menu's stack fitted after the modules

@@ -1,0 +1,137 @@
+diff --git a/src/renderman.c b/src/renderman.c
+index 120f7ae..00cac6c 100644
+--- a/src/renderman.c
++++ b/src/renderman.c
+@@ -17,14 +17,13 @@
+ #define __VRAM_SIZE 4194304
+ 
+ GSGLOBAL *gsGlobal;
+-s32 guiThreadID;
+ 
+ static int order;
+ static short int vmode = -1;
+ static u8 hires = 0;
+-static u8 guiWakeupCount;
++static int vsyncSema = -1;
+ // RIPPS2: microseconds the last frame spent asleep waiting for its vsync. Near zero means the frame
+-// overran: the vsync's wakeup was already pending, so SleepThread returned at once and every thread
++// overran: the vsync signal was already pending, so the wait returned at once and every thread
+ // below the GUI got no CPU this frame (see guiEndFrame).
+ unsigned int rmLastSleepUs = 0;
+ static int vsync_id = -1;
+@@ -191,6 +190,57 @@ void rmStartFrame(void)
+ 
+ unsigned int gRmFrameNo = 0; // RIPPS2 build 115: frames drawn (the hint glyphs' fade compares one frame with the last)
+ 
++static int rmOnVSync(int cause)
++{
++    if (vsyncSema >= 0) {
++        // Keep only the latest tick, including on kernels that do not enforce max_count.
++        // A pending signal belongs to this semaphore, never to an unrelated thread sleep.
++        iPollSema(vsyncSema);
++        iSignalSema(vsyncSema);
++    }
++
++    ExitHandler();
++    return 0;
++}
++
++static void rmVSyncInit(void)
++{
++    ee_sema_t sema = {0};
++    sema.max_count = 1;
++    sema.init_count = 0;
++    vsyncSema = CreateSema(&sema);
++    if (vsyncSema >= 0) {
++        vsync_id = gsKit_add_vsync_handler(&rmOnVSync);
++        if (vsync_id < 0) {
++            DeleteSema(vsyncSema);
++            vsyncSema = -1;
++        }
++    }
++}
++
++static void rmVSyncEnd(void)
++{
++    // Detach the interrupt before releasing the object it signals (also on video-mode changes).
++    if (vsync_id >= 0) {
++        gsKit_remove_vsync_handler(vsync_id);
++        vsync_id = -1;
++    }
++    if (vsyncSema >= 0) {
++        DeleteSema(vsyncSema);
++        vsyncSema = -1;
++    }
++}
++
++static void rmWaitVSync(void)
++{
++    // The old guiWakeupCount latch could suppress every later interrupt after a lost wakeup,
++    // leaving the handoff fade asleep forever. Let the kernel own the signal and wait together.
++    if (vsyncSema >= 0)
++        WaitSema(vsyncSema);
++    else
++        gsKit_vsync_wait(); // Allocation/handler failure: use the GS polling path, not SleepThread.
++}
++
+ void rmEndFrame(void)
+ {
+     gRmFrameNo++;
+@@ -207,9 +257,8 @@ void rmEndFrame(void)
+ 
+         if (!gsGlobal->FirstFrame) {
+             clock_t sleepFrom = clock();
+-            SleepThread();
++            rmWaitVSync();
+             rmLastSleepUs = (unsigned int)(clock() - sleepFrom);
+-            guiWakeupCount = 0;
+ 
+             if (gsGlobal->DoubleBuffering == GS_SETTING_ON) {
+                 GS_SET_DISPFB2(gsGlobal->ScreenBuffer[gsGlobal->ActiveBuffer & 1] / 8192,
+@@ -225,17 +274,6 @@ void rmEndFrame(void)
+     gsKit_TexManager_nextFrame(gsGlobal);
+ }
+ 
+-static int rmOnVSync(int cause)
+-{
+-    if (guiWakeupCount == 0) {
+-        guiWakeupCount = 1;
+-        iWakeupThread(guiThreadID);
+-    }
+-
+-    ExitHandler();
+-    return 0;
+-}
+-
+ // RIPPS2 build 120: the boot sky (ripps2_bible_sky, read from the settings file before the screen starts): the screen's
+ // first fill, so the first picture RIPPS2 shows is the sky BIBLE left on screen at its hand-off, not a black frame
+ static int bootSkySet = 0;
+@@ -279,9 +317,6 @@ void rmInit()
+     rmSetMode(1);
+ 
+     order = 0;
+-
+-    guiWakeupCount = 0;
+-    guiThreadID = GetThreadId();
+ }
+ 
+ int rmSetMode(int force)
+@@ -303,7 +338,7 @@ int rmSetMode(int force)
+             gsGlobal = gsKit_hires_init_global();
+         } else {
+             gsGlobal = gsKit_init_global();
+-            vsync_id = gsKit_add_vsync_handler(&rmOnVSync);
++            rmVSyncInit();
+         }
+         gsGlobal->Mode = rm_mode_table[vmode].mode;
+         gsGlobal->Width = rm_mode_table[vmode].width;
+@@ -437,8 +472,8 @@ void rmEnd(void)
+     if (hires) {
+         gsKit_hires_deinit_global(gsGlobal);
+     } else {
++        rmVSyncEnd();
+         gsKit_deinit_global(gsGlobal);
+-        gsKit_remove_vsync_handler(vsync_id);
+     }
+ 
+     vmode = -1;

@@ -1,0 +1,46 @@
+LUNA Neutrino IGR h1 -- companion runtime for RIPPS2 IGR
+
+The working nigr runtime is LUNA Neutrino af68bf4. The failing old neutrino
+runtime was 02cbf4f: it has IGR but no MMCE GameID/boot-card restoration.
+This package uses the working baseline plus loader validation and failure
+handling. Its resident reset/restore/ELF-load sequence is unchanged.
+
+1. Copy the WHOLE nligr directory to the MMCE SD root. Keep nigr and neutrino.
+2. In RIPPS2, select mmce0:/nligr/neutrino.elf as the Neutrino executable.
+   Do not rely on automatic discovery while multiple runtimes are installed.
+3. Keep the tested RIPPS2 ELF on the boot memory card as:
+       mc0:/RIPPS2/RIPPS2.ELF
+4. Set Settings > Game Launching > In-Game Menu > IGR Path to that path.
+   Keep MMCE Send GameID on Launch enabled.
+5. Show Launch Arguments should include:
+       -igr=mc0:/RIPPS2/RIPPS2.ELF
+       -mmce_gameid=0:SLUS_201.52
+   The example is Ace Combat 4 in slot 1. Adjust slot/game as appropriate.
+6. Launch the same Ace Combat 4 image, confirm the game card, then hold
+   L1+L2+R1+R2+SELECT+START. Release when reset begins. Confirm the boot card
+   returns and RIPPS2 starts directly.
+
+Expected version: af68bf4-IGR-h1
+The full folder is required, including matching modules/ee_core.elf and
+modules/mmceigr.irx. Copying just neutrino.elf is insufficient.
+
+If launch reports an incompatible EE core or missing module, recopy the
+complete folder. A GameID timeout stops launch and means card selection is
+uncertain: restart before retrying. The status polling budget assumes the
+individual driver calls return; it is not a watchdog for a hung driver.
+
+Rollback: select the unchanged nigr/neutrino.elf again. The IGR Path stays
+the same. This package does not change RIPPS2, its settings, or the boot loader.
+
+Validation: target build passed; host loader regression tests passed with
+ASan/UBSan; RIPPS2 recognizes the packed loader's full 0xfff capabilities.
+Both baseline nigr and this h1 variant now have user confirmation of direct
+memory-card return to RIPPS2. The steps above remain the retest procedure for
+other installations. Native OPL is not tested by launching a UDPFS game.
+
+Source: Warksmith/neutrino-luna af68bf4c285d6d9114a60675edff0cf7306a4f54,
+plus the included igr-runtime-hardening.patch. The source archive is the
+unmodified baseline; apply that patch to obtain this build's source.
+Use build_igr_runtime.sh <new-work-directory> <new-output-directory> hardened
+inside the pinned ps2max/dev image named in the script. SHA256SUMS lists
+runtime file hashes. Keep the script and patch together when rebuilding.

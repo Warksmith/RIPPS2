@@ -175,6 +175,14 @@ From build 118, **Settings > Game Sources > Cache > ART Pack** packs the `ART` f
 
 **Merge one `.tar` into another** (build 123). Pack a big drive once as the master, then later pack only the new games' art and merge that small `.tar` into it, instead of packing every ART folder again. In Memory Files, Triangle on a `.tar` > **MERGE A .TAR INTO THIS**: that `.tar` is the one kept, and RIPPS2 lists the others to merge in (in that folder, in each started drive's ART folder and at its top). Cache > ART Pack offers the same for the pack in use, and right after a pack is built. A picture in both comes from the merged-in `.tar`, and the two lists of games become one. The merge is written beside the kept `.tar` and only takes its name once every byte is on the drive, so a stop, a full drive or a pulled card leaves the kept one as it was. At the end a box names both files and asks whether to delete the merged-in one (START deletes it, Back keeps it); the kept one is never offered.
 
+## UDPFS game libraries
+
+UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+
+**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+
+The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+
 ## Your hardware
 
 - **Network adapters and the internal HDD.** RIPPS2 drives every network adapter with the PS2SDK's own DEV9 driver, the one current loaders use, and it tells the two kinds apart by itself: the expansion bay adapters of the fat consoles (SCPH-10281, SCPH-10350, and the IDE and SATA adapters made from them) and the slim's built-in port, and the PC CARD adapter of the first Japanese consoles (SCPH-10000 to 18000). There is no legacy driver to choose. The HDD is read the same way whether it is APA or exFAT, and an HDPro adapter gets its own driver. SMB games, UDPBD and the art download all use the same adapter. If yours does not show up, post the adapter's and the console's model.

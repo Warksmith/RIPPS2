@@ -1,0 +1,477 @@
+diff --git a/.github/scripts/test_igr_polling.py b/.github/scripts/test_igr_polling.py
+index a9e1bd3..da0d539 100644
+--- a/.github/scripts/test_igr_polling.py
++++ b/.github/scripts/test_igr_polling.py
+@@ -99,18 +99,18 @@ RESET_CHECKS = r'''
+         Reset_Padhook();
+         padOpen_hooked = 1;
+         armPad();
+-        int oldCreates = nCreate, oldHandlers = nAddIntc;
++        int oldCreates = nCreate, oldHandlers = nAddIntc, oldScans = padScans;
+         CHECK(New_SifSetDma(&dma, 1) == 1 && !disable_padOpen_hook,
+               "intercepted reboot completes and releases the scan guard");
+-        CHECK(nCreate == oldCreates + 1 && IGR_Thread_ID >= 0 && padScans == 0,
+-              "retained PadOpen patch still recreates the actual IGR worker without rescanning");
++        CHECK(nCreate == oldCreates + 1 && IGR_Thread_ID >= 0 && padScans == oldScans + 1,
++              "reset recreates the actual IGR worker and rechecks pad patches");
+         CHECK(Pad_Data.pad_buf == NULL && padOpen_hooked == 1,
+               "reboot preserves the patch but invalidates the stale pad buffer");
+         CHECK(nAddIntc == oldHandlers + 1 && IGR_Intc_ID >= 0,
+               "reset caller installs a fresh VBLANK sampler after ExecPS2");
+         New_SifSetDma(&dma, 1);
+-        CHECK(nCreate == oldCreates + 1 && padScans == 0,
+-              "another IOP reset reuses the surviving worker and controller patch");
++        CHECK(nCreate == oldCreates + 1 && padScans == oldScans + 2,
++              "another IOP reset reuses the worker and rechecks the controller patch");
+         resetResult = 0;
+         CHECK(New_SifSetDma(&dma, 1) == 0 && !disable_padOpen_hook && IGR_Thread_ID >= 0,
+               "failed IOP reset releases the guard without losing the live monitor");
+@@ -118,16 +118,18 @@ RESET_CHECKS = r'''
+     }
+     Reset_Padhook();
+     startFailures = 1;
++    int oldScans = padScans;
+     New_SifSetDma(&dma, 1);
+     CHECK(IGR_Thread_ID < 0, "worker start failure remains retryable with a retained patch");
+     New_SifSetDma(&dma, 1);
+-    CHECK(IGR_Thread_ID >= 0 && padScans == 0,
++    CHECK(IGR_Thread_ID >= 0 && padScans == oldScans + 2,
+           "next reset retries the actual installer even though the ELF is already patched");
+     Reset_Padhook();
+     g_compat_mask = COMPAT_MODE_6;
+     int oldCreates = nCreate;
++    oldScans = padScans;
+     New_SifSetDma(&dma, 1);
+-    CHECK(IGR_Thread_ID < 0 && nCreate == oldCreates && padScans == 0,
++    CHECK(IGR_Thread_ID < 0 && nCreate == oldCreates && padScans == oldScans,
+           "disabled IGR creates neither worker nor pad scan through the reset caller");
+ '''
+ 
+diff --git a/.github/scripts/test_neutrino_argv_budget.py b/.github/scripts/test_neutrino_argv_budget.py
+index cf045b0..d4b24e9 100644
+--- a/.github/scripts/test_neutrino_argv_budget.py
++++ b/.github/scripts/test_neutrino_argv_budget.py
+@@ -58,6 +58,7 @@ assert re.search(r"if \(sysNeutrinoArgsPreflight\([^;]+?\) < 0\) \{\s*failResult
+     "BDM budget refusal must not fall back to the native core"
+ 
+ harness = r'''
++#include "elfprobe.h"
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -359,8 +360,8 @@ with tempfile.TemporaryDirectory() as tmp:
+     exe = Path(tmp) / "budget"
+     src.write_text(harness.replace("@FUNCTIONS@", functions), encoding="utf-8")
+     for flags in ([], ["-DRETROACHIEVEMENTS"]):
+-        build = subprocess.run(["gcc", *flags, "-std=gnu99", "-Wall", "-Werror", "-Wno-unused-function",
+-                            "-o", str(exe), str(src)], capture_output=True, text=True)
++        build = subprocess.run(["gcc", str(root / "src/elfprobe.c"), "-I", str(root / "include"), *flags, "-std=gnu99", "-Wall", "-Werror", "-Wno-unused-function",
++                            "-o", str(exe), str(src), "-llzma"], capture_output=True, text=True)
+         assert build.returncode == 0, build.stderr
+         result = subprocess.run([str(exe)], capture_output=True, text=True)
+         assert result.returncode == 0, result.stdout + result.stderr
+diff --git a/.github/scripts/test_neutrino_external.py b/.github/scripts/test_neutrino_external.py
+index 258523c..b7e02ec 100644
+--- a/.github/scripts/test_neutrino_external.py
++++ b/.github/scripts/test_neutrino_external.py
+@@ -22,6 +22,7 @@ fails = []
+ probe = source[source.index('#define NF_CFG'):source.index('// The -bsdfs Neutrino will actually run with')]
+ 
+ program = r'''
++#include "elfprobe.h"
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -146,7 +147,7 @@ with tempfile.TemporaryDirectory() as d:
+     c = d / 'probe.c'
+     c.write_text(program.replace('@PROBE@', probe), encoding='utf-8')
+     exe = d / 'probe'
+-    b = subprocess.run(['cc', '-std=gnu99', '-Wall', '-Wextra', '-Werror', '-Wno-unused-function', '-o', str(exe), str(c)],
++    b = subprocess.run(['cc', '-std=gnu99', '-Wall', '-Wextra', '-Werror', '-Wno-unused-function', '-o', str(exe), str(c), str(root / 'src/elfprobe.c'), '-I', str(root / 'include'), '-llzma'],
+                        capture_output=True, text=True)
+     if b.returncode:
+         fails.append('the reader does not compile:\n' + b.stderr[-2000:])
+diff --git a/.github/scripts/test_reset_failure_lifecycle.py b/.github/scripts/test_reset_failure_lifecycle.py
+index fdc2868..80530c3 100644
+--- a/.github/scripts/test_reset_failure_lifecycle.py
++++ b/.github/scripts/test_reset_failure_lifecycle.py
+@@ -146,7 +146,7 @@ int main(void) {
+   assert(New_SifSetDma(&dma,1)==(stage==0));
+   assert(!pad_buffer_live && invalidations==1 && padOpen_hooked==1);
+   assert(!disable_padOpen_hook && ticks==0);
+-  assert(igr_installs==1 && pad_scans==0); // an existing pad patch is NOT a live IGR worker
++  assert(igr_installs==1 && pad_scans==1); // reset rechecks both worker and pad patches
+  }
+  prepare(0);g_compat_mask=0;
+  assert(New_SifSetDma(&dma,1)==1 && igr_installs==1 && pad_scans==1);
+diff --git a/Makefile b/Makefile
+index b61991c..ef05477 100644
+--- a/Makefile
++++ b/Makefile
+@@ -140,7 +140,7 @@ ifneq ($(GIT_TAG),latest)
+ endif
+ endif
+ 
+-FRONTEND_OBJS = ripps2.o ripps2color.o ripps2ui.o ripps2side.o ripps2seance.o ripps2games.o ripps2boot.o ripps2ra.o ripps2status.o ripps2ember.o ripps2art.o ripps2artpack.o ripps2cd.o ripps2disc.o ripps2shot.o ripps2sfxpack.o ripps2bg.o ripps2files.o ripps2edit.o ripps2hdd.o ripps2card.o ripps2biossnd.o ripps2hints.o ripps2media.o ripps2iconrip.o rahunt.o ripps2kbd.o ripps2saves.o ripps2about.o ripps2tr.o padfile.o ripps2pads.o pad.o xparam.o fntsys.o renderman.o menusys.o OSDHistory.o system.o elfldr_noreset.o elfldr.o lang.o lang_internal.o config.o hdd.o dialogs.o favsupport.o mixsupport.o metadb.o \
++FRONTEND_OBJS = ripps2.o ripps2color.o ripps2ui.o ripps2side.o ripps2seance.o ripps2games.o ripps2boot.o ripps2ra.o ripps2status.o ripps2ember.o ripps2art.o ripps2artpack.o ripps2cd.o ripps2disc.o ripps2shot.o ripps2sfxpack.o ripps2bg.o ripps2files.o ripps2edit.o ripps2hdd.o ripps2card.o ripps2biossnd.o ripps2hints.o ripps2media.o ripps2iconrip.o rahunt.o ripps2kbd.o ripps2saves.o ripps2about.o ripps2tr.o padfile.o ripps2pads.o pad.o xparam.o fntsys.o renderman.o menusys.o OSDHistory.o system.o elfprobe.o elfldr_noreset.o elfldr.o lang.o lang_internal.o config.o hdd.o dialogs.o favsupport.o mixsupport.o metadb.o \
+ 		dia.o ioman.o texcache.o themes.o supportbase.o bdmsupport.o netsupport.o ethsupport.o httpcatalog.o httpsupport.o udpfssupport.o udpfslist.o hddsupport.o zso.o lz4.o launchdiag.o \
+ 		appsupport.o mmcesupport.o artindex.o vcdsupport.o cuesupport.o libview.o retrogem.o folderbrowse.o gui.o guigame.o vmcrebuild.o vmc_groups.o textures.o opl.o atlas.o nbns.o httpclient.o gsm.o cheatman.o cheatconfig.o sound.o ps2cnf.o tar.o saveicon.o cfgtitle.o
+ 
+@@ -243,7 +243,7 @@ ifneq ($(wildcard lib/libsmslite.a),)
+   EE_CFLAGS += -DRIPPS2_SMSLITE
+   EE_INCS += -Ithirdparty/libsmslite/include
+ endif
+-EE_LIBS = -L$(PS2SDK)/ports/lib -L$(GSKIT)/lib -L./lib $(RIPPS2_SMSLITE_LIBS) -lbearssl -lgskit -ldmakit -lpoweroff -lfileXio -liopreboot -lpatches -lpng -ljpeg -lz -lmc -lfreetype -lvux -lcdvd -lnetman -lps2ips -laudsrv -lvorbisfile -lvorbis -logg -lpadx -lelf-loader-nocolour -lkbd -lsecr
++EE_LIBS = -L$(PS2SDK)/ports/lib -L$(GSKIT)/lib -L./lib $(RIPPS2_SMSLITE_LIBS) -lbearssl -lgskit -ldmakit -lpoweroff -lfileXio -liopreboot -lpatches -lpng -ljpeg -lz -llzma -lmc -lfreetype -lvux -lcdvd -lnetman -lps2ips -laudsrv -lvorbisfile -lvorbis -logg -lpadx -lelf-loader-nocolour -lkbd -lsecr
+ EE_INCS += -Ibearssl-0.6/inc -I$(PS2SDK)/ports/include -I$(PS2SDK)/ports/include/freetype2 -I$(GSKIT)/include -I$(GSKIT)/ee/dma/include -I$(GSKIT)/ee/gs/include -Imodules/iopcore/common -Imodules/network/common -Imodules/hdd/common -Iinclude
+ BIN2C = $(PS2SDK)/bin/bin2c
+ 
+diff --git a/ee_core/src/syshook.c b/ee_core/src/syshook.c
+index d91a1cd..a7d0240 100644
+--- a/ee_core/src/syshook.c
++++ b/ee_core/src/syshook.c
+@@ -58,8 +58,12 @@ u32 New_SifSetDma(SifDmaTransfer_t *sdd, s32 len)
+     // Ensure power-button monitoring independently of the controller hook.
+     if (!(g_compat_mask & COMPAT_MODE_6)) {
+         Install_IGR();
+-        if (padOpen_hooked == 0)
+-            padOpen_hooked = Install_PadOpen_Hook(0x00100000, 0x01ff0000, PADOPEN_HOOK);
++        // An IOP reset is a real pad lifecycle boundary, unlike a temporary
++        // pause in DMA updates. The old ELF's latched hook flag cannot prove
++        // that calls in an overlay/new image are still patched. Recheck here;
++        // if no new calls are found, leave CreateThread's retry armed until
++        // the game's next hooked PadOpen supplies a fresh buffer.
++        padOpen_hooked = Install_PadOpen_Hook(0x00100000, 0x01ff0000, PADOPEN_HOOK);
+     }
+ 
+     struct _iop_reset_pkt *reset_pkt = (struct _iop_reset_pkt *)sdd->src;
+diff --git a/include/elfprobe.h b/include/elfprobe.h
+new file mode 100644
+index 0000000..4dd8832
+--- /dev/null
++++ b/include/elfprobe.h
+@@ -0,0 +1,8 @@
++#ifndef ELFPROBE_H
++#define ELFPROBE_H
++
++/* Read ps2-packer LZMA payloads for capability inspection only. Never execute
++ * them or write to their virtual addresses. The caller frees the result. */
++unsigned char *elfProbeUnpack(const char *path, int *length);
++
++#endif
+diff --git a/src/elfprobe.c b/src/elfprobe.c
+new file mode 100644
+index 0000000..295dd04
+--- /dev/null
++++ b/src/elfprobe.c
+@@ -0,0 +1,119 @@
++#include "elfprobe.h"
++#include <fcntl.h>
++#include <unistd.h>
++#include <stdlib.h>
++#include <string.h>
++#include <stdint.h>
++#include <lzma.h>
++
++#define PROBE_LIMIT (8 * 1024 * 1024u)
++
++static uint32_t probe32(const unsigned char *p)
++{
++    return (uint32_t)p[0] | (uint32_t)p[1] << 8 | (uint32_t)p[2] << 16 | (uint32_t)p[3] << 24;
++}
++
++/* Map only file-backed PT_LOAD bytes. ELF addresses are untrusted metadata. */
++static int probeOffset(const unsigned char *b, size_t size, uint32_t address, size_t need, size_t *offset)
++{
++    size_t phoff = probe32(b + 28), entsize = b[42] | b[43] << 8;
++    unsigned int count = b[44] | b[45] << 8, i;
++    if (entsize < 32 || count > 32 || phoff > size || count > (size - phoff) / entsize)
++        return 0;
++    for (i = 0; i < count; i++) {
++        const unsigned char *p = b + phoff + i * entsize;
++        size_t start = probe32(p + 4), bytes = probe32(p + 16);
++        uint32_t base = probe32(p + 8);
++        if (probe32(p) != 1 || address < base || address - base > bytes)
++            continue;
++        if (need > bytes - (address - base) || start > size || bytes > size - start)
++            continue;
++        *offset = start + (address - base);
++        return 1;
++    }
++    return 0;
++}
++
++unsigned char *elfProbeUnpack(const char *path, int *length)
++{
++    unsigned char *packed = NULL, *plain = NULL;
++    size_t size, at, header, capacity = 0, used = 0, readSize = 0;
++    unsigned int sections, i;
++    int fd = open(path, O_RDONLY);
++    off_t end;
++    *length = 0;
++    if (fd < 0)
++        return NULL;
++    end = lseek(fd, 0, SEEK_END);
++    if (end < 52 || end > PROBE_LIMIT || lseek(fd, 0, SEEK_SET) < 0)
++        goto done;
++    size = (size_t)end;
++    packed = malloc(size);
++    if (packed == NULL)
++        goto done;
++    while (readSize < size) {
++        int got = read(fd, packed + readSize, size - readSize);
++        if (got <= 0)
++            goto done;
++        readSize += got;
++    }
++    if (memcmp(packed, "\177ELF\1\1\1", 7) || packed[16] != 2 || packed[17] != 0 ||
++        packed[18] != 8 || packed[19] != 0 || probe32(packed + 24) < 28)
++        goto done;
++    /* ps2-packer's stub places the signature and payload pointer 28 bytes
++     * before its entry. Both merged and separate PT_LOAD layouts are valid. */
++    if (!probeOffset(packed, size, probe32(packed + 24) - 28, 8, &at) || memcmp(packed + at, "LZMA", 4))
++        goto done;
++    if (!probeOffset(packed, size, probe32(packed + at + 4), 8, &header))
++        goto done;
++    sections = probe32(packed + header + 4);
++    if (!sections || sections > 32)
++        goto done;
++    at = header + 8;
++    for (i = 0; i < sections; i++) {
++        size_t output, compressed;
++        if (at > size || size - at < 16)
++            goto done;
++        output = probe32(packed + at);
++        compressed = probe32(packed + at + 12);
++        at += 16;
++        if (!output || output >= PROBE_LIMIT - capacity || compressed < 6 || compressed > size - at)
++            goto done;
++        capacity += output + 1; // separate sections so literals cannot straddle them
++        at = (at + compressed + 3) & ~(size_t)3;
++    }
++    plain = malloc(capacity);
++    if (plain == NULL)
++        goto done;
++    at = header + 8;
++    for (i = 0; i < sections; i++) {
++        size_t output = probe32(packed + at), compressed = probe32(packed + at + 12);
++        size_t inPos = 0, outPos = 0;
++        lzma_filter filters[2] = {{LZMA_FILTER_LZMA1, NULL}, {LZMA_VLI_UNKNOWN, NULL}};
++        lzma_ret result;
++        at += 16;
++        result = lzma_properties_decode(&filters[0], NULL, packed + at, 5);
++        if (result == LZMA_OK && ((lzma_options_lzma *)filters[0].options)->dict_size <= PROBE_LIMIT)
++            result = lzma_raw_buffer_decode(filters, NULL, packed + at + 5, &inPos, compressed - 5,
++                                            plain + used, &outPos, output);
++        else
++            result = LZMA_DATA_ERROR;
++        lzma_filters_free(filters, NULL);
++        if (result != LZMA_OK || inPos != compressed - 5 || !outPos)
++            goto done;
++        /* Older ps2-packer versions advertise the untrimmed size. Accept a
++         * shorter, properly terminated stream; never read its unwritten tail. */
++        used += outPos;
++        plain[used++] = 0xff;
++        at = (at + compressed + 3) & ~(size_t)3;
++    }
++    *length = (int)used;
++done:
++    close(fd);
++    free(packed);
++    if (!*length) {
++        free(plain);
++        plain = NULL;
++    }
++    return plain;
++}
+diff --git a/src/system.c b/src/system.c
+index b06374d..d8638ff 100644
+--- a/src/system.c
++++ b/src/system.c
+@@ -32,6 +32,7 @@
+ #include "include/util.h"
+ #include "include/pad.h"
+ #include "include/system.h"
++#include "include/elfprobe.h"
+ #include "include/ripps2.h" // RIPPS2: launch light-up
+ #include "include/ripps2diag.h" // RIPPS2 build 115: the hardware log
+ #include "include/ripps2shot.h" // RIPPS2 build 108: RIPSHOT's state for ee_core
+@@ -1444,19 +1445,19 @@ static int neutrinoArgHasActiveFlag(const char *args, const char *flag)
+ // 1.5; -dbc is missing again from 1.5 and 1.6. A Neutrino set up for another launcher (XEB+, an older NHDDL kit) may be
+ // any of them, and RIPPS2 sent every option it uses. Each version keeps the options it reads as strings in its ELF,
+ // so the ELF is read once before the teardown (sysNeutrinoPreflight) and only those options are sent. An ELF that
+-// does not show "-dvd=" (packed, or not Neutrino) is taken to know them all, as before.
+-#define NF_CFG   0x001
+-#define NF_DBC   0x002
+-#define NF_LOGO  0x004
+-#define NF_BSDFS 0x008
+-#define NF_CWD   0x010
+-#define NF_QB    0x020
+-#define NF_GSM   0x040
+-#define NF_MC    0x080
+-#define NF_ELF   0x100
+-#define NF_GC    0x200
+-#define NF_ALL   0x3ff // stock options only: unknown/packed ELFs must not acquire fork flags
+-#define NF_IGR   0x400
++// does not expose "-dvd=" (directly or in a supported packed payload) keeps the stock fallback.
++#define NF_CFG         0x001
++#define NF_DBC         0x002
++#define NF_LOGO        0x004
++#define NF_BSDFS       0x008
++#define NF_CWD         0x010
++#define NF_QB          0x020
++#define NF_GSM         0x040
++#define NF_MC          0x080
++#define NF_ELF         0x100
++#define NF_GC          0x200
++#define NF_ALL         0x3ff // stock options only: unknown ELFs must not acquire fork flags
++#define NF_IGR         0x400
+ #define NF_MMCE_GAMEID 0x800
+ static unsigned int sysNeutrinoFlagSet = NF_ALL;
+ static char sysNeutrinoFlagsFor[256] = "";
+@@ -1488,19 +1489,42 @@ static unsigned int sysNeutrinoFlagsOf(int major, int minor)
+     return f;
+ }
+ 
+-// The ELF's own option strings, for a Neutrino that is not packed. Each literal is taken with the NUL that ends it, so
+-// a word in the usage text does not count; the last 16 bytes of a piece are kept in front of the next. 1: readable
+-static int sysNeutrinoProbeElf(const char *neutrinoPath, unsigned int *flags)
++// Match parser literals including their terminating NUL, not usage text.
++static void sysNeutrinoProbeBytes(const unsigned char *buf, int len, unsigned int *found, int *dvd)
+ {
+     static const struct
+     {
+         const char *lit;
+         unsigned int bit;
+-    } opts[] = {{"-cfg=", NF_CFG}, {"-dbc", NF_DBC}, {"-logo", NF_LOGO}, {"-bsdfs=", NF_BSDFS}, {"-cwd=", NF_CWD},
+-                {"-qb", NF_QB}, {"-gsm=", NF_GSM}, {"-mc0=", NF_MC}, {"-elf=", NF_ELF}, {"-gc=", NF_GC}, {"-igr=", NF_IGR}, {"-mmce_gameid=", NF_MMCE_GAMEID}};
++    } opts[] = {{"-cfg=", NF_CFG}, {"-dbc", NF_DBC}, {"-logo", NF_LOGO}, {"-bsdfs=", NF_BSDFS}, {"-cwd=", NF_CWD}, {"-qb", NF_QB}, {"-gsm=", NF_GSM}, {"-mc0=", NF_MC}, {"-elf=", NF_ELF}, {"-gc=", NF_GC}, {"-igr=", NF_IGR}, {"-mmce_gameid=", NF_MMCE_GAMEID}};
++    int i, j;
++    for (i = 0; i + 4 <= len; i++) {
++        if (buf[i] == 'v') { // a version tag, "v1.8.0", as 1.8 keeps it (GIT_TAG)
++            if (!sysNeutrinoVersion[0] && i > 0 && buf[i - 1] == '\0' && buf[i + 1] >= '0' && buf[i + 1] <= '9' && buf[i + 2] == '.') {
++                for (j = i + 1; j < len && j - i < 24 && buf[j] > ' ' && buf[j] < 0x7f; j++)
++                    ;
++                if (j < len && buf[j] == '\0' && j - i >= 5)
++                    snprintf(sysNeutrinoVersion, sizeof(sysNeutrinoVersion), "%.*s", j - i, (const char *)&buf[i]);
++            }
++            continue;
++        }
++        if (buf[i] != '-')
++            continue;
++        if (i + 6 <= len && !memcmp(&buf[i], "-dvd=", 6))
++            *dvd = 1;
++        for (j = 0; j < (int)(sizeof(opts) / sizeof(opts[0])); j++) {
++            int n = (int)strlen(opts[j].lit) + 1;
++            if (i + n <= len && !memcmp(&buf[i], opts[j].lit, n))
++                *found |= opts[j].bit;
++        }
++    }
++}
++
++static int sysNeutrinoProbeElf(const char *neutrinoPath, unsigned int *flags)
++{
+     unsigned char *buf;
+     unsigned int found = 0;
+-    int fd, got, keep = 0, total = 0, dvd = 0, i, j;
++    int fd, got, keep = 0, total = 0, dvd = 0;
+     const int chunk = 32 * 1024, tail = 16;
+ 
+     if ((fd = open(neutrinoPath, O_RDONLY)) < 0)
+@@ -1512,31 +1536,22 @@ static int sysNeutrinoProbeElf(const char *neutrinoPath, unsigned int *flags)
+     while (total < 8 * 1024 * 1024 && (got = read(fd, buf + keep, chunk)) > 0) {
+         int len = keep + got;
+         total += got;
+-        for (i = 0; i + 4 <= len; i++) {
+-            if (buf[i] == 'v') { // a version tag, "v1.8.0", as 1.8 keeps it (GIT_TAG)
+-                if (!sysNeutrinoVersion[0] && i > 0 && buf[i - 1] == '\0' && buf[i + 1] >= '0' && buf[i + 1] <= '9' && buf[i + 2] == '.') {
+-                    for (j = i + 1; j < len && j - i < 24 && buf[j] > ' ' && buf[j] < 0x7f; j++)
+-                        ;
+-                    if (j < len && buf[j] == '\0' && j - i >= 5)
+-                        snprintf(sysNeutrinoVersion, sizeof(sysNeutrinoVersion), "%.*s", j - i, (const char *)&buf[i]);
+-                }
+-                continue;
+-            }
+-            if (buf[i] != '-')
+-                continue;
+-            if (i + 6 <= len && !memcmp(&buf[i], "-dvd=", 6))
+-                dvd = 1;
+-            for (j = 0; j < (int)(sizeof(opts) / sizeof(opts[0])); j++) {
+-                int n = (int)strlen(opts[j].lit) + 1;
+-                if (i + n <= len && !memcmp(&buf[i], opts[j].lit, n))
+-                    found |= opts[j].bit;
+-            }
+-        }
++        sysNeutrinoProbeBytes(buf, len, &found, &dvd);
+         keep = len < tail ? len : tail;
+         memmove(buf, buf + len - keep, keep);
+     }
+     free(buf);
+     close(fd);
++    if (!dvd) {
++        // LUNA distributes ps2-packer LZMA ELFs. Inspect their decoded payload
++        // before deciding whether fork-only arguments can be passed.
++        buf = elfProbeUnpack(neutrinoPath, &got);
++        if (buf != NULL) {
++            found = 0;
++            sysNeutrinoProbeBytes(buf, got, &found, &dvd);
++            free(buf);
++        }
++    }
+     if (dvd)
+         *flags = found;
+     return dvd;
+@@ -1556,7 +1571,7 @@ static int sysNeutrinoHas(const char *dir, char sep, const char *file)
+ 
+ // RIPPS2 build 115: what the Neutrino about to start understands, read before the teardown (sysNeutrinoPreflight).
+ // Its release kit says which it is: version.txt (every kit since 1.6.1, "v1.8.0", "v1.8.0-61-g7be8de2"); a Neutrino
+-// built unpacked shows its options as strings; an older kit (an XEB+ or NHDDL one) is known by its config files --
++// built unpacked or with ps2-packer LZMA shows its parser strings; an older kit (an XEB+ or NHDDL one) is known by its config files --
+ // bsd-mmce.toml came in 1.5, the bsdfs-*.toml in 1.3, rc-uya.toml in 1.2 -- and is taken as the oldest it may be
+ // (1.3 and 1.4 share their files, so as 1.3: no -cwd, no -qb). Nothing to go on (a hand-made folder): everything.
+ static void sysNeutrinoReadFlags(const char *neutrinoPath)
+@@ -1698,7 +1713,7 @@ static int neutrinoEffectiveBsdfs(const char *deviceName, int neutrinoBsdfs, con
+ // Rewrite the "ip=A.B.C.D" token inside <neutrino dir>/config/bsd-<device>.toml to the PS2's configured
+ // static IP. Neutrino's ministack takes its IP from that toml -- hardcoded 192.168.1.10 in the stock and
+ // bundled files -- NOT from anything OPL used while browsing, so any mismatch means the UDPFS server's
+-// discovery reply never routes back and the game black-screens after a perfectly healthy list. Δ6: now
++// discovery reply never routes back and the game black-screens after a perfectly healthy list. Î”6: now
+ // runs PRE-deinit via sysNeutrinoPreflight (every mount is up, the GUI is alive), so a hard failure can
+ // abort to the menu with a toast instead of dying invisibly post-teardown. Anchored to the stock `"ip=`
+ // quoting so a comment mentioning ip= can never be clobbered.
+@@ -1818,7 +1833,7 @@ broken:
+ 
+ static int sysSyncNeutrinoUdpfsToml(const char *neutrinoPath, const char *deviceName)
+ {
+-    static char toml[4096]; // Δ6: raised from 2048 -- an annotated toml no longer gets skipped
++    static char toml[4096]; // Î”6: raised from 2048 -- an annotated toml no longer gets skipped
+     static char updated[4096 + 20];
+     char tomlPath[288];
+     char newIp[20];
+@@ -2255,7 +2270,7 @@ void sysNeutrinoWarnPadEmu(config_set_t *configSet)
+ #endif
+ }
+ 
+-// Δ6 (NHDDL parity): everything that can FAIL a Neutrino launch and is checkable pre-teardown runs
++// Î”6 (NHDDL parity): everything that can FAIL a Neutrino launch and is checkable pre-teardown runs
+ // HERE, called by every device leg BEFORE deinitEx -- the GUI is alive for a toast and nothing has
+ // been torn down, so a failure is "stay in the menu", not a post-teardown black screen. Returns
+ // 0 = proceed; <0 = abort (a toast was shown). neutrinoBsdfs/extraArgs/bdDevNr are what the leg will
+@@ -2511,7 +2526,7 @@ static int sysRunNeutrinoLaunch(const char *driver, const char *path, const char
+ 
+     char bsd[16];
+     char bsdfs[16];
+-    char filePath[288];        // "-dvd=hdl:" (9) + up to a 255-char path + NUL — avoid truncation (B2)
++    char filePath[288];        // "-dvd=hdl:" (9) + up to a 255-char path + NUL â€” avoid truncation (B2)
+     char cwdArg[288];          // "-cwd=" + the neutrino.elf install dir (auto; Neutrino finds its config/modules there)
+     char compatModes[32] = ""; // stays empty when no compat modes are forwarded (B1)
+     char globalArgsBuf[256];   // mutable copy of gNeutrinoArgs for tokenizing (tokens point in)
+@@ -2732,7 +2747,7 @@ static int sysRunNeutrinoLaunch(const char *driver, const char *path, const char
+         }
+     }
+ 
+-    // Δ6: the bsd toml ip= sync (network transports) now runs PRE-deinit inside sysNeutrinoPreflight
++    // Î”6: the bsd toml ip= sync (network transports) now runs PRE-deinit inside sysNeutrinoPreflight
+     // -- called by every device leg before deinitEx -- so a failure aborts to a live menu with a
+     // toast instead of dying invisibly here, post-teardown. Nothing to do at this point.
+ 
