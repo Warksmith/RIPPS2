@@ -14,6 +14,9 @@ psx-place bump for BIBLE a060790 in BIBLE's thread. Paste from the [CENTER] line
 [*][B]A new card icon[/B], remade in Blender, its PS2 logo in the splash's gradient.
 [/LIST]
 
+[CENTER][SPOILER="BIBLE's Settings in Manage"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/bible-settings.jpg[/IMG][/SPOILER] [SPOILER="Sky Color's picker"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/sky-color-picker.jpg[/IMG][/SPOILER][/CENTER]
+[B]BIBLE's Settings in RIPPS2 1.5.7[/B]: every setting with a tip, [B]BOOT LOCK[/B] (RIPPS2 first at power on, and a game's EXIT back the same way), [B]Other Regions[/B] (BIBLE for other regions' consoles on the same card, each region's folder holding only its boot file) and [B]Launch Keys[/B]. Sky Color opens a colour picker for the sky's top, horizon and floor.
+
 [B]With RIPPS2 1.5.7, nothing to download:[/B] Settings > General > Boot Loader > Manage installs a060790 the one-folder way and offers the update to a card with 3282396 or f5705eb. For KELFBinder, BIBLE-signed.zip; for consoles with no system update (many from ROM 2.30 on), BIBLE-ELF.zip and OpenTuna or FunTuna.
 
 a060790 itself has not been bound on a console yet. Tell us here or [URL='https://github.com/akilluminati47/RIPPS2/issues']open an issue[/URL] with your console model, ROM and card, PAL and Japanese consoles most of all.

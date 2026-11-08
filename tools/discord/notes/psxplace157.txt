@@ -1,26 +1,43 @@
-psx-place bump for v1.5.7 beta (builds 142 to 157) in RIPPS2's thread. Paste from the [CENTER] line. The first post (psxplace-post.bbcode) is updated for 157 in the same commit: its release line, size and BIBLE lines.
+psx-place bump for v1.5.7 beta (builds 142 to 157) in RIPPS2's thread: everything new since 1.4.1, with pictures of the menus as they look now. Paste from the [CENTER] line (it can also replace an older bump's text). The first post (psxplace-post.bbcode) is updated for 157 in the same commit.
 
-[CENTER][SPOILER="Rip it, build 157"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/a4c577a/media/ripps2-test-me.png[/IMG][/SPOILER]
+[CENTER][SPOILER="BIBLE's Settings in Manage"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/bible-settings.jpg[/IMG][/SPOILER]
 
 [SIZE=5][B]RIPPS2 v1.5.7 beta: BIBLE a060790 inside, a ripped CD track from an SD2PSX, Warksmith's and RiptOPL's fixes[/B][/SIZE]
 [URL='https://github.com/akilluminati47/RIPPS2/releases/latest/download/RIPPS2.elf']RIPPS2.elf[/URL] (2,780 KB)  |  [URL='https://github.com/akilluminati47/RIPPS2/releases/tag/v1.5.7-beta']What's new[/URL]  |  [URL='https://github.com/akilluminati47/RIPPS2/blob/main/CHANGELOG.md']Changelog[/URL][/CENTER]
 
-Everything since 1.4.1: builds 142 to 157. In the PCSX2 lab it boots, starts a game from an exFAT HDD on the built-in core, and walks Memory Files; the new parts below have not been on a real PS2 yet, so your reports count.
+Everything since 1.4.1: builds 142 to 157. In the PCSX2 lab it boots, starts a game from an exFAT HDD on the built-in core, and walks Manage, Memory Files and a game's Controllers page; the new parts below have not been on a real PS2 yet, so your reports count. The pictures are build 157 in the lab.
 
-[B]BIBLE a060790 inside.[/B] If your card has BIBLE, Manage offers the update:
+[SIZE=4][B]BIBLE a060790 inside, and Manage's page as it is now[/B][/SIZE]
 [LIST]
-[*][B]One settings file on a card.[/B] BIBLE reads PS2BBL.INI from this console's region folder first, then the other regions', then SYS-CONF. A card that boots consoles of several regions keeps one copy.
+[*][B]One settings file on a card.[/B] BIBLE reads PS2BBL.INI from this console's region folder first, then the other regions', then SYS-CONF. Manage installs it that way: one settings file and one boot sound in one system folder.
+[*][B]Other Regions[/B], a new row: BIBLE for consoles of other regions on the same card. Each region's folder holds only its boot file; a card for one console does not need them.
+[*][B]BOOT LOCK[/B] is a row on this page now, after Widescreen and before Launch Keys: On, BIBLE starts RIPPS2 first at power on and a game's EXIT comes back the same way. Read Console History is gone.
 [*][B]The AUTO hang is fixed.[/B] A missing file on an AUTO path, on a drive BIBLE loads a driver for, no longer leaves BIBLE on its splash. It moves on to the next path (passed on a SCPH-39001 with an SD2PSX).
-[*][B]BIBLE no longer reads the boot sound into memory.[/B] RIPPS2 reads it, and the towers come about 0.8 s sooner.
-[*]ROM 2.30 and up: Manage warns that a bound BIBLE may not start at power on there. BIBLE's card icon is remade.
+[*][B]BIBLE no longer reads the boot sound into memory.[/B] RIPPS2 reads it, and the towers come about 0.8 s sooner. A card with BIBLE 3282396 or f5705eb is offered the update, and BIBLE's card icon is remade.
+[*]ROM 2.30 and up: Manage warns that a bound BIBLE may not start at power on there, and still lets you try. A plain BIBLE started by OpenTuna or FunTuna is recognised.
 [/LIST]
 
-[B]A ripped CD track plays from an SD2PSX.[/B] The music was read in long runs that held the card's bus while the sound driver had only a tenth of a second queued, so a .wav (nine times an Ogg's data) skipped. RIPPS2 now reads it in small pieces with a short gap after each on MMCE. Keep .wav for your rips; for music kept on MMCE, .ogg at 44.1 kHz stereo is the safe choice. DIAG.TXT now logs each track's read speed.
+[CENTER][SPOILER="The colour picker"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/sky-color-picker.jpg[/IMG][/SPOILER][/CENTER]
+[B]A colour picker[/B] for BIBLE's Sky Color (its top, horizon and floor) and every colour row, the theme's own colour included: saturation and brightness on a field, hue on a bar, the value in hex and numbers, and the Color Themes one press away.
 
-[B]From Warksmith:[/B] UDPFS with OPL and plain libraries on one share, disc IDs checked once and kept; in-game return detects a packed Neutrino, the pad hook recovers, and MMCE cards are put back on the way out.
+[CENTER][SPOILER="Controllers and Button Map"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/controllers.jpg[/IMG] [IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/button-map.jpg[/IMG][/SPOILER][/CENTER]
+[B]A game's Controller Settings is one page[/B]: Controller Emulation, Controller Macros, My Pads, Set Up A USB Pad, and a new [B]Button Map[/B]: what each button does in that game on a USB pad through the Pad Emulator, kept in PADS/GAMES/<ID>.pad.
 
-[B]From RiptOPL:[/B] MX4SIO saves no longer lose sectors (the fixed driver from ps2sdk #936 is built in), two IOP hangs in the CD stream emulation are gone, .hack//Infection's IOP allocations fit, and 8-bit art keeps its colours.
+[B]A ripped CD track plays from an SD2PSX.[/B] The music was read in long runs that held the card's bus while the sound driver had only a tenth of a second queued, so a .wav (nine times an Ogg's data) skipped. RIPPS2 now reads it in small pieces with a short gap after each on MMCE. Keep .wav for your rips; for music kept on MMCE, .ogg at 44.1 kHz stereo is the safe choice. DIAG.TXT now logs each track's read speed and every time the sound ran dry.
 
-[B]Fixes:[/B] Save Settings To stays where you chose (thanks nuno6573), All Games keeps every drive, the internal HDD comes back after an IOP restart (no more 401 on exFAT), RIPSHOT on MMCE makes its roll, Back on a changed page asks first, a colour picker for every colour row, one Controller Settings page with a Button Map.
+[B]From Warksmith:[/B] UDPFS with OPL and plain libraries on one share, disc IDs checked once and kept, the catalogue read once for the art too; the launch hand-off waits on its own vsync; in-game return detects a packed Neutrino, the pad hook recovers, shutdown has a deadline, and MMCE cards are put back on the way out.
+
+[B]From RiptOPL:[/B] MX4SIO saves no longer lose sectors (the fixed driver from ps2sdk #936 is built in, at full speed again), two IOP hangs in the CD stream emulation are gone, .hack//Infection's IOP allocations fit, network games get IOP memory back, 8-bit art keeps its own colours, and an app's menu no longer crashes when the app list is read again.
+
+[B]Fixes and pages:[/B]
+[LIST]
+[*][B]Save Settings To stays where you chose[/B] (thanks nuno6573), and the row starts the drive you pick, MMCE and USB included.
+[*][B]All Games[/B] keeps every drive's games in its saved list, and comes back after Manage's bind.
+[*][B]The internal HDD[/B] comes back after an IOP restart: no more "401: Hard drive not detected" on exFAT.
+[*][B]RIPSHOT on MMCE[/B] makes its roll, and says NO ROLL: SEE DIAG.TXT instead of DRIVE FULL when it cannot.
+[*][B]Back on a changed page[/B] asks: Accept, Discard, or START to keep editing.
+[*][B]Back from a rip's folder[/B] lands on Memory Files with the bar saying so.
+[*]Pickers in Roboto that wrap, a tip per item in the Card Manager, long paths that roll in Memory Files, and button glyphs instead of words on Download Covers and the sound preview.
+[/LIST]
 
 Tell us what breaks here or [URL='https://github.com/akilluminati47/RIPPS2/issues']open an issue[/URL], with your console model, ROM, what you did and your DIAG.TXT.

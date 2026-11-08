@@ -1,6 +1,6 @@
 # RIPPS2 changelog
 
-## Build 157 (not released): RiptOPL's backend fixes since our last merge
+## Build 157 (beta, v1.5.7-beta): RiptOPL's backend fixes since our last merge
 
 Picked from RiptOPL (rebuild/main) on 11/08, backend only, as RIPPS2 takes them: drivers, the game cores, compatibility. Nothing of
 RiptOPL's menus or look.
@@ -17,7 +17,7 @@ RiptOPL's menus or look.
   borrows another image's colours. libpng refuses an image too big before it allocates for it.
 - An app's menu no longer crashes when the app list is read again under it; the HD Pro's driver takes its lock correctly.
 
-## Build 156 (not released)
+## Build 156 (beta, released in v1.5.7-beta)
 
 From the user's console run on 11/08: a ripped CD track on the SD2PSX, and the page it left behind.
 
@@ -40,7 +40,7 @@ From the user's console run on 11/08: a ripped CD track on the SD2PSX, and the p
 - **Button glyphs, not words:** Download Covers said "Circle: stop" in words, and a sound's preview said "Cross play again
   Circle close". Both draw the buttons now, as every other page does.
 
-## Build 155 (not released)
+## Build 155 (beta, released in v1.5.7-beta)
 
 - **BIBLE `a060790` inside**, signed by akilluminati47 on 11/07 (MMCE, MX4SIO, memory card and HDD). It is `f5705eb` plus one
   change: BIBLE finds its settings in its system folder, `mc?:/B?EXEC-SYSTEM/PS2BBL.INI`, from any region's folder.
@@ -50,7 +50,7 @@ From the user's console run on 11/08: a ripped CD track on the SD2PSX, and the p
 - BIBLE still only tells RIPPS2 the boot sound's folder; the RAM hand-off went in `f5705eb`. RIPPS2 still takes an older BIBLE's
   RAM copy.
 
-## Builds 145 to 154 (not released): Wark's network and in-game return work
+## Builds 145 to 154 (beta, released in v1.5.7-beta): Wark's network and in-game return work
 
 Merged from Warksmith's branch on 11/08 after the series built and the host tests passed. Wark tested these on a console.
 
@@ -60,7 +60,7 @@ Merged from Warksmith's branch on 11/08 after the series built and the host test
 - **In-game return (IGR) to RIPPS2:** a packed Neutrino is detected, the pad hook recovers, shutdown has a deadline, and MMCE cards
   are put back on the way out. The direct return to the memory card is kept; the optional boot-loader bridge was taken out.
 
-## Build 144 (not released)
+## Build 144 (beta, released in v1.5.7-beta)
 
 From the user's first console run of 143 (11/05). 143's bind and AUTO fix passed on the real SCPH-39001 and SD2PSX.
 
@@ -77,7 +77,7 @@ From the user's first console run of 143 (11/05). 143's bind and AUTO fix passed
 - **The internal HDD after an IOP restart:** its drivers never loaded again, so an APA or exFAT HDD was gone until the console was turned off. They load again now, which also ends the "401: Hard drive not detected" an exFAT drive showed there.
 - **A neater card, regions kept, ready but off:** one settings file and one boot sound on a card, in a system folder. Every region's copy stays current, holding only its boot file and BIBLE's icon, its title naming the region. SYS-CONF and PS2BBL go when they hold nothing else. Manage's Other Regions row adds or removes the copies. Taking the copies away first moves the settings and boot sound to this console's folder. It turns on with a BIBLE that finds its settings from any region's folder: branch one-folder, waiting on a signature. The browser shows every folder: it ignores the hidden attribute, tried in the lab.
 
-## Build 143 (beta, v1.4.3-beta), changes since build 142
+## Build 143 (beta, released in v1.5.7-beta), changes since build 142
 
 BIBLE's next signed build goes in, with what follows from it. Built and run in the PCSX2 lab; nothing here has been on a real PS2.
 
@@ -113,7 +113,7 @@ BIBLE's next signed build goes in, with what follows from it. Built and run in t
 | **The install's icon step, and a bind of this BIBLE** | **Not run: the lab's cards refuse a bind, and nothing on the card changes** |
 | **Any of this on a real PS2** | **Not run yet** |
 
-## Build 142 (beta, v1.4.2-beta), changes since build 141
+## Build 142 (beta, released in v1.5.7-beta), changes since build 141
 
 nuno6573, 11/04: settings do not stay on MMCE or USB "despite changing configuration destination". Two causes reproduced in the lab,
 both old, not from 1.4.1. Built and run in the PCSX2 lab; nothing here has been on a real PS2.

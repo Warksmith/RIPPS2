@@ -57,10 +57,11 @@ Hold [B]TRIANGLE + CROSS[/B] at power on for the video mode page. It always open
 [SIZE=5][B]Install it[/B][/SIZE]
 [LIST]
 [*][LEFT][B]With RIPPS2 (nothing to download)[/B]: RIPPS2.elf carries all four signed builds. Settings > General > Boot Loader > [B]Manage[/B] picks the one that reaches where RIPPS2 lives, has the console bind it to your card, moves whatever was there into a backup folder (nothing is deleted) and writes BIBLE's settings file, starting RIPPS2 first.[/LEFT]
-[*][LEFT][B]Already have BIBLE?[/B] Manage opens a BIBLE menu. [B]UPDATE BIBLE[/B] binds the newest over an older one in place, and every setting is on one page with a tip on each row.[/LEFT]
+[*][LEFT][B]Already have BIBLE?[/B] Manage opens [B]BIBLE's Settings[/B]: [B]Update BIBLE[/B] binds the newest over an older one in place, and every setting is on one page with a tip on each row, [B]BOOT LOCK[/B], [B]Other Regions[/B] (BIBLE for other regions' consoles on the same card) and [B]Launch Keys[/B] included. Sky Color opens a colour picker for the sky's top, horizon and floor.[/LEFT]
 [/LIST]
-[CENTER][SPOILER="Manage's BIBLE menu"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/main/media/b139/new-01-bible-menu.jpg[/IMG][/SPOILER]
-[SIZE=2]Manage's BIBLE menu[/SIZE][/CENTER]
+[CENTER][SPOILER="BIBLE's Settings in Manage"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/bible-settings.jpg[/IMG][/SPOILER]
+[SIZE=2]BIBLE's Settings in RIPPS2 1.5.7's Manage, here on a card with an older BIBLE[/SIZE]
+[SPOILER="Sky Color's picker"][IMG]https://raw.githubusercontent.com/akilluminati47/RIPPS2/b6d7d7bebd67479da2a86da65987173c416df994/media/b157/sky-color-picker.jpg[/IMG][/SPOILER][/CENTER]
 [LIST]
 [*][LEFT][B]No system update on your console[/B] (many from ROM 2.30 on): [URL='https://github.com/akilluminati47/BIBLE/releases/latest/download/BIBLE-ELF.zip']BIBLE-ELF.zip[/URL] is the same build as plain ELFs, for OpenTuna or FunTuna to start from mc?:/BOOT/BOOT.ELF. Its README walks through it.[/LEFT]
 [*][LEFT][B]With KELFBinder[/B]: [URL='https://github.com/akilluminati47/BIBLE/releases/latest/download/BIBLE-signed.zip']BIBLE-signed.zip[/URL] has SYSTEM.XLF (memory card), MMCE/SYSTEM.XLF, MX4SIO/SYSTEM.XLF and HSYSTEM.XLF (HDD), with their SHA-256s.[/LEFT]
@@ -68,7 +69,7 @@ Hold [B]TRIANGLE + CROSS[/B] at power on for the video mode page. It always open
 [SIZE=2]A memory card KELF only starts once a console has bound it to that card: Manage and KELFBinder do this as they install it. Copying the file onto a card by hand does not make it boot. The binding is the console's own MechaCon at work; RIPPS2 boots KELFBinder's IOPRP image for that step and holds no keys.[/SIZE]
 
 [SIZE=5][B]Its settings[/B][/SIZE]
-One text file on the card, [B]PS2BBL.INI[/B] in the card's system folder for this console's region (mc?:/B?EXEC-SYSTEM), read first; then the other regions' system folders, then [B]mc?:/SYS-CONF/PS2BBL.INI[/B] for a card set up before; else PS2BBL/CONFIG.INI on a card, USB, MMCE or the HDD. RIPPS2's Manage writes it and its BIBLE menu changes it, one line at a time, keeping your notes; Memory Files opens it as text. Lines starting with # are notes, and every key is optional.
+One text file on the card, [B]PS2BBL.INI[/B] in the card's system folder for this console's region (mc?:/B?EXEC-SYSTEM), read first; then the other regions' system folders, then [B]mc?:/SYS-CONF/PS2BBL.INI[/B] for a card set up before; else PS2BBL/CONFIG.INI on a card, USB, MMCE or the HDD. RIPPS2's Manage writes it and BIBLE's Settings page changes it, one line at a time, keeping your notes; Memory Files opens it as text. Lines starting with # are notes, and every key is optional.
 [TABLE]
 [TR][TH]Key[/TH][TH]In RIPPS2's menu[/TH][TH]What it does[/TH][/TR]
 [TR][TD]KEY_READ_WAIT_TIME[/TD][TD]Power-on Wait[/TD][TD]How long (ms) a button held at power on can pick its entry; 0 is allowed[/TD][/TR]
