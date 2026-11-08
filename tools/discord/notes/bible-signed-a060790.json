@@ -1,0 +1,36 @@
+{
+ "title": "BIBLE a060790: one settings file on a card, signed by akilluminati47",
+ "url": "https://github.com/akilluminati47/BIBLE/releases/latest",
+ "description": "**BIBLE** is akilluminati47's boot loader, built on PS2BBL by El Isra and PS2BBL Extended by saildot4k (GPL-3). All four builds of `a060790` are **signed by akilluminati47**, and BIBLE now has **one release that rolls**: the newest signed build, always at the same links.",
+ "fields": [
+  [
+   "New in a060790",
+   "- **One settings file on a card**: BIBLE reads `PS2BBL.INI` from this console's region folder first (`mc?:/B?EXEC-SYSTEM`), then the other regions', then `SYS-CONF`. A card that boots consoles of several regions keeps one copy, with `boot.adp` beside it.\n- **The AUTO hang is fixed**: a missing file on an AUTO path, on a drive BIBLE loads a driver for, no longer leaves BIBLE on its splash. It moves on to the next path.\n- **No boot sound read into memory**: BIBLE tells RIPPS2 the folder and RIPPS2 reads it. Start to the towers about 0.8 s faster in the lab.\n- **A new card icon**, remade in Blender, its PS2 logo in the splash's gradient."
+  ],
+  [
+   "Set it up from RIPPS2 1.5.7",
+   "**Nothing to download with RIPPS2**: BIBLE `a060790` rides inside [RIPPS2.elf v1.5.7](https://github.com/akilluminati47/RIPPS2/releases/tag/v1.5.7-beta). Settings > General > Boot Loader > **Manage** installs it the one-folder way and offers the update to a card with `3282396` or `f5705eb`. On ROM 2.30 and up it warns that a bound BIBLE may not start at power on, and still lets you try."
+  ],
+  [
+   "Attached here",
+   "`BIBLE-signed.zip`: the four signed builds (memory card, MX4SIO, MMCE, HDD) for KELFBinder and other installers.\n`BIBLE-ELF.zip`: the same commit as plain ELFs for OpenTuna or FunTuna, with its card icon and a step by step README.\nBoth stay current at [releases/latest](https://github.com/akilluminati47/BIBLE/releases/latest), with `SHA256SUMS.txt`."
+  ],
+  [
+   "Tested",
+   "**In the lab** (PCSX2): the MMCE build found its settings in each region's folder and in SYS-CONF alone, and started RIPPS2 from each. The signed files hold CI's ELFs byte for byte.\n**On a real PS2**: `f5705eb`, the build before (it differs only in where it reads its settings), bound and booted on akilluminati47's SCPH-39001 with an SD2PSX. `a060790` itself has not been bound on a console yet: your reports count."
+  ],
+  [
+   "Please test",
+   "Update BIBLE with Manage on a genuine card, an SD2PSX or a MemCard PRO 2, PAL and Japanese consoles most of all, and on a console that boots the card in another region. Tell us here or [open an issue](https://github.com/akilluminati47/RIPPS2/issues) with your console model, ROM and card."
+  ],
+  [
+   "See it",
+   "[BIBLE's website](https://akilluminati47.github.io/BIBLE/): its splash on a Sony Trinitron KV-27V42 and a BRAVIA, each measured from photos, with every setting to try. Take the TV apart or blow it up."
+  ],
+  [
+   "Thanks",
+   "El Isra for PS2BBL and KELFBinder, saildot4k for PS2BBL Extended."
+  ]
+ ],
+ "footer": "BIBLE a060790, signed 2026-11-07  |  rides inside RIPPS2 v1.5.7"
+}
