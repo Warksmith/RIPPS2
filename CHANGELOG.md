@@ -16,8 +16,9 @@ From the user's console run on 11/08: a ripped CD track on the SD2PSX, and the p
   stayed on LAUNCH DISC. Backing out of the browser showed Memory Files' page (START BROWSER, the ORBIT formation names) under
   LAUNCH DISC, with that page's keys. The bar now moves to MEMORY FILES with the browser.
 - **BIBLE's icon, remade in Blender.** The same plate, raised PS2 logo and open book, but the book is the one on BIBLE's new mark
-  (curved blocks of lined pages) and the light is baked into its texture: soft shadows round the logo and the book. One shape and
-  the header as before, tiled for Memory Files' viewer as before (its PC check scores it a little better than the old icon), 49 KB
+  (curved blocks of lined pages), the PS2 logo has the gradient of BIBLE's splash (cyan at its foot to a muted blue at its
+  top), and the light is baked into its texture: soft shadows round the logo and the book. One shape and
+  the header as before, tiled for Memory Files' viewer as before (its PC check scores it a little better than the old icon), 50 KB
   where the old one was 37 KB. Not yet seen in a console's browser.
 - **Button glyphs, not words:** Download Covers said "Circle: stop" in words, and a sound's preview said "Cross play again
   Circle close". Both draw the buttons now, as every other page does.

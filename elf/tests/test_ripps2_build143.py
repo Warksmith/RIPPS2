@@ -40,8 +40,8 @@ if 'a060790' not in readme:
 # ---- BIBLE's icon
 icn = (here / 'bible' / 'bible.icn').read_bytes()
 sys_ = (here / 'bible' / 'icon.sys').read_bytes()
-if len(icn) != 49492 or icn[:4] != b'\0\0\1\0':  # build 156: remade in Blender (BIBLE tools/icon/blender_icon.py); icon v2 was 37,564
-    fail.append('elf/bible/bible.icn is the Blender icon, 49,492 bytes, a PS2 icon')
+if len(icn) != 50266 or icn[:4] != b'\0\0\1\0':  # build 156: remade in Blender (BIBLE tools/icon/blender_icon.py); icon v2 was 37,564
+    fail.append('elf/bible/bible.icn is the Blender icon, 50,266 bytes, a PS2 icon')
 if len(sys_) != 964 or sys_[:4] != b'PS2D':
     fail.append('elf/bible/icon.sys is BIBLE\'s')
 for want, why in (('cp -f "$HERE/bible/bible.icn" "$SRC/misc/bible.icn"', 'the build takes the icon'),
