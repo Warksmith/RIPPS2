@@ -1052,7 +1052,15 @@ strings:
 - en: 'your own, found and launched: github.com/Gageformer/Ember/releases'
   in:
   - ripps2about.c
+- en: '
+
+    %d covers ready on MMCE; %d missing from the collection; %d download failures.'
+  in:
+  - ripps2art.c
 - en: ' (no DNS answer)'
+  in:
+  - ripps2art.c
+- en: '%d covers verified on UDPFS; %d existing covers kept; %d copy failures. MMCE copies remain at %s/%s.'
   in:
   - ripps2art.c
 - en: '%d new covers. %d of your games are not in the collection%s%s.'
@@ -1085,7 +1093,31 @@ strings:
 - en: Connection lost (TLS error %d).
   in:
   - ripps2art.c
+- en: Copy completed covers from MMCE to the original UDPFS share now? MMCE copies are kept. Choose No to copy the staged ART folder on a PC later.
+  in:
+  - ripps2art.c
+- en: Copy completed files to UDPFS
+  in:
+  - ripps2art.c
+- en: Copying and verifying covers on UDPFS...
+  in:
+  - ripps2art.c
 - en: Could not connect to %s (last tried %s).
+  in:
+  - ripps2art.c
+- en: Could not save the artwork job. Check the selected MMCE card and its free space. The network has not been switched.
+  in:
+  - ripps2art.c
+- en: Cover downloads cannot run while UDPFS or UDPBD owns Ethernet. Add covers to the server's ART folder from a PC. For console downloads, disable UDPFS/UDPBD, save settings and restart, then use a local drive or SMB game list.
+  in:
+  - ripps2art.c
+- en: 'Cross: stop'
+  in:
+  - ripps2art.c
+- en: 'Download HD covers to MMCE (280 x 400)? START: Standard (140 x 200). Existing server covers are kept.'
+  in:
+  - ripps2art.c
+- en: Download missing files
   in:
   - ripps2art.c
 - en: 'Download the covers in HD (280 x 400)? Sharper on an HD screen, about 70 KB each. START: Standard (140 x 200, as Open PS2 Loader''s), about 20 KB each. A game that already has a cover keeps it.'
@@ -1094,16 +1126,37 @@ strings:
 - en: Downloading covers from xlenore's ps2-covers on GitHub
   in:
   - ripps2art.c
+- en: Enable writes before creating an artwork job.
+  in:
+  - ripps2art.c
+- en: Enable writes before downloading or copying staged artwork.
+  in:
+  - ripps2art.c
 - en: Every game in your started lists already has a cover. Start a drive's list first to look at its games.
   in:
   - ripps2art.c
+- en: Internet networking did not start (code %d). Check cable, IP, gateway and DNS settings. The MMCE job is saved.
+  in:
+  - ripps2art.c
 - en: Looking for games without a cover...
+  in:
+  - ripps2art.c
+- en: Looking for missing UDPFS covers...
+  in:
+  - ripps2art.c
+- en: MMCE card 1
+  in:
+  - ripps2art.c
+- en: MMCE card 2
   in:
   - ripps2art.c
 - en: No cover could be downloaded. %s
   in:
   - ripps2art.c
 - en: No length in the answer (status %d).
+  in:
+  - ripps2art.c
+- en: No missing covers in the current UDPFS list. Start or refresh that list first.
   in:
   - ripps2art.c
 - en: No socket (%d).
@@ -1113,6 +1166,15 @@ strings:
   in:
   - ripps2art.c
 - en: Not enough memory for the cover download.
+  in:
+  - ripps2art.c
+- en: Preparing artwork transfer...
+  in:
+  - ripps2art.c
+- en: Restoring UDPFS...
+  in:
+  - ripps2art.c
+- en: Resume staged artwork
   in:
   - ripps2art.c
 - en: STANDARD
@@ -1125,16 +1187,43 @@ strings:
   - ripps2files.c
   - ripps2media.c
   - ripps2seance.c
+- en: 'Staged artwork: %s/%s. Copy its ART folder into the original server library. Existing covers are unchanged.'
+  in:
+  - ripps2art.c
+- en: Start a new artwork job
+  in:
+  - ripps2art.c
+- en: Starting Internet access...
+  in:
+  - ripps2art.c
 - en: Starting the network...
   in:
   - ripps2art.c
 - en: TLS would not start (error %d).
   in:
   - ripps2art.c
+- en: The library is busy. The network was not switched. Try again after current activity finishes.
+  in:
+  - ripps2art.c
+- en: The library is busy. Try the artwork download again after it finishes loading.
+  in:
+  - ripps2art.c
 - en: The network did not start. Check the cable, and the IP settings on this page.
   in:
   - ripps2art.c
+- en: The network will restart while covers download to MMCE. UDPFS returns afterward. Keep this card inserted; completed downloads can be resumed or copied from the card on a PC. Continue?
+  in:
+  - ripps2art.c
+- en: The original share marker was not found. No server files were written. Copy the artwork manually from %s/%s, or reconnect the original server and resume.
+  in:
+  - ripps2art.c
 - en: The server sent a chunked answer.
+  in:
+  - ripps2art.c
+- en: The staged job is not readable after restarting MMCE. Downloads remain on the original card.
+  in:
+  - ripps2art.c
+- en: UDPFS did not reconnect. Keep the staged artwork at %s/%s. Resume the job to copy it later.
   in:
   - ripps2art.c
 - en: '%d IN'

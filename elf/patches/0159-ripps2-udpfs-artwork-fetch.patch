@@ -1,0 +1,873 @@
+diff --git a/Makefile b/Makefile
+--- a/Makefile
++++ b/Makefile
+@@ -144,4 +144,6 @@
+ 		dia.o ioman.o texcache.o themes.o supportbase.o bdmsupport.o netsupport.o ethsupport.o httpcatalog.o httpsupport.o udpfssupport.o udpfslist.o hddsupport.o zso.o lz4.o launchdiag.o \
+ 		appsupport.o mmcesupport.o artindex.o vcdsupport.o cuesupport.o libview.o retrogem.o folderbrowse.o gui.o guigame.o vmcrebuild.o vmc_groups.o textures.o opl.o atlas.o nbns.o httpclient.o gsm.o cheatman.o cheatconfig.o sound.o ps2cnf.o tar.o saveicon.o cfgtitle.o
++
++FRONTEND_OBJS += ripps2artjob.o
+ 
+ IOP_OBJS =	iomanx.o filexio.o ps2fs.o usbd.o usbhdfsd.o bdmevent.o dvrdrv.o dvrfile.o \
+diff --git a/include/ripps2.h b/include/ripps2.h
+--- a/include/ripps2.h
++++ b/include/ripps2.h
+@@ -345,6 +345,11 @@
+ int ripps2FilesPick(const char *title, char *out, int size, int *bdmType); // ripps2files.c: the browser picks an ELF; 1 when one was
+ void ripps2ThemeSky(int p, char *out, size_t size); // ripps2ui.c: a Color Theme's sky as RRGGBB,RRGGBB,RRGGBB
+ int ripps2FilesDriveUp(const char *root); // build 123: Memory Files would list this drive ("mass0:/"): worth a look
++// Artwork maintenance: no automatic source startup until End. Begin returning 0
++// leaves the menu intact; every successful Begin must be paired with End.
++int ripps2ArtSessionBegin(void);
++void ripps2ArtSessionReset(void);
++void ripps2ArtSessionEnd(void);
+ void ripps2CardManager(int slot, const char *image); // ripps2card.c (build 86): memory card 1/2 (slot 0/1), or a card image (slot -1)
+ // ripps2media.c (build 93): Memory Files opens pictures (PNG, JPG) and video (AVI, with libsmslite)
+ enum { RIPPS2_MEDIA_NONE = 0, RIPPS2_MEDIA_PICTURE, RIPPS2_MEDIA_VIDEO, RIPPS2_MEDIA_SOUND, RIPPS2_MEDIA_ICON,
+diff --git a/include/system.h b/include/system.h
+--- a/include/system.h
++++ b/include/system.h
+@@ -18,6 +18,8 @@
+ void sysShutdownDev9(void);
+ void sysReset(int modload_mask);
+ void sysSetRebootImage(const void *ioprp, int size); // RIPPS2: the next sysReset boots the IOP from this IOPRP image (NULL: the ROM's own)
++// Only immediately before an IOP reset, after every source and IO user is drained.
++void sysShutdownDev9ForReset(void);
+ void sysExecExit(void);
+ // Boot the physical PS2 disc in the drive; <0 (stays in OPL) on failure. `progress` is called once
+ // per poll while waiting on the drive -- pass guiRenderProbeFrame from the GUI thread so the menu
+diff --git a/include/ripps2artjob.h b/include/ripps2artjob.h
+new file mode 100644
+--- /dev/null
++++ b/include/ripps2artjob.h
+@@ -0,0 +1,38 @@
++#ifndef RIPPS2_ART_JOB_H
++#define RIPPS2_ART_JOB_H
++
++#include <stdint.h>
++
++#define ART_JOB_MAX 512
++#define ART_JOB_BYTES (1024 * 1024)
++typedef struct {
++    char serial[16];
++    char path[256]; /* original destination, without .png */
++    char title[64];
++} art_job_target_t;
++
++typedef struct {
++    char magic[8];
++    uint32_t generation, count, width, height;
++    char token[24];
++    art_job_target_t targets[ART_JOB_MAX];
++    uint32_t checksum;
++} art_job_t;
++
++/* root is a private staging directory on the selected MMCE card. Manifests
++   alternate between two checked slots; image receipts are independently checked.
++   Callers serialize writes with ioWriteBegin and retain the selected card root. */
++art_job_t *artJobLoad(const char *root);
++int artJobCreate(const char *root, art_job_t *job, const art_job_target_t *targets,
++                 int count, int width, int height, uint32_t seed);
++int artJobStagePath(const char *root, const art_job_t *job, int index, char *out, int size);
++int artJobRead(const char *root, const art_job_t *job, int index, unsigned char *data, int capacity);
++int artJobStore(const char *root, const art_job_t *job, int index, const unsigned char *data, int size);
++/* Identity marker is written while the original share is still mounted. */
++int artJobMarkServer(const art_job_t *job);
++int artJobSameServer(const art_job_t *job);
++/* 1 copied/already identical, 2 existing artwork preserved, 0 failed.
++   Always retains the MMCE file. No server rename operation is required. */
++int artJobDeliver(const char *root, const art_job_t *job, int index, unsigned char *data, int capacity);
++
++#endif
+diff --git a/src/opl.c b/src/opl.c
+--- a/src/opl.c
++++ b/src/opl.c
+@@ -5472,6 +5472,72 @@
+         sysShutdownDev9();
+ }
+ 
++static int artSessionActive;
++
++void ripps2ArtSessionReset(void)
++{
++    if (!artSessionActive)
++        return;
++    // All source IO is blocked and all artwork/file handles have been closed.
++    // Ordinary shutdown cannot unload either Ethernet driver. The IOP reset can.
++    ethDeinitModules();
++    sysShutdownDev9ForReset();
++    unloadPads();
++    reset();
++    LOG_INIT();
++    padInit(0);
++    for (int tries = 0; tries < 100; tries++) {
++        if (startPads())
++            break;
++        delay(1);
++    }
++    mmceLoadModules();
++}
++
++int ripps2ArtSessionBegin(void)
++{
++    if (artSessionActive || sysIsPccfOwned())
++        return 0;
++    // IO drain uses legacy delay ticks (~250ms); the art drain uses milliseconds.
++    ioBlockOpsTimed(1, 20);
++    if (ioHasPendingRequests() || !cacheCancelPendingImageLoadsTimed(3000)) {
++        ioBlockOps(0);
++        return 0;
++    }
++    if (!ioWriteBegin()) {
++        ioBlockOps(0);
++        return 0;
++    }
++    ioWriteEnd();
++    audioEnd();
++    guiExecDeferredOps();
++    deinitAllSupport(NO_EXCEPTION, IO_MODE_SELECTED_ALL);
++    clearErrorMessage();
++    artSessionActive = 1;
++    ripps2ArtSessionReset();
++    return 1;
++}
++
++void ripps2ArtSessionEnd(void)
++{
++    if (!artSessionActive)
++        return;
++    // A completed transfer already runs on UDPFS. Keep that compatible stack;
++    // a failed/cancelled Internet phase still needs its return reset.
++    if (ethGetModulesLoaded())
++        ripps2ArtSessionReset();
++    artSessionActive = 0;
++    ioBlockOps(0);
++    initAllSupport(1);
++    mixRequestUpdate();
++    cacheInvalidateFailMemo();
++    artIndexInvalidate();
++    audioInit();
++    sfxReload(-1);
++    if (gEnableBGM)
++        bgmStart();
++}
++
+ static int loadLwnbdSvr(int *teardownStarted)
+ {
+     int ret, padStatus, padTries;
+diff --git a/src/system.c b/src/system.c
+--- a/src/system.c
++++ b/src/system.c
+@@ -265,6 +265,15 @@
+             }
+         }
+     }
++}
++
++void sysShutdownDev9ForReset(void)
++{
++    // Maintenance has closed all users, including ATA. Release their remaining
++    // references so a live NIC cannot hold up SifIopReset. sysReset clears the
++    // module bookkeeping; this must never be used without the following reset.
++    while (dev9InitCount > 0)
++        sysShutdownDev9();
+ }
+ 
+ // RIPPS2 (BIBLE): an IOPRP image the next reset boots the IOP from, in place of the ROM's modules of
+diff --git a/src/udpfssupport.c b/src/udpfssupport.c
+--- a/src/udpfssupport.c
++++ b/src/udpfssupport.c
+@@ -47,6 +47,7 @@
+ static int udpfsPs1GameCount = 0;
+ static base_game_info_t *udpfsPs1Games = NULL;
+ static int udpfsIomanModLoaded = 0;
++static int udpfsNicClaimed = 0; // resident SMAP, including a partial load
+ 
+ // RIPPS2 build 115 (the user, 10/26 evening: after BIBLE the memory card and MMCE were gone, and the HDD said it was
+ // empty, until the console was turned off): an IOP reset (BIBLE, the NBD server) unloads every module, and these
+@@ -54,8 +55,8 @@
+ void udpfsIopWasReset(void)
+ {
+     udpfsIomanModLoaded = 0;
+-}
+-static int udpfsNicClaimed = 0;       // SMAP resident, even if later modules fail; requires IOP reset
++    udpfsNicClaimed = 0;
++}
+ static int udpfsWaitingForServer = 0; // the last scan got no answer from the server; see udpfsSetWaitingForServer
+ static int udpfsThemesScanned = 0;    // THM is registered once per active UDPFS session, after THM opens
+ static int udpfsLanguagesScanned = 0; // LNG uses the shared registry once its directory becomes readable
+diff --git a/src/ripps2art.c b/src/ripps2art.c
+--- a/src/ripps2art.c
++++ b/src/ripps2art.c
+@@ -58,6 +58,8 @@
+ #include "include/netsupport.h"
+ #include "include/bdmsupport.h"
+ #include "include/udpfssupport.h"
++#include "include/mmcesupport.h"
++#include "include/ripps2artjob.h"
+ #include "include/texcache.h"
+ #include "include/artindex.h"
+ #include "include/ripps2.h"
+@@ -79,12 +81,7 @@
+ #define AR_DIM  GS_SETREG_RGBA(0x4C, 0x52, 0x64, 0x80)
+ #define AR_PRIM(r, g, b, a) GS_SETREG_RGBAQ((r), (g), (b), (a), 0x00)
+ 
+-typedef struct
+-{
+-    char serial[16]; // SLUS-20398, the collection's name
+-    char path[256];  // <prefix>ART/SLUS_203.98_COV, without the extension
+-    char title[64];
+-} art_target_t;
++typedef art_job_target_t art_target_t;
+ 
+ static art_target_t *artTargets = NULL;
+ static int artCount = 0;
+@@ -158,13 +155,15 @@
+     return 0;
+ }
+ 
+-static void artCollect(void)
++static void artCollect(int modeOnly)
+ {
+     int mode, id;
+     GSTEXTURE probeTex;
+ 
+     artCount = 0;
+     for (mode = 0; mode < MODE_COUNT && artCount < ART_MAX_GAMES; mode++) {
++        if (modeOnly >= 0 && mode != modeOnly)
++            continue;
+         if (mode == APP_MODE || mode == FAV_MODE || MODE_IS_MIX(mode))
+             continue; // apps have no covers here; Favorites and All Games repeat other lists
+         opl_io_module_t *mod = oplGetModule(mode);
+@@ -732,88 +731,11 @@
+     return w == len;
+ }
+ 
+-// ---------------------------------------------------------------- the run
+-static const char *artNetworkConflict(void)
+-{
+-    // Test resident drivers, not the selected protocol: changing Settings cannot
+-    // unload a NIC driver, and a partially started UDPFS chain still owns it.
+-    if (udpfsGetModulesLoaded() || bdmIsUDPBDLoaded())
+-        return _t("Cover downloads cannot run while UDPFS or UDPBD owns Ethernet. Add covers to the server's ART folder from a PC. For console downloads, disable UDPFS/UDPBD, save settings and restart, then use a local drive or SMB game list.");
+-    return NULL;
+-}
+-
+-void ripps2ArtDownload(void)
+-{
+-    unsigned char *body = NULL, *rgb = NULL;
+-    char err[96];
+-    int i, len, status, connected = 0, saved;
+-    const char *conflict = artNetworkConflict();
+-
+-    if (conflict != NULL) {
+-        guiMsgBox(conflict, 0, NULL);
+-        return;
+-    }
+-
+-    artDone = artGot = artMissing = artFailed = 0;
+-    artLine[0] = artLine2[0] = '\0';
+-    artCount = 0;
+-    artTargets = (art_target_t *)malloc(sizeof(art_target_t) * ART_MAX_GAMES);
+-    body = (unsigned char *)malloc(ART_MAX_BYTES);
+-    rgb = (unsigned char *)malloc(ART_HD_W * ART_HD_H * 3); // either size
+-    if (artTargets == NULL || body == NULL || rgb == NULL) {
+-        free(artTargets);
+-        free(body);
+-        free(rgb);
+-        artTargets = NULL;
+-        guiMsgBox(_t("Not enough memory for the cover download."), 0, NULL);
+-        return;
+-    }
+-
+-    artStage = _t("Looking for games without a cover...");
+-    artDraw();
+-    ioBlockOps(1); // the lists hold still while they are read
+-    artCollect();
+-    ioBlockOps(0);
+-    if (artCount == 0) {
+-        free(artTargets);
+-        free(body);
+-        free(rgb);
+-        artTargets = NULL;
+-        guiMsgBox(_t("Every game in your started lists already has a cover. Start a drive's list first to look at its games."), 0, NULL);
+-        return;
+-    }
+-
+-    // build 125: the size, HD first; a game with a cover keeps it either way
+-    {
+-        int pick;
+-        guiMsgBoxStartOption(_t("STANDARD"));
+-        pick = guiMsgBox(_t("Download the covers in HD (280 x 400)? Sharper on an HD screen, about 70 KB each. START: Standard (140 x 200, as Open PS2 Loader's), about 20 KB each. A game that already has a cover keeps it."),
+-                         1, NULL);
+-        if (pick == 0) {
+-            free(artTargets);
+-            free(body);
+-            free(rgb);
+-            artTargets = NULL;
+-            return;
+-        }
+-        artCovW = pick == 2 ? ART_STD_W : ART_HD_W;
+-        artCovH = pick == 2 ? ART_STD_H : ART_HD_H;
+-    }
+-
+-    artStage = _t("Starting the network...");
+-    artDraw();
+-    if (netLoadInitModules(NET_PROTO_SMB) != 0) {
+-        free(artTargets);
+-        free(body);
+-        free(rgb);
+-        artTargets = NULL;
+-        // A background source startup may have claimed the NIC since entry.
+-        conflict = artNetworkConflict();
+-        guiMsgBox(conflict != NULL ? conflict : _t("The network did not start. Check the cable, and the IP settings on this page."), 0, NULL);
+-        return;
+-    }
+-
+-    for (i = 0; i < artCount; i++) {
++static void artDownloadTargets(unsigned char *body, unsigned char *rgb, const art_job_t *job, const char *root)
++{
++    char err[96] = "";
++    int len, status, saved, connected = 0;
++    for (int i = 0; i < artCount; i++) {
+         art_target_t *t = &artTargets[i];
+         snprintf(artLine, sizeof(artLine), "%s", t->title);
+         snprintf(artLine2, sizeof(artLine2), "%s", t->serial);
+@@ -821,6 +743,11 @@
+         artDraw();
+         if (artCancelled())
+             break;
++        if (job != NULL && artJobRead(root, job, i, body, ART_MAX_BYTES) > 0) {
++            artGot++;
++            artDone = i + 1;
++            continue;
++        }
+         status = -1;
+         for (int attempt = 0; attempt < 2 && status < 0; attempt++) {
+             if (!connected) {
+@@ -843,7 +770,7 @@
+                 snprintf(err, sizeof(err), _t("%s: the picture would not decode."), t->serial);
+             else if ((len = artEncode(rgb, body, ART_MAX_BYTES)) <= 0)
+                 snprintf(err, sizeof(err), _t("%s: the PNG would not encode."), t->serial);
+-            else if (!(saved = artSave(t, body, len)))
++            else if (!(saved = job != NULL ? artJobStore(root, job, i, body, len) : artSave(t, body, len)))
+                 snprintf(err, sizeof(err), _t("%s: the drive would not take the file."), t->serial);
+             status = saved ? 200 : 0;
+         }
+@@ -864,6 +791,254 @@
+         artDone = i + 1;
+     }
+     artClose();
++}
++
++// ---------------------------------------------------------------- the run
++static void artDownloadStaged(void)
++{
++    const char *cards[] = {_t("MMCE card 1"), _t("MMCE card 2")};
++    const char *jobs[] = {_t("Resume staged artwork"), _t("Start a new artwork job")};
++    const char *actions[] = {_t("Download missing files"), _t("Copy completed files to UDPFS")};
++    char root[128], message[512];
++    art_job_t *job = NULL;
++    unsigned char *body = NULL, *rgb = NULL;
++    int session = 0, transferOnly = 0, delivered = 0, preserved = 0, failed = 0;
++    int card = ripps2PickList(cards, 2);
++    if (card < 0) return;
++    snprintf(root, sizeof(root), "mmce%d:/RIPPS2/ARTWORK", card);
++    mmceLoadModules();
++    job = artJobLoad(root);
++    if (job != NULL) {
++        int choice = ripps2PickList(jobs, 2);
++        if (choice < 0) goto done;
++        if (choice == 1) { free(job); job = NULL; }
++        else {
++            choice = ripps2PickList(actions, 2);
++            if (choice < 0) goto done;
++            transferOnly = choice == 1;
++        }
++    }
++    artDone = artGot = artMissing = artFailed = artCount = 0;
++    artLine[0] = artLine2[0] = 0;
++    if (job == NULL) {
++        if (!gEnableWrite) {
++            guiMsgBox(_t("Enable writes before creating an artwork job."), 0, NULL);
++            goto done;
++        }
++        artTargets = calloc(ART_MAX_GAMES, sizeof(*artTargets));
++        if (!artTargets) goto memory;
++        artStage = _t("Looking for missing UDPFS covers...");
++        artDraw();
++        ioBlockOpsTimed(1, 20);
++        if (ioHasPendingRequests()) {
++            ioBlockOps(0);
++            guiMsgBox(_t("The library is busy. Try the artwork download again after it finishes loading."), 0, NULL);
++            goto done;
++        }
++        artCollect(UDPFS_MODE);
++        ioBlockOps(0);
++        // This job belongs to exactly one UDPFS share, never to a local source.
++        int count = 0;
++        for (int i = 0; i < artCount; i++)
++            if (!strncmp(artTargets[i].path, "udpfs:/", 7)) artTargets[count++] = artTargets[i];
++        artCount = count;
++        if (!count) {
++            guiMsgBox(_t("No missing covers in the current UDPFS list. Start or refresh that list first."), 0, NULL);
++            goto done;
++        }
++        guiMsgBoxStartOption(_t("STANDARD"));
++        int size = guiMsgBox(_t("Download HD covers to MMCE (280 x 400)? START: Standard (140 x 200). Existing server covers are kept."), 1, NULL);
++        if (!size) goto done;
++        job = calloc(1, sizeof(*job));
++        if (!job) goto memory;
++        int ok = 0;
++        if (ioWriteBegin()) {
++            ok = artJobCreate(root, job, artTargets, count, size == 2 ? ART_STD_W : ART_HD_W,
++                              size == 2 ? ART_STD_H : ART_HD_H, (unsigned int)GetTimerSystemTime());
++            ioWriteEnd();
++        }
++        free(artTargets);
++        artTargets = NULL;
++        if (!ok) {
++            guiMsgBox(_t("Could not save the artwork job. Check the selected MMCE card and its free space. The network has not been switched."), 0, NULL);
++            goto done;
++        }
++        // Failure is allowed for a read-only server: manual export still works.
++        if (ioWriteBegin()) { artJobMarkServer(job); ioWriteEnd(); }
++    }
++    if (!gEnableWrite) {
++        guiMsgBox(_t("Enable writes before downloading or copying staged artwork."), 0, NULL);
++        goto done;
++    }
++    artTargets = job->targets;
++    artCount = job->count;
++    artCovW = job->width;
++    artCovH = job->height;
++    body = malloc(ART_MAX_BYTES);
++    rgb = malloc(ART_HD_W * ART_HD_H * 3);
++    if (!body || !rgb) goto memory;
++    if (!transferOnly && !guiMsgBox(_t("The network will restart while covers download to MMCE. UDPFS returns afterward. Keep this card inserted; completed downloads can be resumed or copied from the card on a PC. Continue?"), 1, NULL)) goto done;
++    artStage = _t("Preparing artwork transfer...");
++    artDraw();
++    if (!ripps2ArtSessionBegin()) {
++        guiMsgBox(_t("The library is busy. The network was not switched. Try again after current activity finishes."), 0, NULL);
++        goto done;
++    }
++    session = 1;
++    // Probe the same card/job after reset, before making any download writes.
++    art_job_t *check = artJobLoad(root);
++    int sameCard = check && !memcmp(check, job, sizeof(*job));
++    free(check);
++    if (!sameCard) {
++        snprintf(message, sizeof(message), "%s", _t("The staged job is not readable after restarting MMCE. Downloads remain on the original card."));
++        goto restore;
++    }
++    if (!transferOnly) {
++        artStage = _t("Starting Internet access...");
++        artDraw();
++        if (netLoadInitModules(NET_PROTO_SMB) != 0) {
++            snprintf(message, sizeof(message), _t("Internet networking did not start (code %d). Check cable, IP, gateway and DNS settings. The MMCE job is saved."), gNetworkStartup);
++            goto restore;
++        }
++        artDownloadTargets(body, rgb, job, root);
++        artStage = _t("Restoring UDPFS...");
++        artDraw();
++        ripps2ArtSessionReset();
++    }
++    // Deliberately keep automatic source startup blocked during the copy.
++    if (!udpfsEnsureReady(5000)) {
++        snprintf(message, sizeof(message), _t("UDPFS did not reconnect. Keep the staged artwork at %s/%s. Resume the job to copy it later."), root, job->token);
++        goto restore;
++    }
++    if (!transferOnly && !guiMsgBox(_t("Copy completed covers from MMCE to the original UDPFS share now? MMCE copies are kept. Choose No to copy the staged ART folder on a PC later."), 1, NULL)) {
++        snprintf(message, sizeof(message), _t("Staged artwork: %s/%s. Copy its ART folder into the original server library. Existing covers are unchanged."), root, job->token);
++        goto restore;
++    }
++    if (!artJobSameServer(job)) {
++        snprintf(message, sizeof(message), _t("The original share marker was not found. No server files were written. Copy the artwork manually from %s/%s, or reconnect the original server and resume."), root, job->token);
++        goto restore;
++    }
++    artStage = _t("Copying and verifying covers on UDPFS...");
++    for (int i = 0; i < artCount; i++) {
++        artDone = i;
++        snprintf(artLine, sizeof(artLine), "%s", job->targets[i].title);
++        artDraw();
++        if (artCancelled()) break;
++        if (!artJobRead(root, job, i, body, ART_MAX_BYTES)) continue;
++        int result = artJobDeliver(root, job, i, body, ART_MAX_BYTES);
++        if (result == 1) {
++            char path[272];
++            delivered++;
++            snprintf(path, sizeof(path), "%s.png", job->targets[i].path);
++            ripps2ArtPackNoteNew(path);
++        } else if (result == 2) preserved++;
++        else failed++;
++    }
++    snprintf(message, sizeof(message), _t("%d covers verified on UDPFS; %d existing covers kept; %d copy failures. MMCE copies remain at %s/%s."),
++             delivered, preserved, failed, root, job->token);
++restore:
++    ripps2ArtSessionEnd();
++    session = 0;
++    if (!transferOnly) {
++        int used = strlen(message);
++        snprintf(message + used, sizeof(message) - used, _t("\n%d covers ready on MMCE; %d missing from the collection; %d download failures."), artGot, artMissing, artFailed);
++    }
++    guiMsgBox(message, 0, NULL);
++    goto done;
++memory:
++    guiMsgBox(_t("Not enough memory for the cover download."), 0, NULL);
++done:
++    if (session) ripps2ArtSessionEnd();
++    if (artTargets && (!job || artTargets != job->targets)) free(artTargets);
++    artTargets = NULL;
++    free(job);
++    free(body);
++    free(rgb);
++}
++
++static const char *artNetworkConflict(void)
++{
++    // Test resident drivers, not the selected protocol: changing Settings cannot
++    // unload a NIC driver, and a partially started UDPFS chain still owns it.
++    if (udpfsGetModulesLoaded() || bdmIsUDPBDLoaded())
++        return _t("Cover downloads cannot run while UDPFS or UDPBD owns Ethernet. Add covers to the server's ART folder from a PC. For console downloads, disable UDPFS/UDPBD, save settings and restart, then use a local drive or SMB game list.");
++    return NULL;
++}
++
++void ripps2ArtDownload(void)
++{
++    if (!bdmIsUDPBDLoaded() && (udpfsGetModulesLoaded() || gNetworkProtocol == NET_PROTO_UDPFS)) {
++        artDownloadStaged();
++        return;
++    }
++    unsigned char *body = NULL, *rgb = NULL;
++    const char *conflict = artNetworkConflict();
++
++    if (conflict != NULL) {
++        guiMsgBox(conflict, 0, NULL);
++        return;
++    }
++
++    artDone = artGot = artMissing = artFailed = 0;
++    artLine[0] = artLine2[0] = '\0';
++    artCount = 0;
++    artTargets = (art_target_t *)malloc(sizeof(art_target_t) * ART_MAX_GAMES);
++    body = (unsigned char *)malloc(ART_MAX_BYTES);
++    rgb = (unsigned char *)malloc(ART_HD_W * ART_HD_H * 3); // either size
++    if (artTargets == NULL || body == NULL || rgb == NULL) {
++        free(artTargets);
++        free(body);
++        free(rgb);
++        artTargets = NULL;
++        guiMsgBox(_t("Not enough memory for the cover download."), 0, NULL);
++        return;
++    }
++
++    artStage = _t("Looking for games without a cover...");
++    artDraw();
++    ioBlockOps(1); // the lists hold still while they are read
++    artCollect(-1);
++    ioBlockOps(0);
++    if (artCount == 0) {
++        free(artTargets);
++        free(body);
++        free(rgb);
++        artTargets = NULL;
++        guiMsgBox(_t("Every game in your started lists already has a cover. Start a drive's list first to look at its games."), 0, NULL);
++        return;
++    }
++
++    // build 125: the size, HD first; a game with a cover keeps it either way
++    {
++        int pick;
++        guiMsgBoxStartOption(_t("STANDARD"));
++        pick = guiMsgBox(_t("Download the covers in HD (280 x 400)? Sharper on an HD screen, about 70 KB each. START: Standard (140 x 200, as Open PS2 Loader's), about 20 KB each. A game that already has a cover keeps it."),
++                         1, NULL);
++        if (pick == 0) {
++            free(artTargets);
++            free(body);
++            free(rgb);
++            artTargets = NULL;
++            return;
++        }
++        artCovW = pick == 2 ? ART_STD_W : ART_HD_W;
++        artCovH = pick == 2 ? ART_STD_H : ART_HD_H;
++    }
++
++    artStage = _t("Starting the network...");
++    artDraw();
++    if (netLoadInitModules(NET_PROTO_SMB) != 0) {
++        free(artTargets);
++        free(body);
++        free(rgb);
++        artTargets = NULL;
++        // A background source startup may have claimed the NIC since entry.
++        conflict = artNetworkConflict();
++        guiMsgBox(conflict != NULL ? conflict : _t("The network did not start. Check the cable, and the IP settings on this page."), 0, NULL);
++        return;
++    }
++
++    artDownloadTargets(body, rgb, NULL, NULL);
+     free(body);
+     free(rgb);
+     free(artTargets);
+diff --git a/src/ripps2artjob.c b/src/ripps2artjob.c
+new file mode 100644
+--- /dev/null
++++ b/src/ripps2artjob.c
+@@ -0,0 +1,258 @@
++/* Durable UDPFS artwork staging. No network-stack or GUI dependencies. */
++#include "include/ripps2artjob.h"
++#include <stddef.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/stat.h>
++#include <errno.h>
++
++typedef struct {
++    char magic[8];
++    uint32_t bytes, hash;
++} art_receipt_t;
++
++static uint32_t jobHash(const void *data, size_t size)
++{
++    const unsigned char *p = data;
++    uint32_t h = 2166136261u;
++    while (size--) h = (h ^ *p++) * 16777619u;
++    return h;
++}
++
++static int jobReadExact(const char *path, void *data, size_t size)
++{
++    FILE *f = fopen(path, "rb");
++    int ok;
++    if (!f) return 0;
++    ok = fread(data, 1, size, f) == size && fgetc(f) == EOF && !ferror(f);
++    if (fclose(f) != 0) ok = 0;
++    return ok;
++}
++
++static int jobWriteExact(const char *path, const void *data, size_t size)
++{
++    FILE *f = fopen(path, "wb");
++    size_t done = 0;
++    if (!f) return 0;
++    while (done < size) {
++        size_t n = fwrite((const unsigned char *)data + done, 1, size - done, f);
++        if (!n) break;
++        done += n;
++    }
++    int ok = done == size && !ferror(f);
++    if (fclose(f) != 0) ok = 0;
++    return ok;
++}
++
++static int jobParents(const char *path)
++{
++    char dir[512];
++    if (strlen(path) >= sizeof(dir)) return 0;
++    strcpy(dir, path);
++    for (char *p = dir; *p; p++) {
++        if (*p != '/' || p == dir || p[-1] == ':') continue;
++        *p = 0;
++        struct stat st;
++        if (mkdir(dir, 0777) != 0 && (stat(dir, &st) != 0 || !S_ISDIR(st.st_mode))) return 0;
++        *p = '/';
++    }
++    return 1;
++}
++
++static int jobTargetValid(const art_job_target_t *t)
++{
++    /* Current UDPFS sources use the share root. Restrict persisted write targets
++       to ART/<disc-id>_COV, including the server's exact ART capitalization. */
++    if (!memchr(t->serial, 0, sizeof(t->serial)) || !memchr(t->path, 0, sizeof(t->path)) ||
++        !memchr(t->title, 0, sizeof(t->title)) || strlen(t->serial) != 10 || strlen(t->path) != 26)
++        return 0;
++    if (strncmp(t->path, "udpfs:/", 7) || (t->path[7] != 'A' && t->path[7] != 'a') ||
++        (t->path[8] != 'R' && t->path[8] != 'r') || (t->path[9] != 'T' && t->path[9] != 't') ||
++        t->path[10] != '/' || t->serial[4] != '-' || strcmp(t->path + 22, "_COV")) return 0;
++    for (int i = 0; i < 4; i++) if (t->serial[i] < 'A' || t->serial[i] > 'Z') return 0;
++    for (int i = 5; i < 10; i++) if (t->serial[i] < '0' || t->serial[i] > '9') return 0;
++    char key[32];
++    snprintf(key, sizeof(key), "%.4s_%.3s.%.2s_COV", t->serial, t->serial + 5, t->serial + 8);
++    return !strcmp(t->path + 11, key);
++}
++
++static int jobValid(const art_job_t *job)
++{
++    if (memcmp(job->magic, "R2ART01", 8) || !job->generation || !job->count || job->count > ART_JOB_MAX ||
++        !((job->width == 280 && job->height == 400) || (job->width == 140 && job->height == 200)) ||
++        !memchr(job->token, 0, sizeof(job->token)) || strlen(job->token) != 16 ||
++        job->checksum != jobHash(job, offsetof(art_job_t, checksum))) return 0;
++    for (int i = 0; i < 16; i++)
++        if (!((job->token[i] >= '0' && job->token[i] <= '9') || (job->token[i] >= 'a' && job->token[i] <= 'f'))) return 0;
++    for (unsigned int i = 0; i < job->count; i++) if (!jobTargetValid(&job->targets[i])) return 0;
++    return 1;
++}
++
++art_job_t *artJobLoad(const char *root)
++{
++    art_job_t *best = NULL, *next = malloc(sizeof(*next));
++    char path[256];
++    if (!next) return NULL;
++    for (int slot = 0; slot < 2; slot++) {
++        snprintf(path, sizeof(path), "%s/job%d.bin", root, slot);
++        if (jobReadExact(path, next, sizeof(*next)) && jobValid(next) &&
++            (!best || next->generation > best->generation)) {
++            art_job_t *swap = best;
++            best = next;
++            next = swap ? swap : malloc(sizeof(*next));
++            if (!next) break;
++        }
++    }
++    free(next);
++    return best;
++}
++
++int artJobCreate(const char *root, art_job_t *job, const art_job_target_t *targets,
++                 int count, int width, int height, uint32_t seed)
++{
++    char path[256];
++    art_job_t *previous;
++    uint32_t generation;
++    if (count <= 0 || count > ART_JOB_MAX || strlen(root) > 120) return 0;
++    previous = artJobLoad(root);
++    generation = previous ? previous->generation + 1 : 1;
++    free(previous);
++    if (!generation) return 0;
++    memset(job, 0, sizeof(*job));
++    memcpy(job->magic, "R2ART01", 8);
++    job->generation = generation;
++    job->count = count;
++    job->width = width;
++    job->height = height;
++    memcpy(job->targets, targets, count * sizeof(*targets));
++    /* An existing directory is never reused, including after lost manifests. */
++    int made = 0;
++    for (unsigned int n = 0; n < 10000; n++) {
++        snprintf(job->token, sizeof(job->token), "%08x%08x", (unsigned int)seed, (unsigned int)(generation + n));
++        snprintf(path, sizeof(path), "%s/%s/placeholder", root, job->token);
++        char dir[256];
++        snprintf(dir, sizeof(dir), "%s/%s", root, job->token);
++        struct stat st;
++        if (!stat(dir, &st)) continue;
++        if (!jobParents(path)) return 0;
++        made = 1;
++        break;
++    }
++    if (!made) return 0;
++    job->checksum = jobHash(job, offsetof(art_job_t, checksum));
++    if (!jobValid(job)) return 0;
++    snprintf(path, sizeof(path), "%s/job%u.bin", root, (unsigned int)(generation & 1));
++    if (!jobWriteExact(path, job, sizeof(*job))) return 0;
++    art_job_t *check = artJobLoad(root);
++    int ok = check && !memcmp(check, job, sizeof(*job));
++    free(check);
++    return ok;
++}
++
++int artJobStagePath(const char *root, const art_job_t *job, int index, char *out, int size)
++{
++    if (index < 0 || (unsigned int)index >= job->count || !jobTargetValid(&job->targets[index])) return 0;
++    int n = snprintf(out, size, "%s/%s/%s.png", root, job->token, job->targets[index].path + 7);
++    return n >= 0 && n < size;
++}
++
++static int jobReceiptPath(const char *root, const art_job_t *job, int index, char *out, int size)
++{
++    int n = snprintf(out, size, "%s/%s/%d.ok", root, job->token, index);
++    return n >= 0 && n < size;
++}
++
++int artJobRead(const char *root, const art_job_t *job, int index, unsigned char *data, int capacity)
++{
++    char path[512];
++    art_receipt_t receipt;
++    if (!jobReceiptPath(root, job, index, path, sizeof(path)) || !jobReadExact(path, &receipt, sizeof(receipt)) ||
++        memcmp(receipt.magic, "R2PNG01", 8) || !receipt.bytes || receipt.bytes > ART_JOB_BYTES ||
++        receipt.bytes > (unsigned int)capacity || !artJobStagePath(root, job, index, path, sizeof(path)) ||
++        !jobReadExact(path, data, receipt.bytes) || jobHash(data, receipt.bytes) != receipt.hash) return 0;
++    return receipt.bytes;
++}
++
++int artJobStore(const char *root, const art_job_t *job, int index, const unsigned char *data, int size)
++{
++    char path[512];
++    art_receipt_t receipt = {{0}, 0, 0};
++    if (size < 8 || size > ART_JOB_BYTES || memcmp(data, "\x89PNG\r\n\x1a\n", 8) ||
++        !artJobStagePath(root, job, index, path, sizeof(path)) || !jobParents(path)) return 0;
++    if (!jobWriteExact(path, data, size)) return 0;
++    /* Read back before publishing the receipt. A crash before it is retryable. */
++    FILE *f = fopen(path, "rb");
++    unsigned char block[2048];
++    int ok = f != NULL, offset = 0;
++    while (ok && offset < size) {
++        int n = size - offset < (int)sizeof(block) ? size - offset : (int)sizeof(block);
++        ok = fread(block, 1, n, f) == (size_t)n && !memcmp(block, data + offset, n);
++        offset += n;
++    }
++    if (f && fclose(f) != 0) ok = 0;
++    if (!ok) return 0;
++    memcpy(receipt.magic, "R2PNG01", 8);
++    receipt.bytes = size;
++    receipt.hash = jobHash(data, size);
++    return jobReceiptPath(root, job, index, path, sizeof(path)) && jobWriteExact(path, &receipt, sizeof(receipt));
++}
++
++static void jobServerMarker(const art_job_t *job, char *path, int size)
++{
++    snprintf(path, size, "udpfs:/RIPPS2/artwork-%s.job", job->token);
++}
++
++int artJobSameServer(const art_job_t *job)
++{
++    char path[128], token[24];
++    jobServerMarker(job, path, sizeof(path));
++    return jobReadExact(path, token, sizeof(token)) && !memcmp(token, job->token, sizeof(token));
++}
++
++int artJobMarkServer(const art_job_t *job)
++{
++    char path[128];
++    jobServerMarker(job, path, sizeof(path));
++    return jobParents(path) && jobWriteExact(path, job->token, sizeof(job->token)) && artJobSameServer(job);
++}
++
++/* 0 missing, 1 identical, 2 proper prefix, 3 different contents, 4 IO error. */
++static int jobCompare(const char *path, const unsigned char *data, int size)
++{
++    unsigned char block[2048];
++    FILE *f = fopen(path, "rb");
++    int done = 0, result = 3;
++    if (!f) return errno == ENOENT ? 0 : 4;
++    while (done < size) {
++        int want = size - done < (int)sizeof(block) ? size - done : (int)sizeof(block);
++        size_t n = fread(block, 1, want, f);
++        if (ferror(f)) { result = 4; goto end; }
++        if (memcmp(block, data + done, n)) goto end;
++        done += n;
++        if (!n) { result = 2; goto end; }
++    }
++    if (fgetc(f) == EOF && !ferror(f)) result = 1;
++end:
++    if (fclose(f) != 0) result = 4;
++    return result;
++}
++
++int artJobDeliver(const char *root, const art_job_t *job, int index, unsigned char *data, int capacity)
++{
++    char dest[272], pending[320], token[24];
++    int size = artJobRead(root, job, index, data, capacity);
++    if (!size || !artJobSameServer(job)) return 0;
++    snprintf(dest, sizeof(dest), "%s.png", job->targets[index].path);
++    snprintf(pending, sizeof(pending), "%s.%s.pending", dest, job->token);
++    int existing = jobCompare(dest, data, size);
++    if (existing == 4) return 0;
++    if (existing == 1) { remove(pending); return 1; }
++    if (existing != 0 && !(existing == 2 && jobReadExact(pending, token, sizeof(token)) &&
++                          !memcmp(token, job->token, sizeof(token)))) return 2;
++    if (!jobParents(dest) || !jobWriteExact(pending, job->token, sizeof(job->token)) ||
++        !jobReadExact(pending, token, sizeof(token)) || memcmp(token, job->token, sizeof(token))) return 0;
++    if (!jobWriteExact(dest, data, size) || jobCompare(dest, data, size) != 1) return 0;
++    remove(pending);
++    return 1;
++}
