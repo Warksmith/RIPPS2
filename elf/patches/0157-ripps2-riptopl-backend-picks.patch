@@ -10,6 +10,19 @@ index cdcdc103..d6ddaeb9 100644
  ./modules/usb/usbd-ra
  ./modules/bdmassault
  ./third_party/mbedtls
+diff --git a/.github/scripts/test_patch_zone_restore.py b/.github/scripts/test_patch_zone_restore.py
+index 823ae8c1..2d736e07 100644
+--- a/.github/scripts/test_patch_zone_restore.py
++++ b/.github/scripts/test_patch_zone_restore.py
+@@ -81,6 +81,8 @@ static const char *sbCheatsNotFoundText(void) { return ""; }
+ static const char *_l(int id) { (void)id; return ""; }
+ static int GetCheatsFromGlobalDefault(void) { return 0; }
+ static int guiMsgBox(const char *t, int accept, struct UIItem *ui) { (void)t; (void)accept; (void)ui; return answer; }
++/* RIPPS2 build 157 (RiptOPL's .hack//Infection IOP pad): a title list, no part of the patch zone. */
++static int sbNeedsIopPad(config_set_t *c) { (void)c; return 0; }
+ 
+ @FUNCTIONS@
+ 
 diff --git a/Makefile b/Makefile
 index 49a2fd7f..be7c5469 100644
 --- a/Makefile
