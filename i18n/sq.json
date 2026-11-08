@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Bashko një `.tar` në një tjetër** (ndërtimi 123). Paketo një herë një pajisje të madhe si kryesore, pastaj më vonë paketo vetëm figurat e lojërave të reja dhe bashko atë `.tar` të vogël në të, në vend që të ripaketosh çdo dosje ART. Në Memory Files, Trekëndësh mbi një `.tar` > **MERGE A .TAR INTO THIS**: ai `.tar` është ai që mbahet, dhe RIPPS2 rendit të tjerët për t'u bashkuar (në atë dosje, në dosjen ART të çdo pajisjeje të nisur dhe në rrënjën e saj). Cache > ART Pack ofron të njëjtën gjë për paketën në përdorim, dhe menjëherë pasi ndërtohet një paketë. Një figurë që është te të dy vjen nga `.tar`-i i shtuar, dhe dy listat e lojërave bëhen një. Bashkimi shkruhet pranë `.tar`-it që mbahet dhe merr emrin e tij vetëm kur çdo bajt është në pajisje, kështu që një ndalim, një pajisje e mbushur ose një kartë e nxjerrë e lënë atë që mbahet ashtu siç ishte. Në fund një kuti emërton të dy skedarët dhe pyet nëse të fshihet ai i shtuari (START e fshin, Back e mban); ai që mbahet nuk ofrohet kurrë."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[Përshkrimi i versionit dhe i PR](docs/udpfs-layout-compatibility-release-and-pr.md) shpjegon ndryshimet në strukturë, trajtimin e meta të dhënave të serverit, rregullimin e ngrirjes gjatë nisjes dhe rezultatet e verifikimit të build-eve 145 dhe 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) nga lieff (CC0 1.0, domen publik): luajtja e MP3 në Memory Files dhe AUDIO, që nga ndërtimi 115, e pandryshuar në `thirdparty/minimp3` të RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [Reel-i i v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | v1.1.0, e montuar mbi Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Dega IGR:** L1 + L2 + R1 + R2 + SELECT + START mund të kthehet në RIPPS2 përmes Neutrino LUNA, duke rikthyer kartën e nisjes MMCE. Bërthama e integruar OPL rikthen gjithashtu kartën dhe kanalin e numëruar që kapi para se të kthehet. Shih [IGR: konfigurimi, kërkesat dhe verifikimi](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Raftin e kukudhëve, para shtyllave |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Biblioteka lojërash përmes UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Ku shkojnë AUDIO dhe MEDIA.** Mbaje `AUDIO` pranë `RIPPS2.elf`, në pajisjen nga e cila niset RIPPS2: nisja e lexon të parën, dhe me **Fast Boot** të ndezur (Settings > Game Sources > Cache) tingulli i nisjes lexohet bashkë me cilësimet, para se të nisin pajisjet dhe listat, kështu që tashmë po luan kur shfaqet kuadri i parë i kullave (që nga ndërtimi 118). RIPPS2 në një kartë memorieje me `AUDIO` në një pajisje: pas **BIOS Sounds > Rip**, START kopjon vetëm `boot.adp` (rreth 360 KB) pranë RIPPS2 në kartë, kështu që tingulli i nisjes luan ndërsa ngrihen shtyllat dhe jo kur pajisja të jetë gati (që nga ndërtimi 121). Mbaj aty vetëm atë që luajnë menytë. `MEDIA` (CD dhe DVD video të nxjerra, pamje në madhësi të plotë) është për pajisjen tënde më të madhe: asgjë prej saj nuk lexohet në nisje, kështu që sa shpejt lexon ajo pajisje ka pak rëndësi."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): telemetri RetroAchievements përmes klientit [xeRAbora](https://github.com/hacan359/xerabora) në kompjuterin tënd (i fiksuar te [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), distinktivë në lojërat e ndjekura, disku në tabaka, dhe **YOUR ACCOUNT**, çdo lojë që ke kontrolluar me atë që ke zhbllokuar dhe, me xeRAbora të hapur në rrjet, **LEFT TO HUNT**: çdo arritje e bllokuar dhe si ta fitosh."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files pranon dosjet `CD/` dhe `DVD/` të OPL pranë skedarëve ISO, në rrënjën e burimit të ndarë ose në nëndosje të zakonshme. Lojërat që i shpaketon serveri ruajnë emrat e tyre virtualë `.iso`, kështu që të njëjtën bibliotekë mund ta përdorin edhe LUNA dhe Neutrino. Shih [Përputhshmëria e UDPFS](docs/udpfs-compatibility.md) për shfletimin, mbështetjen e serverëve dhe kufijtë e formateve."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

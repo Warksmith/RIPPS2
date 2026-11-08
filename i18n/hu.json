@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Olvassz egy `.tar` fájlt egy másikba** (123-as build). Csomagolj be egyszer egy nagy meghajtót mesterként, később pedig csak az új játékok képeit csomagold be, és olvaszd ezt a kis `.tar` fájlt bele, ahelyett hogy minden ART mappát újra becsomagolnál. A Memory Filesban: Háromszög egy `.tar` fájlon > **MERGE A .TAR INTO THIS**: ez a `.tar` marad meg, a RIPPS2 pedig felsorolja a többit, amelyeket beleolvaszthatsz (abban a mappában, minden elindított meghajtó ART mappájában és a gyökerében). A Cache > ART Pack ugyanezt kínálja a használt csomaghoz, és közvetlenül egy csomag elkészülte után is. Egy kép, amely mindkettőben megvan, a beolvasztott `.tar` fájlból jön, és a két játéklista eggyé válik. Az összeolvasztás a megtartott `.tar` mellé íródik, és csak akkor kapja meg a nevét, amikor minden bájt a meghajtón van, így egy leállás, egy megtelt meghajtó vagy egy kihúzott kártya a megtartottat olyan állapotban hagyja, amilyen volt. A végén egy ablak megnevezi mindkét fájlt, és megkérdezi, törölje-e a beolvasztottat (a START törli, a Back megtartja); a megtartottat sosem ajánlja fel."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "A [kiadás és a PR leírása](docs/udpfs-layout-compatibility-release-and-pr.md) elmagyarázza az elrendezés változásait, a szerver metaadatainak kezelését, az indításkori lefagyás javítását és a 145-ös és 146-os build ellenőrzési eredményeit."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- lieff [minimp3](https://github.com/lieff/minimp3) könyvtára (CC0 1.0, közkincs): MP3-lejátszás a Memory Filesban és az AUDIO-ban, a 115-ös buildtől, változatlanul a RiptOPL `thirdparty/minimp3` mappájában."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [A v1.1.0 reelje](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | A v1.1.0, az Over the Rainbow-ra vágva |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**IGR-ág:** L1 + L2 + R1 + R2 + SELECT + START a Neutrino LUNA-n át visszatérhet a RIPPS2-be, és visszaállítja az MMCE indítókártyát. A beépített OPL-mag is visszaállítja a rögzített számozott kártyát és csatornát a visszatérés előtt. Lásd [IGR: beállítás, követelmények és ellenőrzés](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | A manópolcot, az oszlopok előtt |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Játékkönyvtárak UDPFS-en"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Hová kerül az AUDIO és a MEDIA.** Tartsd az `AUDIO` mappát a `RIPPS2.elf` mellett, azon a meghajtón, amelyről a RIPPS2 indul: az indítás ezt olvassa először, és bekapcsolt **Fast Boot** mellett (Settings > Game Sources > Cache) az indítóhangot a beállításokkal együtt olvassa be, mielőtt a meghajtók és a listák elindulnának, így már szól, amikor a tornyok első képkockája megjelenik (a 118-as buildtől). RIPPS2 memóriakártyán, `AUDIO` egy meghajtón: a **BIOS Sounds > Rip** után a START csak a `boot.adp` fájlt (kb. 360 KB) másolja a kártyán a RIPPS2 mellé, így az indítóhang akkor szól, amikor az oszlopok emelkednek, nem csak amikor a meghajtó készen áll (a 121-es buildtől). Csak azt tartsd ott, amit a menük játszanak. A `MEDIA` (rippelt CD-k és DVD-videók, teljes méretű képek) a legnagyobb meghajtódra való: induláskor semmit sem olvas belőle, így az a meghajtó milyen gyorsan olvas, keveset számít."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): RetroAchievements-telemetria a [xeRAbora](https://github.com/hacan359/xerabora) kliensen keresztül a gépeden (a [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18) verzióhoz rögzítve), jelvények a követett játékokon, a tálcán lévő lemez, és a **YOUR ACCOUNT**, minden ellenőrzött játék azzal, amit feloldottál, és ha a xeRAbora nyitva van a hálózat felé, a **LEFT TO HUNT**: minden zárolt teljesítmény, és hogyan szerezheted meg."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "Az UDPFS Files elfogadja az OPL `CD/` és `DVD/` mappáit az ISO-k mellett, a megosztás gyökerében vagy sima almappákban. A szerver által kicsomagolt játékok megtartják virtuális `.iso` nevüket, így ugyanazt a könyvtárat a LUNA és a Neutrino is használhatja. Lásd [UDPFS-kompatibilitás](docs/udpfs-compatibility.md) a böngészésről, a szerverek támogatásáról és a formátumok korlátairól."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Îmbină un `.tar` în altul** (build 123). Împachetează o dată o unitate mare ca principală, apoi împachetează doar imaginile jocurilor noi și îmbină acel `.tar` mic în ea, în loc să reîmpachetezi fiecare folder ART. În Memory Files, Triunghi pe un `.tar` > **MERGE A .TAR INTO THIS**: acel `.tar` e cel păstrat, iar RIPPS2 le listează pe celelalte de îmbinat (în acel folder, în folderul ART al fiecărei unități pornite și în rădăcina ei). Cache > ART Pack oferă același lucru pentru pachetul folosit, și imediat după ce se face un pachet. O imagine care e în ambele vine din `.tar`-ul adăugat, iar cele două liste de jocuri devin una. Îmbinarea e scrisă lângă `.tar`-ul păstrat și îi ia numele doar când fiecare octet e pe unitate, așa că o oprire, o unitate plină sau un card scos îl lasă pe cel păstrat cum era. La final, o casetă numește ambele fișiere și întreabă dacă să-l șteargă pe cel adăugat (START îl șterge, Back îl păstrează); cel păstrat nu e oferit niciodată."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[Descrierea versiunii și a PR-ului](docs/udpfs-layout-compatibility-release-and-pr.md) explică schimbările de structură, tratarea metadatelor serverului, remedierea blocării la lansare și rezultatele verificării build-urilor 145 și 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) de la lieff (CC0 1.0, domeniu public): redarea MP3 în Memory Files și AUDIO, din build-ul 115, nemodificat în `thirdparty/minimp3` al RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [Reel-ul pentru v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | v1.1.0, montată pe Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Ramura IGR:** L1 + L2 + R1 + R2 + SELECT + START poate reveni în RIPPS2 prin Neutrino LUNA, restaurând cardul de pornire MMCE. Nucleul OPL integrat restaurează și cardul și canalul numerotate capturate înainte de revenire. Vezi [IGR: configurare, cerințe și verificare](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Raftul cu elfi, în fața stâlpilor |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Biblioteci de jocuri prin UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Unde merg AUDIO și MEDIA.** Ține `AUDIO` lângă `RIPPS2.elf`, pe unitatea de pe care pornește RIPPS2: pornirea îl citește primul, iar cu **Fast Boot** activat (Settings > Game Sources > Cache) sunetul de pornire e citit odată cu setările, înainte să pornească unitățile și listele, așa că deja cântă când apare primul cadru al turnurilor (din build-ul 118). RIPPS2 pe un card de memorie cu `AUDIO` pe o unitate: după **BIOS Sounds > Rip**, START copiază doar `boot.adp` (cam 360 KB) lângă RIPPS2 pe card, așa că sunetul de pornire cântă în timp ce se ridică stâlpii, nu abia când unitatea e gata (din build-ul 121). Păstrează acolo doar ce redau meniurile. `MEDIA` (CD-uri și DVD video scoase, capturi la mărime completă) e pentru cea mai mare unitate a ta: nimic din el nu e citit la pornire, așa că viteza de citire a acelei unități contează puțin."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): telemetrie RetroAchievements prin clientul [xeRAbora](https://github.com/hacan359/xerabora) de pe PC-ul tău (fixat la [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), insigne pe jocurile urmărite, discul din tavă și **YOUR ACCOUNT**, fiecare joc pe care l-ai verificat cu ce ai deblocat și, cu xeRAbora deschis către rețea, **LEFT TO HUNT**: fiecare realizare blocată și cum o obții."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files acceptă folderele OPL `CD/` și `DVD/` alături de ISO-uri, în rădăcina partajării sau în subfoldere obișnuite. Jocurile decomprimate de server își păstrează numele `.iso` virtuale, așa că aceeași bibliotecă poate fi folosită și de LUNA și Neutrino. Vezi [Compatibilitatea UDPFS](docs/udpfs-compatibility.md) pentru navigare, suportul serverelor și limitele formatelor."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

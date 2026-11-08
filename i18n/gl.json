@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Fusiona un `.tar` noutro** (build 123). Empaqueta unha unidade grande unha vez como mestre e, máis adiante, empaqueta só a arte dos xogos novos e fusiona ese `.tar` pequeno nel, no canto de volver empaquetar todos os cartafoles ART. En Memory Files, Triángulo sobre un `.tar` > **MERGE A .TAR INTO THIS**: ese `.tar` é o que se conserva, e RIPPS2 lista os demais para fusionar (nese cartafol, no cartafol ART de cada unidade iniciada e na súa raíz). Cache > ART Pack ofrece o mesmo para o paquete en uso, e xusto despois de crear un paquete. Unha imaxe que está nos dous sae do `.tar` fusionado, e as dúas listas de xogos pasan a ser unha. A fusión escríbese xunto ao `.tar` conservado e só toma o seu nome cando cada byte está na unidade, así que unha parada, unha unidade chea ou unha tarxeta retirada deixan o conservado como estaba. Ao final un cadro nomea os dous ficheiros e pregunta se borrar o fusionado (START bórrao, Back consérvao); o conservado nunca se ofrece."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "O [informe da versión e do PR](docs/udpfs-layout-compatibility-release-and-pr.md) explica os cambios de estrutura, o manexo dos metadatos do servidor, a corrección do bloqueo ao lanzar e os resultados de validación das builds 145 e 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) de lieff (CC0 1.0, dominio público): a reprodución de MP3 en Memory Files e AUDIO, desde a build 115, sen cambios en `thirdparty/minimp3` de RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [O reel da v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | A v1.1.0, montada con Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Rama IGR:** L1 + L2 + R1 + R2 + SELECT + START pode volver a RIPPS2 a través de Neutrino LUNA, restaurando a tarxeta de arranque MMCE. O núcleo OPL integrado tamén restaura a tarxeta e a canle numeradas que capturou antes de volver. Consulta [Configuración, requisitos e validación de IGR](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | O andel dos elfos, diante dos piares |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Bibliotecas de xogos por UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Onde van AUDIO e MEDIA.** Deixa `AUDIO` xunto a `RIPPS2.elf`, na unidade desde a que arranca RIPPS2: o arranque leo primeiro, e con **Fast Boot** activado (Settings > Game Sources > Cache) o son de arranque lese cos axustes, antes de que arranquen as unidades e as listas, así que xa soa cando aparece o primeiro fotograma das torres (desde a build 118). RIPPS2 nunha tarxeta de memoria con `AUDIO` nunha unidade: tras **BIOS Sounds > Rip**, START copia só `boot.adp` (uns 360 KB) xunto a RIPPS2 na tarxeta, así o son de arranque soa mentres soben os piares e non cando a unidade xa está lista (desde a build 121). Deixa alí só o que soan os menús. `MEDIA` (CD e DVD vídeo extraídos, capturas a tamaño completo) é para a túa unidade máis grande: nada dela se le ao arrancar, así que o rápido que lea esa unidade importa pouco."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): telemetría de RetroAchievements a través do cliente [xeRAbora](https://github.com/hacan359/xerabora) no teu PC (fixado na [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), insignias nos xogos seguidos, o disco da bandexa e **YOUR ACCOUNT**, cada xogo que comprobaches co que desbloqueaches e, con xeRAbora aberto á rede, **LEFT TO HUNT**: cada logro bloqueado e como conseguilo."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files acepta os cartafoles `CD/` e `DVD/` de OPL xunto ás ISO, na raíz do recurso compartido ou en subcartafoles normais. Os xogos que descomprime o servidor conservan os seus nomes `.iso` virtuais, así que LUNA e Neutrino poden usar a mesma biblioteca. Consulta [Compatibilidade de UDPFS](docs/udpfs-compatibility.md) para a navegación, o soporte de servidores e os límites de formato."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

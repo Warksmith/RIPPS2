@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Spoji jedan `.tar` u drugi** (build 123). Zapakiraj velik pogon jednom kao glavni, a kasnije zapakiraj samo slike novih igara i spoji taj mali `.tar` u njega, umjesto da ponovno pakiraš svaku mapu ART. U Memory Files: Trokut na `.tar` > **MERGE A .TAR INTO THIS**: taj `.tar` je onaj koji ostaje, a RIPPS2 navodi ostale za spajanje (u toj mapi, u mapi ART svakog pokrenutog pogona i u njegovom korijenu). Cache > ART Pack nudi isto za paket u upotrebi, i odmah nakon izrade paketa. Slika koja je u oba dolazi iz pripojenog `.tar`, a dva popisa igara postaju jedan. Spajanje se zapisuje pokraj zadržanog `.tar` i preuzima njegovo ime tek kad je svaki bajt na pogonu, pa prekid, pun pogon ili izvađena kartica ostavljaju zadržani kakav je bio. Na kraju okvir navodi obje datoteke i pita treba li obrisati pripojenu (START je briše, Back je zadržava); zadržana se nikad ne nudi."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[Opis izdanja i PR-a](docs/udpfs-layout-compatibility-release-and-pr.md) objašnjava promjene rasporeda, rukovanje metapodacima poslužitelja, ispravak zamrzavanja pri pokretanju i rezultate provjere buildova 145 i 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) od lieffa (CC0 1.0, javna domena): reprodukcija MP3-a u Memory Filesu i AUDIO, od builda 115, nepromijenjena u RiptOPL-ovom `thirdparty/minimp3`."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [Reel za v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | v1.1.0, montirana uz Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**IGR grana:** L1 + L2 + R1 + R2 + SELECT + START može se vratiti u RIPPS2 kroz Neutrino LUNA, uz vraćanje MMCE kartice za pokretanje. Ugrađena OPL jezgra prije povratka također vraća uhvaćenu numeriranu karticu i kanal. Pogledaj [IGR: postavljanje, zahtjevi i provjera](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Policu s vilenjacima, ispred stupova |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Knjižnice igara preko UDPFS-a"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Kamo idu AUDIO i MEDIA.** Drži `AUDIO` pokraj `RIPPS2.elf`, na pogonu s kojeg se RIPPS2 pokreće: pokretanje je čita prvu, a s uključenim **Fast Boot** (Settings > Game Sources > Cache) zvuk pokretanja čita se s postavkama, prije nego se pokrenu pogoni i popisi, pa već svira kad se pojavi prva sličica kula (od builda 118). RIPPS2 na memorijskoj kartici s `AUDIO` na pogonu: nakon **BIOS Sounds > Rip**, START kopira samo `boot.adp` (oko 360 KB) pokraj RIPPS2 na karticu, pa zvuk pokretanja svira dok se stupovi dižu, a ne tek kad je pogon spreman (od builda 121). Drži tamo samo ono što sviraju izbornici. `MEDIA` (ripani CD-ovi i DVD video, snimke pune veličine) je za tvoj najveći pogon: ništa iz nje se ne čita pri pokretanju, pa brzina čitanja tog pogona malo znači."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): RetroAchievements telemetrija kroz klijent [xeRAbora](https://github.com/hacan359/xerabora) na tvom računalu (prikovan na [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), značke na praćenim igrama, disk u ladici i **YOUR ACCOUNT**, svaka igra koju si provjerio s onim što si otključao i, kad je xeRAbora otvoren prema mreži, **LEFT TO HUNT**: svako zaključano postignuće i kako ga zaslužiti."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files prihvaća OPL mape `CD/` i `DVD/` uz ISO datoteke, u korijenu dijeljenog resursa ili u običnim podmapama. Igre koje poslužitelj raspakira zadržavaju virtualna imena `.iso`, pa istu knjižnicu mogu koristiti i LUNA i Neutrino. Pogledaj [Kompatibilnost UDPFS-a](docs/udpfs-compatibility.md) za pregledavanje, podršku poslužitelja i ograničenja formata."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

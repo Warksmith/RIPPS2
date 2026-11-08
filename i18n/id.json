@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Gabungkan satu `.tar` ke yang lain** (build 123). Kemas drive besar sekali sebagai induk, lalu nanti hanya kemas gambar game baru dan gabungkan `.tar` kecil itu ke dalamnya, alih-alih mengemas ulang setiap folder ART. Di Memory Files, segitiga pada `.tar` > **MERGE A .TAR INTO THIS**: `.tar` itulah yang disimpan, dan RIPPS2 mendaftar yang lain untuk digabungkan (di folder yang sama, di folder ART setiap drive yang sudah dimulai, dan di akarnya). Cache > ART Pack menawarkan hal yang sama untuk paket yang sedang dipakai, dan tepat setelah membuat paket. Gambar yang ada di keduanya diambil dari `.tar` yang ditambahkan, dan dua daftar game menjadi satu. Hasil gabungan ditulis di samping `.tar` yang disimpan dan baru mengambil namanya saat setiap byte sudah ada di drive, jadi berhenti di tengah, drive penuh, atau kartu yang dicabut membiarkan yang disimpan seperti semula. Di akhir sebuah dialog menyebut kedua nama berkas dan bertanya apakah yang ditambahkan dihapus (START menghapus, Back menyimpan); yang disimpan tidak pernah ditawarkan."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[Tulisan rilis dan PR](docs/udpfs-layout-compatibility-release-and-pr.md) menjelaskan perubahan tata letak, penanganan metadata server, perbaikan macet saat peluncuran, dan hasil validasi build 145 dan 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) oleh lieff (CC0 1.0, domain publik): pemutaran MP3 di Memory Files dan AUDIO, sejak build 115, tanpa diubah di `thirdparty/minimp3` RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [Video perkenalan v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | v1.1.0, disunting mengikuti Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Cabang IGR:** L1 + L2 + R1 + R2 + SELECT + START bisa kembali ke RIPPS2 lewat Neutrino LUNA, sambil memulihkan kartu boot MMCE. Inti OPL bawaan juga memulihkan kartu dan kanal bernomor yang direkam sebelum kembali. Lihat [Penyiapan, persyaratan, dan validasi IGR](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Rak peri, di depan pilar |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Pustaka game lewat UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Di mana menaruh AUDIO dan MEDIA.** Simpan `AUDIO` di samping `RIPPS2.elf`, di drive tempat RIPPS2 melakukan boot: boot membacanya lebih dulu, dan dengan **Fast Boot** aktif (Settings > Game Sources > Cache) suara boot dibaca bersama pengaturan, sebelum drive dan daftar dimulai, sehingga sudah berbunyi saat bingkai pertama menara muncul (sejak build 118). RIPPS2 di memory card dan `AUDIO` di sebuah drive: setelah **BIOS Sounds > Rip**, START hanya menyalin `boot.adp` (sekitar 360 KB) ke samping RIPPS2 di kartu, sehingga suara boot berbunyi saat pilar naik, bukan saat drive siap (sejak build 121). Simpan di sana hanya yang diputar menu. `MEDIA` (CD dan DVD video hasil rip, bidikan ukuran penuh) untuk drive terbesar Anda: tidak ada isinya yang dibaca saat boot, jadi kecepatan baca drive itu tidak terlalu penting."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): telemetri RetroAchievements melalui klien [xeRAbora](https://github.com/hacan359/xerabora) di PC Anda (dikunci pada [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), lencana pada game yang dilacak, disk di baki, dan **YOUR ACCOUNT**: setiap game yang sudah Anda periksa beserta apa yang terbuka, dan saat xeRAbora terbuka ke jaringan, **LEFT TO HUNT**: setiap pencapaian yang masih terkunci dan cara mendapatkannya."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files menerima folder OPL `CD/` dan `DVD/` di samping ISO, di root share atau di subfolder biasa. Game yang didekompresi server tetap memakai nama `.iso` virtualnya, jadi satu pustaka juga bisa dipakai LUNA dan Neutrino. Lihat [Kompatibilitas UDPFS](docs/udpfs-compatibility.md) untuk penjelajahan, dukungan server, dan batas format."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Unisci un `.tar` a un altro** (build 123). Impacchetta una grande unità una volta come master, poi più avanti impacchetta solo le immagini dei giochi nuovi e unisci quel piccolo `.tar` al master, invece di reimpacchettare tutte le cartelle ART. In Memory Files, Triangolo su un `.tar` > **MERGE A .TAR INTO THIS**: quel `.tar` è quello che resta, e RIPPS2 elenca gli altri da unire (in quella cartella, nella cartella ART di ogni unità avviata e nella sua radice). Cache > ART Pack offre lo stesso per il pacchetto in uso, e subito dopo aver creato un pacchetto. Un'immagine presente in entrambi viene dal `.tar` unito, e le due liste di giochi diventano una. L'unione viene scritta accanto al `.tar` che resta e ne prende il nome solo quando ogni byte è sull'unità, così un'interruzione, un'unità piena o una card estratta lasciano quello che resta com'era. Alla fine una finestra nomina entrambi i file e chiede se eliminare quello unito (START lo elimina, Back lo tiene); quello che resta non viene mai proposto."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "Il [resoconto della release e della PR](docs/udpfs-layout-compatibility-release-and-pr.md) spiega le modifiche alla struttura, la gestione dei metadati del server, la correzione del blocco all’avvio e i risultati di verifica delle build 145 e 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) di lieff (CC0 1.0, pubblico dominio): la riproduzione MP3 in Memory Files e AUDIO, dalla build 115, senza modifiche in `thirdparty/minimp3` di RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [Il reel della v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | La v1.1.0, montata su Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Ramo IGR:** L1 + L2 + R1 + R2 + SELECT + START può tornare a RIPPS2 tramite Neutrino LUNA, ripristinando la scheda di avvio MMCE. Anche il core OPL integrato ripristina la scheda e il canale numerati catturati prima di tornare. Vedi [Configurazione, requisiti e verifica dell’IGR](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Lo scaffale degli elfi, davanti ai pilastri |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Librerie di giochi via UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Dove vanno AUDIO e MEDIA.** Tieni `AUDIO` accanto a `RIPPS2.elf`, sull'unità da cui parte RIPPS2: l'avvio la legge per prima, e con **Fast Boot** attivo (Settings > Game Sources > Cache) il suono di avvio viene letto insieme alle impostazioni, prima che partano unità e liste, così suona già quando compare il primo fotogramma delle torri (dalla build 118). RIPPS2 su una memory card con `AUDIO` su un'unità: dopo **BIOS Sounds > Rip**, START copia solo `boot.adp` (circa 360 KB) accanto a RIPPS2 sulla card, così il suono di avvio suona mentre i pilastri salgono invece che quando l'unità è pronta (dalla build 121). Tieni lì solo ciò che suonano i menu. `MEDIA` (CD e DVD video rippati, scatti a dimensione piena) è per la tua unità più grande: niente al suo interno viene letto all'avvio, quindi quanto è veloce quell'unità conta poco."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): telemetria di RetroAchievements tramite il client [xeRAbora](https://github.com/hacan359/xerabora) sul tuo PC (fissato alla [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), badge sui giochi tracciati, il disco nel cassetto, e **YOUR ACCOUNT**, ogni gioco che hai controllato con ciò che hai sbloccato e, con xeRAbora aperto alla rete, **LEFT TO HUNT**: ogni obiettivo bloccato e come ottenerlo."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files accetta le cartelle `CD/` e `DVD/` di OPL insieme alle ISO, nella radice della condivisione o in sottocartelle normali. I giochi decompressi dal server mantengono i loro nomi `.iso` virtuali, quindi la stessa libreria può servire anche LUNA e Neutrino. Vedi [Compatibilità UDPFS](docs/udpfs-compatibility.md) per la navigazione, il supporto dei server e i limiti dei formati."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

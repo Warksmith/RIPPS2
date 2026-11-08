@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Gộp một `.tar` vào cái khác** (bản dựng 123). Gói một ổ lớn một lần làm bản chính, sau đó chỉ gói ảnh của các game mới và gộp `.tar` nhỏ đó vào, thay vì gói lại mọi thư mục ART. Trong Memory Files, tam giác trên một `.tar` > **MERGE A .TAR INTO THIS**: `.tar` đó là cái được giữ, và RIPPS2 liệt kê những cái khác để gộp vào (trong cùng thư mục, trong thư mục ART của mỗi ổ đã khởi động và ở gốc của nó). Cache > ART Pack đề xuất điều tương tự cho gói đang dùng, và ngay sau khi làm một gói. Ảnh có ở cả hai lấy từ `.tar` được thêm vào, và hai danh sách game thành một. Bản gộp được ghi cạnh `.tar` được giữ và chỉ lấy tên của nó khi mọi byte đã nằm trên ổ, nên một lần dừng, ổ đầy hay thẻ bị rút ra đều để cái được giữ nguyên như cũ. Cuối cùng một hộp thoại nêu tên cả hai tệp và hỏi có xóa cái được thêm không (START xóa, Back giữ); cái được giữ không bao giờ được đề xuất xóa."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[Bài viết về bản phát hành và PR](docs/udpfs-layout-compatibility-release-and-pr.md) giải thích các thay đổi bố cục, cách xử lý siêu dữ liệu của máy chủ, bản sửa lỗi treo khi khởi chạy và kết quả kiểm chứng của bản dựng 145 và 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) của lieff (CC0 1.0, phạm vi công cộng): phát MP3 trong Memory Files và AUDIO, từ bản dựng 115, không chỉnh sửa trong `thirdparty/minimp3` của RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [Video giới thiệu v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | v1.1.0, dựng theo Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Nhánh IGR:** L1 + L2 + R1 + R2 + SELECT + START có thể quay về RIPPS2 qua Neutrino LUNA, đồng thời khôi phục thẻ khởi động MMCE. Lõi OPL tích hợp cũng khôi phục thẻ và kênh có đánh số đã ghi lại trước khi quay về. Xem [IGR: thiết lập, yêu cầu và kiểm chứng](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Kệ yêu tinh, trước các cột trụ |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Thư viện game qua UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Đặt AUDIO và MEDIA ở đâu.** Giữ `AUDIO` cạnh `RIPPS2.elf`, trên ổ mà RIPPS2 khởi động từ đó: khởi động đọc nó đầu tiên, và với **Fast Boot** bật (Settings > Game Sources > Cache) âm thanh khởi động được đọc cùng cài đặt, trước khi các ổ và danh sách bắt đầu, nên nó đã đang phát khi khung hình đầu tiên của các tòa tháp xuất hiện (từ bản dựng 118). RIPPS2 trên thẻ nhớ và `AUDIO` trên một ổ: sau **BIOS Sounds > Rip**, START chỉ chép `boot.adp` (khoảng 360 KB) cạnh RIPPS2 trên thẻ, để âm thanh khởi động vang lên khi các cột trụ dâng lên chứ không phải khi ổ sẵn sàng (từ bản dựng 121). Chỉ giữ ở đó những gì menu phát. `MEDIA` (CD và DVD video đã rip, ảnh cỡ đầy đủ) dành cho ổ lớn nhất của bạn: không gì trong đó được đọc khi khởi động, nên tốc độ đọc của ổ đó ít quan trọng."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): đo từ xa RetroAchievements qua ứng dụng [xeRAbora](https://github.com/hacan359/xerabora) trên máy tính của bạn (cố định ở [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), huy hiệu trên các game được theo dõi, chiếc đĩa trong khay, và **YOUR ACCOUNT**: mọi game bạn đã kiểm tra cùng những gì đã mở khóa, và khi xeRAbora mở ra mạng, **LEFT TO HUNT**: mọi thành tích còn khóa và cách đạt được."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files nhận các thư mục `CD/` và `DVD/` của OPL cùng với ISO, ở gốc thư mục chia sẻ hoặc trong các thư mục con thông thường. Game do máy chủ giải nén giữ tên `.iso` ảo của chúng, nên LUNA và Neutrino cũng dùng được cùng một thư viện. Xem [Tương thích UDPFS](docs/udpfs-compatibility.md) về duyệt, hỗ trợ máy chủ và giới hạn định dạng."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

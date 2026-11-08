@@ -193,13 +193,15 @@ Sukad sa build 118, giputos sa **Settings > Game Sources > Cache > ART Pack** an
 
 **Isagol ang usa ka `.tar` ngadto sa lain** (build 123). Putosa kausa ang dako nga drive isip master, unya sa sunod ang mga hulagway lang sa bag-ong mga dula ug isagol kanang gamay nga `.tar`, imbes putuson pag-usab ang matag ART folder. Sa Memory Files, Triangle sa usa ka `.tar` > **MERGE A .TAR INTO THIS**: kana nga `.tar` ang tipigan, ug ilista sa RIPPS2 ang uban nga masagol (sa samang folder, sa ART folder sa matag nasugdang drive ug sa root niini). Itanyag usab sa Cache > ART Pack ang pareho para sa pack nga gigamit, ug dayon human sa paghimo og pack. Ang hulagway nga anaa sa duha kuhaon gikan sa gidugang nga `.tar`, ug mahimong usa ang duha ka lista sa dula. Isulat ang nasagol tupad sa gitipigan nga `.tar` ug kuhaon lang ang ngalan niini kon anaa na sa drive ang matag byte, busa ang paghunong, puno nga drive, o gibira nga card magbilin sa gitipigan sama sa kaniadto. Sa katapusan, isulti sa usa ka dialog ang duha ka ngalan sa file ug mangutana kon papason ba ang gidugang (gipapas sa START, gitipigan sa Back); dili gayud itanyag ang gitipigan.
 
-## UDPFS game libraries
+<a id="udpfs-game-libraries"></a>
 
-UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+## Mga librarya sa dula pinaagi sa UDPFS
 
-**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+Ang UDPFS Files modawat sa mga folder nga `CD/` ug `DVD/` sa OPL uban sa mga ISO, sa root sa share o sa ordinaryong mga subfolder. Ang mga dula nga gi-decompress sa server magpabilin sa ilang virtual nga ngalan nga `.iso`, busa magamit usab sa LUNA ug Neutrino ang samang librarya. Tan-awa ang [Compatibility sa UDPFS](docs/udpfs-compatibility.md) para sa pag-browse, suporta sa server ug mga limitasyon sa format.
 
-The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+**Sanga sa IGR:** Ang L1 + L2 + R1 + R2 + SELECT + START makabalik sa RIPPS2 pinaagi sa Neutrino LUNA, ug ibalik ang MMCE boot card. Ibalik usab sa built-in nga OPL core ang nakuha nga may numero nga card ug channel sa dili pa mobalik. Tan-awa ang [Setup, mga kinahanglanon ug pag-validate sa IGR](docs/igr.md).
+
+Ang [paghulagway sa release ug PR](docs/udpfs-layout-compatibility-release-and-pr.md) nagpatin-aw sa mga kausaban sa layout, sa pagdumala sa metadata sa server, sa ayo sa pag-freeze sa paglansad ug sa mga resulta sa pag-validate sa mga build 145 ug 146.
 
 <a id="your-hardware"></a>
 

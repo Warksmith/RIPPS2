@@ -193,13 +193,15 @@
 
 **Συγχώνευσε ένα `.tar` σε άλλο** (build 123). Πακετάρισε μια μεγάλη μονάδα μία φορά ως κύριο, και αργότερα πακετάρισε μόνο τις εικόνες των νέων παιχνιδιών και συγχώνευσε αυτό το μικρό `.tar` μέσα του, αντί να ξαναπακετάρεις κάθε φάκελο ART. Στο Memory Files, Τρίγωνο σε ένα `.tar` > **MERGE A .TAR INTO THIS**: εκείνο το `.tar` είναι αυτό που μένει, και το RIPPS2 απαριθμεί τα άλλα για συγχώνευση (σε εκείνον τον φάκελο, στον φάκελο ART κάθε ξεκινημένης μονάδας και στη ρίζα της). Το Cache > ART Pack προσφέρει το ίδιο για το πακέτο σε χρήση, και αμέσως μόλις φτιαχτεί ένα πακέτο. Μια εικόνα που υπάρχει και στα δύο έρχεται από το `.tar` που προστίθεται, και οι δύο λίστες παιχνιδιών γίνονται μία. Η συγχώνευση γράφεται δίπλα στο `.tar` που μένει και παίρνει το όνομά του μόνο όταν κάθε byte είναι στη μονάδα, οπότε μια διακοπή, μια γεμάτη μονάδα ή μια κάρτα που βγήκε αφήνουν αυτό που μένει όπως ήταν. Στο τέλος ένα πλαίσιο ονομάζει και τα δύο αρχεία και ρωτά αν θα σβηστεί αυτό που προστέθηκε (το START το σβήνει, το Back το κρατά)· αυτό που μένει δεν προσφέρεται ποτέ.
 
-## UDPFS game libraries
+<a id="udpfs-game-libraries"></a>
 
-UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+## Βιβλιοθήκες παιχνιδιών μέσω UDPFS
 
-**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+Το UDPFS Files δέχεται τους φακέλους `CD/` και `DVD/` του OPL δίπλα σε ISO, στη ρίζα του κοινόχρηστου φακέλου ή σε κανονικούς υποφακέλους. Τα παιχνίδια που αποσυμπιέζει ο διακομιστής κρατούν τα εικονικά ονόματα `.iso`, οπότε την ίδια βιβλιοθήκη μπορούν να χρησιμοποιούν και το LUNA και το Neutrino. Δες [Συμβατότητα UDPFS](docs/udpfs-compatibility.md) για την περιήγηση, την υποστήριξη διακομιστών και τα όρια μορφών.
 
-The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+**Κλάδος IGR:** L1 + L2 + R1 + R2 + SELECT + START μπορεί να επιστρέψει στο RIPPS2 μέσω του Neutrino LUNA, επαναφέροντας την κάρτα εκκίνησης MMCE. Ο ενσωματωμένος πυρήνας OPL επαναφέρει επίσης την καταγεγραμμένη αριθμημένη κάρτα και το κανάλι πριν επιστρέψει. Δες [IGR: ρύθμιση, απαιτήσεις και επαλήθευση](docs/igr.md).
+
+Η [περιγραφή της έκδοσης και του PR](docs/udpfs-layout-compatibility-release-and-pr.md) εξηγεί τις αλλαγές στη διάταξη, τον χειρισμό των μεταδεδομένων του διακομιστή, τη διόρθωση του παγώματος στην εκκίνηση και τα αποτελέσματα επαλήθευσης των builds 145 και 146.
 
 <a id="your-hardware"></a>
 

@@ -195,13 +195,15 @@ RIPPS2 واجهة لجهاز PS2 في ملف `.elf` واحد: تفكيك وإع�
 
 **ادمج ملف `.tar` في آخر** (الإصدار 123). احزم محرّكًا كبيرًا مرة واحدة كنسخة رئيسية، ثم احزم لاحقًا صور الألعاب الجديدة وحدها وادمج ذلك الملف `.tar` الصغير فيها، بدلًا من حزم كل مجلدات ART من جديد. في Memory Files، المثلث على ملف `.tar` > **MERGE A .TAR INTO THIS**: ذلك الملف `.tar` هو الذي يبقى، ويسرد RIPPS2 الملفات الأخرى للدمج (في ذلك المجلد، وفي مجلد ART لكل محرّك مشغَّل وفي جذره). ويعرض Cache > ART Pack الشيء نفسه للحزمة المستخدمة، ومباشرة بعد بناء حزمة. الصورة الموجودة في الاثنين تأتي من الملف `.tar` المضاف، وتصبح قائمتا الألعاب قائمة واحدة. يُكتب الدمج بجوار الملف `.tar` الباقي ولا يأخذ اسمه إلا حين يصبح كل بايت على المحرّك، فالتوقف أو امتلاء المحرّك أو سحب البطاقة يترك الملف الباقي كما كان. وفي النهاية يسمّي مربع حوار الملفين ويسأل إن كان سيُحذف الملف المضاف (START يحذفه، وBack يبقيه)؛ ولا يُعرض الملف الباقي للحذف أبدًا.
 
-## UDPFS game libraries
+<a id="udpfs-game-libraries"></a>
 
-UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+## مكتبات الألعاب عبر UDPFS
 
-**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+يقبل UDPFS Files مجلدَي OPL `CD/` و`DVD/` إلى جانب ملفات ISO، في جذر المجلد المشترك أو في مجلدات فرعية عادية. تحتفظ الألعاب التي يفك الخادم ضغطها بأسماء `.iso` الافتراضية، لذا يمكن أن تستخدم LUNA وNeutrino المكتبة نفسها. راجع [توافق UDPFS](docs/udpfs-compatibility.md) لمعرفة التصفح ودعم الخوادم وحدود الصيغ.
 
-The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+**فرع IGR:** يمكن للأزرار L1 + L2 + R1 + R2 + SELECT + START العودة إلى RIPPS2 عبر Neutrino LUNA مع استعادة بطاقة الإقلاع MMCE. كما تستعيد نواة OPL المدمجة البطاقة والقناة المرقمتين اللتين التقطتهما قبل العودة. راجع [إعداد IGR ومتطلباته والتحقق منه](docs/igr.md).
+
+يشرح [تقرير الإصدار وطلب الدمج](docs/udpfs-layout-compatibility-release-and-pr.md) تغييرات التنظيم، ومعالجة بيانات الخادم الوصفية، وإصلاح التجمد عند التشغيل، ونتائج التحقق للإصدارين 145 و146.
 
 <a id="your-hardware"></a>
 

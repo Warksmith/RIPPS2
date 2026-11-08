@@ -193,13 +193,15 @@ RIPPS2 聽起來像一臺從未離開客廳的 PS2：**Sony 主機自己的聲�
 
 **把一個 `.tar` 合併到另一個**（組建 123）。先把一個大磁碟機打包一次作為主包，之後只打包新遊戲的圖片，再把那個小 `.tar` 合並進去，而不必重新打包所有 ART 資料夾。在 Memory Files 中，在 `.tar` 上按三角 > **MERGE A .TAR INTO THIS**：這個 `.tar` 就是要保留的那個，RIPPS2 會列出其他可合併的（同一資料夾中、每個已啟動磁碟機的 ART 資料夾及其根目錄中）。Cache > ART Pack 也會為正在使用的包，以及剛打包完時，提供同樣的選項。兩邊都有的圖片取自新加入的 `.tar`，兩個遊戲清單合而為一。合併結果寫在保留的 `.tar` 旁邊，只有在每個位元組都寫入磁碟機後才會取用它的名字，所以中途停止、磁碟機寫滿或卡被拔出，保留的那個都保持原樣。最後會彈出對話方塊，寫明兩個檔名並詢問是否刪除新加入的那個（START 刪除，Back 保留）；保留的那個永遠不會被提議刪除。
 
-## UDPFS game libraries
+<a id="udpfs-game-libraries"></a>
 
-UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+## UDPFS 遊戲庫
 
-**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+UDPFS Files 接受 OPL 的 `CD/` 與 `DVD/` 資料夾，與 ISO 一起放在共用根目錄或一般子資料夾中。伺服器解壓縮的遊戲保留其虛擬 `.iso` 名稱，因此 LUNA 和 Neutrino 也能使用同一個遊戲庫。瀏覽、伺服器支援與格式限制請見 [UDPFS 相容性](docs/udpfs-compatibility.md)。
 
-The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+**IGR 分支：** L1 + L2 + R1 + R2 + SELECT + START 可以經由 Neutrino LUNA 返回 RIPPS2，並還原 MMCE 開機卡。內建的 OPL 核心在返回前也會還原所記錄的編號記憶卡與通道。請見 [IGR 設定、需求與驗證](docs/igr.md)。
+
+[版本與 PR 說明](docs/udpfs-layout-compatibility-release-and-pr.md) 解釋了配置變更、伺服器中繼資料處理、啟動卡死修正，以及建置 145 和 146 的驗證結果。
 
 <a id="your-hardware"></a>
 

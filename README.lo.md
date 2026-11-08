@@ -193,13 +193,15 @@ RIPPS2 ມີສຽງຂອງ PS2 ທີ່ບໍ່ເຄີຍອອກຈ�
 
 **ລວມ `.tar` ເຂົ້າກັບອີກອັນ** (ບິວ 123). ຫໍ່ໄດຣຟ໌ໃຫຍ່ເທື່ອດຽວເປັນຕົ້ນສະບັບ, ແລ້ວພາຍຫຼັງຫໍ່ພຽງຮູບຂອງເກມໃໝ່ ແລະ ລວມ `.tar` ນ້ອຍນັ້ນເຂົ້າໄປ, ແທນທີ່ຈະຫໍ່ທຸກໂຟນເດີ ART ໃໝ່. ໃນ Memory Files, ສາມຫຼ່ຽມເທິງ `.tar` > **MERGE A .TAR INTO THIS**: `.tar` ນັ້ນແມ່ນອັນທີ່ເກັບໄວ້, ແລະ RIPPS2 ລາຍຊື່ອັນອື່ນເພື່ອລວມເຂົ້າ (ໃນໂຟນເດີດຽວກັນ, ໃນໂຟນເດີ ART ຂອງແຕ່ລະໄດຣຟ໌ທີ່ເລີ່ມແລ້ວ ແລະ ທີ່ຮາກຂອງມັນ). Cache > ART Pack ສະເໜີແບບດຽວກັນສຳລັບຊຸດທີ່ກຳລັງໃຊ້, ແລະ ທັນທີຫຼັງສ້າງຊຸດ. ຮູບທີ່ມີໃນທັງສອງມາຈາກ `.tar` ທີ່ເພີ່ມ, ແລະ ລາຍການເກມສອງອັນກາຍເປັນອັນດຽວ. ການລວມຖືກຂຽນຂ້າງ `.tar` ທີ່ເກັບໄວ້ ແລະ ໄດ້ຊື່ຂອງມັນພຽງເມື່ອທຸກໄບຢູ່ເທິງໄດຣຟ໌, ດັ່ງນັ້ນການຢຸດ, ໄດຣຟ໌ເຕັມ ຫຼື ບັດທີ່ຖືກດຶງອອກ ຈະປ່ອຍອັນທີ່ເກັບໄວ້ຕາມເດີມ. ໃນທີ່ສຸດກ່ອງໂຕ້ຕອບບອກຊື່ທັງສອງໄຟລ໌ ແລະ ຖາມວ່າຈະລຶບອັນທີ່ເພີ່ມບໍ (START ລຶບ, Back ເກັບ); ອັນທີ່ເກັບໄວ້ບໍ່ເຄີຍຖືກສະເໜີໃຫ້ລຶບ.
 
-## UDPFS game libraries
+<a id="udpfs-game-libraries"></a>
 
-UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+## ຄັງເກມຜ່ານ UDPFS
 
-**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+UDPFS Files ຮັບໂຟນເດີ `CD/` ແລະ `DVD/` ຂອງ OPL ພ້ອມກັບໄຟລ໌ ISO, ຢູ່ຮາກຂອງບ່ອນແບ່ງປັນ ຫຼື ໃນໂຟນເດີຍ່ອຍທຳມະດາ. ເກມທີ່ເຊີບເວີແຕກໄຟລ໌ຈະຮັກສາຊື່ `.iso` ສະເໝືອນໄວ້, ສະນັ້ນ LUNA ແລະ Neutrino ກໍໃຊ້ຄັງດຽວກັນໄດ້. ເບິ່ງ [ຄວາມເຂົ້າກັນໄດ້ຂອງ UDPFS](docs/udpfs-compatibility.md) ສຳລັບການທ່ອງເບິ່ງ, ການຮອງຮັບເຊີບເວີ ແລະ ຂໍ້ຈຳກັດຂອງຮູບແບບ.
 
-The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+**ສາຂາ IGR:** L1 + L2 + R1 + R2 + SELECT + START ສາມາດກັບຄືນສູ່ RIPPS2 ຜ່ານ Neutrino LUNA, ພ້ອມກູ້ບັດບູດ MMCE ຄືນ. ແກນ OPL ໃນຕົວກໍກູ້ບັດ ແລະ ຊ່ອງທີ່ມີໝາຍເລກທີ່ບັນທຶກໄວ້ຄືນກ່ອນກັບມາ. ເບິ່ງ [ການຕັ້ງຄ່າ, ຂໍ້ກຳນົດ ແລະ ການກວດສອບ IGR](docs/igr.md).
+
+[ບົດອະທິບາຍລຸ້ນ ແລະ PR](docs/udpfs-layout-compatibility-release-and-pr.md) ອະທິບາຍການປ່ຽນແປງໂຄງສ້າງ, ການຈັດການຂໍ້ມູນເມຕາຂອງເຊີບເວີ, ການແກ້ການຄ້າງຕອນເປີດ ແລະ ຜົນການກວດສອບຂອງບິວ 145 ແລະ 146.
 
 <a id="your-hardware"></a>
 

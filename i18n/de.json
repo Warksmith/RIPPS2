@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Eine `.tar` mit einer anderen zusammenführen** (Build 123). Packe ein großes Laufwerk einmal als Master, packe später nur das Artwork der neuen Spiele und führe diese kleine `.tar` mit ihr zusammen, statt jeden ART-Ordner neu zu packen. In Memory Files Dreieck auf einer `.tar` > **MERGE A .TAR INTO THIS**: diese `.tar` ist die, die bleibt, und RIPPS2 listet die anderen zum Zusammenführen (in diesem Ordner, im ART-Ordner jedes gestarteten Laufwerks und in seinem Stammverzeichnis). Cache > ART Pack bietet dasselbe für das benutzte Paket an, und direkt nachdem ein Paket gebaut wurde. Ein Bild, das in beiden ist, kommt aus der hinzugefügten `.tar`, und die zwei Spielelisten werden eine. Die Zusammenführung wird neben die behaltene `.tar` geschrieben und übernimmt deren Namen erst, wenn jedes Byte auf dem Laufwerk ist, so lassen ein Abbruch, ein volles Laufwerk oder eine gezogene Karte die behaltene so, wie sie war. Am Ende nennt ein Fenster beide Dateien und fragt, ob die hinzugefügte gelöscht werden soll (START löscht sie, Back behält sie); die behaltene wird nie angeboten."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "Der [Bericht zu Release und PR](docs/udpfs-layout-compatibility-release-and-pr.md) erklärt die Änderungen am Aufbau, den Umgang mit den Metadaten des Servers, die Behebung des Hängers beim Start und die Prüfergebnisse der Builds 145 und 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) von lieff (CC0 1.0, gemeinfrei): MP3-Wiedergabe in Memory Files und AUDIO, seit Build 115, unverändert in RiptOPLs `thirdparty/minimp3`."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [Das v1.1.0-Reel](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | v1.1.0, geschnitten zu Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**IGR-Zweig:** L1 + L2 + R1 + R2 + SELECT + START kann über Neutrino LUNA zu RIPPS2 zurückkehren und stellt dabei die MMCE-Bootkarte wieder her. Der eingebaute OPL-Kern stellt vor der Rückkehr ebenfalls die erfasste nummerierte Karte und den Kanal wieder her. Siehe [IGR: Einrichtung, Voraussetzungen und Prüfung](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Das Elfenregal, vor den Säulen |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Spielebibliotheken über UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Wohin AUDIO und MEDIA gehören.** Behalte `AUDIO` neben `RIPPS2.elf`, auf dem Laufwerk, von dem RIPPS2 startet: der Start liest es zuerst, und mit **Fast Boot** (Settings > Game Sources > Cache) wird der Startsound mit den Einstellungen gelesen, bevor Laufwerke und Listen starten, so spielt er schon, wenn das erste Bild der Türme erscheint (seit Build 118). RIPPS2 auf einer Memory Card mit `AUDIO` auf einem Laufwerk: nach **BIOS Sounds > Rip** kopiert START nur `boot.adp` (etwa 360 KB) neben RIPPS2 auf die Karte, so spielt der Startsound, während die Säulen aufsteigen, statt erst, wenn das Laufwerk bereit ist (seit Build 121). Lass dort nur, was die Menüs spielen. `MEDIA` (gerippte CDs und DVD-Videos, Aufnahmen in voller Größe) ist für dein größtes Laufwerk: davon wird beim Start nichts gelesen, also spielt es kaum eine Rolle, wie schnell dieses Laufwerk liest."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): RetroAchievements-Telemetrie über den [xeRAbora](https://github.com/hacan359/xerabora)-Client auf deinem PC (festgelegt auf [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), Abzeichen auf verfolgten Spielen, die Disc im Laufwerk und **YOUR ACCOUNT**, jedes geprüfte Spiel mit dem, was du freigeschaltet hast, und, wenn xeRAbora fürs Netzwerk offen ist, **LEFT TO HUNT**: jede gesperrte Errungenschaft und wie man sie bekommt."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files akzeptiert die OPL-Ordner `CD/` und `DVD/` neben ISOs, im Stammverzeichnis der Freigabe oder in normalen Unterordnern. Vom Server entpackte Spiele behalten ihre virtuellen `.iso`-Namen, sodass LUNA und Neutrino dieselbe Bibliothek nutzen können. Siehe [UDPFS-Kompatibilität](docs/udpfs-compatibility.md) zu Durchsuchen, Serverunterstützung und Formatgrenzen."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

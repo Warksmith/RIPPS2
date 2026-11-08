@@ -193,13 +193,15 @@ Sejak build 118, **Settings > Game Sources > Cache > ART Pack** mengemas folder 
 
 **Gabungkan satu `.tar` ke yang lain** (build 123). Kemas drive besar sekali sebagai induk, lalu nanti hanya kemas gambar game baru dan gabungkan `.tar` kecil itu ke dalamnya, alih-alih mengemas ulang setiap folder ART. Di Memory Files, segitiga pada `.tar` > **MERGE A .TAR INTO THIS**: `.tar` itulah yang disimpan, dan RIPPS2 mendaftar yang lain untuk digabungkan (di folder yang sama, di folder ART setiap drive yang sudah dimulai, dan di akarnya). Cache > ART Pack menawarkan hal yang sama untuk paket yang sedang dipakai, dan tepat setelah membuat paket. Gambar yang ada di keduanya diambil dari `.tar` yang ditambahkan, dan dua daftar game menjadi satu. Hasil gabungan ditulis di samping `.tar` yang disimpan dan baru mengambil namanya saat setiap byte sudah ada di drive, jadi berhenti di tengah, drive penuh, atau kartu yang dicabut membiarkan yang disimpan seperti semula. Di akhir sebuah dialog menyebut kedua nama berkas dan bertanya apakah yang ditambahkan dihapus (START menghapus, Back menyimpan); yang disimpan tidak pernah ditawarkan.
 
-## UDPFS game libraries
+<a id="udpfs-game-libraries"></a>
 
-UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+## Pustaka game lewat UDPFS
 
-**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+UDPFS Files menerima folder OPL `CD/` dan `DVD/` di samping ISO, di root share atau di subfolder biasa. Game yang didekompresi server tetap memakai nama `.iso` virtualnya, jadi satu pustaka juga bisa dipakai LUNA dan Neutrino. Lihat [Kompatibilitas UDPFS](docs/udpfs-compatibility.md) untuk penjelajahan, dukungan server, dan batas format.
 
-The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+**Cabang IGR:** L1 + L2 + R1 + R2 + SELECT + START bisa kembali ke RIPPS2 lewat Neutrino LUNA, sambil memulihkan kartu boot MMCE. Inti OPL bawaan juga memulihkan kartu dan kanal bernomor yang direkam sebelum kembali. Lihat [Penyiapan, persyaratan, dan validasi IGR](docs/igr.md).
+
+[Tulisan rilis dan PR](docs/udpfs-layout-compatibility-release-and-pr.md) menjelaskan perubahan tata letak, penanganan metadata server, perbaikan macet saat peluncuran, dan hasil validasi build 145 dan 146.
 
 <a id="your-hardware"></a>
 

@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**`.tar` を別の `.tar` にマージ** (ビルド 123)。大きなドライブを一度マスターとしてまとめ、後から新しいゲームの画像だけをまとめて、その小さな `.tar` をマージします。ART フォルダーをすべてまとめ直す必要はありません。Memory Files で `.tar` 上の三角 > **MERGE A .TAR INTO THIS**: その `.tar` が残すものになり、RIPPS2 がマージ候補を一覧します (同じフォルダー、開始済みの各ドライブの ART フォルダーとそのルートから)。Cache > ART Pack は使用中のパックにも、パックを作った直後にも同じことを勧めます。両方にある画像は追加する方のものになり、2 つのゲーム一覧は 1 つになります。マージは残す `.tar` の隣に書かれ、すべてのバイトがドライブに書かれたときだけその名前になります。だから停止、満杯のドライブ、抜かれたカードがあっても、残す方はそのままです。最後にダイアログが両方のファイル名を示し、追加した方を消すか尋ねます (START で消去、Back で保持)。残す方が候補になることはありません。"
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[リリースと PR の説明](docs/udpfs-layout-compatibility-release-and-pr.md) では、構成の変更、サーバーのメタデータの扱い、起動時のフリーズの修正、ビルド 145 と 146 の検証結果を説明しています。"
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) by lieff (CC0 1.0、パブリックドメイン): Memory Files と AUDIO での MP3 再生、ビルド 115 から、RiptOPL の `thirdparty/minimp3` に無改変で。"
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [v1.1.0 紹介リール](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | Over the Rainbow に合わせて編集した v1.1.0 |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**IGR ブランチ:** L1 + L2 + R1 + R2 + SELECT + START で Neutrino LUNA を通って RIPPS2 に戻れます。MMCE のブートカードも元に戻します。内蔵の OPL コアも、戻る前に記録した番号付きのカードとチャンネルを元に戻します。[IGR の設定、必要なもの、検証](docs/igr.md) を参照してください。"
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | 柱の前のエルフの棚 |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## UDPFS のゲームライブラリ"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**AUDIO と MEDIA の置き場所。** `AUDIO` は `RIPPS2.elf` の隣、RIPPS2 が起動するドライブに置きます: 起動で最初に読まれ、**Fast Boot** がオンなら (Settings > Game Sources > Cache) 起動音は設定と一緒に、ドライブや一覧が始まる前に読まれるので、塔の最初のフレームが出たときにはもう鳴っています (ビルド 118 から)。RIPPS2 がメモリーカード、`AUDIO` がドライブにある場合: **BIOS Sounds > Rip** の後、START で `boot.adp` (約 360 KB) だけをカードの RIPPS2 の隣にコピーするので、起動音はドライブの準備ができたときではなく柱が昇るときに鳴ります (ビルド 121 から)。そこにはメニューが鳴らすものだけを置きましょう。`MEDIA` (リップした CD や DVD ビデオ、フルサイズのショット) は一番大きなドライブ向けです: 起動時には何も読まれないので、そのドライブの読み込み速度はあまり関係ありません。"
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): PC の [xeRAbora](https://github.com/hacan359/xerabora) クライアント経由の RetroAchievements テレメトリー ([v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18) に固定)、追跡中のゲームのバッジ、トレイのディスク、そして **YOUR ACCOUNT**: 確認したすべてのゲームと解除したもの。xeRAbora がネットワークに開いているときは **LEFT TO HUNT**: ロック中の実績すべてとその取り方。"
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files は、共有のルートや通常のサブフォルダーにある ISO と並べて、OPL の `CD/` と `DVD/` フォルダーも読み込みます。サーバーが展開するゲームは仮想の `.iso` 名を保つので、同じライブラリを LUNA と Neutrino でも使えます。ブラウズ、サーバー対応、形式の制限は [UDPFS の互換性](docs/udpfs-compatibility.md) を参照してください。"
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

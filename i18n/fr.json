@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Fusionner un `.tar` dans un autre** (build 123). Empaquetez une fois un gros lecteur comme maître, puis plus tard n'empaquetez que les images des nouveaux jeux et fusionnez ce petit `.tar` dedans, au lieu de tout réempaqueter. Dans Memory Files, Triangle sur un `.tar` > **MERGE A .TAR INTO THIS** : ce `.tar` est celui qui est gardé, et RIPPS2 liste les autres à fusionner (dans ce dossier, dans le dossier ART de chaque lecteur démarré et à sa racine). Cache > ART Pack propose la même chose pour le pack utilisé, et juste après la construction d'un pack. Une image présente dans les deux vient du `.tar` fusionné, et les deux listes de jeux n'en font plus qu'une. La fusion est écrite à côté du `.tar` gardé et ne prend son nom qu'une fois chaque octet sur le lecteur, ainsi un arrêt, un lecteur plein ou une carte retirée laissent celui qui est gardé tel qu'il était. À la fin, une boîte nomme les deux fichiers et demande s'il faut supprimer celui qui a été fusionné (START le supprime, Back le garde) ; celui qui est gardé n'est jamais proposé."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "Le [compte rendu de la version et de la PR](docs/udpfs-layout-compatibility-release-and-pr.md) explique les changements d’organisation, le traitement des métadonnées du serveur, la correction du blocage au lancement et les résultats de validation des builds 145 et 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) de lieff (CC0 1.0, domaine public) : la lecture MP3 dans Memory Files et AUDIO, depuis la build 115, sans modification dans `thirdparty/minimp3` de RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [Le reel de la v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | La v1.1.0, montée sur Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Branche IGR :** L1 + L2 + R1 + R2 + SELECT + START peut revenir à RIPPS2 par Neutrino LUNA, en restaurant la carte de démarrage MMCE. Le cœur OPL intégré restaure aussi la carte et le canal numérotés qu’il a capturés avant de revenir. Voir [Installation, prérequis et validation de l’IGR](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | L'étagère à elfes, devant les piliers |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Bibliothèques de jeux par UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Où mettre AUDIO et MEDIA.** Gardez `AUDIO` à côté de `RIPPS2.elf`, sur le lecteur d'où démarre RIPPS2 : le démarrage le lit en premier, et avec **Fast Boot** activé (Settings > Game Sources > Cache) le son de démarrage est lu avec les réglages, avant que les lecteurs et les listes ne démarrent, ainsi il joue déjà quand apparaît la première image des tours (depuis la build 118). RIPPS2 sur une carte mémoire avec `AUDIO` sur un lecteur : après **BIOS Sounds > Rip**, START copie seulement `boot.adp` (environ 360 Ko) à côté de RIPPS2 sur la carte, ainsi le son de démarrage joue pendant que les piliers montent plutôt qu'une fois le lecteur prêt (depuis la build 121). N'y gardez que ce que jouent les menus. `MEDIA` (CD et DVD vidéo extraits, captures pleine taille) est pour votre plus gros lecteur : rien n'y est lu au démarrage, donc la vitesse de lecture de ce lecteur compte peu."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA) : la télémétrie RetroAchievements via le client [xeRAbora](https://github.com/hacan359/xerabora) sur votre PC (figé sur la [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), des badges sur les jeux suivis, le disque dans le tiroir, et **YOUR ACCOUNT**, chaque jeu vérifié avec ce que vous avez débloqué et, avec xeRAbora ouvert au réseau, **LEFT TO HUNT** : chaque succès verrouillé et comment l'obtenir."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files accepte les dossiers `CD/` et `DVD/` d’OPL à côté des ISO, à la racine du partage ou dans des sous-dossiers ordinaires. Les jeux décompressés par le serveur gardent leur nom `.iso` virtuel, si bien qu’une même bibliothèque sert aussi à LUNA et à Neutrino. Voir [Compatibilité UDPFS](docs/udpfs-compatibility.md) pour la navigation, la prise en charge des serveurs et les limites de format."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

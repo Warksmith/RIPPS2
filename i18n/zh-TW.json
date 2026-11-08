@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**把一個 `.tar` 合併到另一個**（組建 123）。先把一個大磁碟機打包一次作為主包，之後只打包新遊戲的圖片，再把那個小 `.tar` 合並進去，而不必重新打包所有 ART 資料夾。在 Memory Files 中，在 `.tar` 上按三角 > **MERGE A .TAR INTO THIS**：這個 `.tar` 就是要保留的那個，RIPPS2 會列出其他可合併的（同一資料夾中、每個已啟動磁碟機的 ART 資料夾及其根目錄中）。Cache > ART Pack 也會為正在使用的包，以及剛打包完時，提供同樣的選項。兩邊都有的圖片取自新加入的 `.tar`，兩個遊戲清單合而為一。合併結果寫在保留的 `.tar` 旁邊，只有在每個位元組都寫入磁碟機後才會取用它的名字，所以中途停止、磁碟機寫滿或卡被拔出，保留的那個都保持原樣。最後會彈出對話方塊，寫明兩個檔名並詢問是否刪除新加入的那個（START 刪除，Back 保留）；保留的那個永遠不會被提議刪除。"
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[版本與 PR 說明](docs/udpfs-layout-compatibility-release-and-pr.md) 解釋了配置變更、伺服器中繼資料處理、啟動卡死修正，以及建置 145 和 146 的驗證結果。"
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3)，由 lieff 開發（CC0 1.0，公有領域）：Memory Files 和 AUDIO 中的 MP3 播放，從組建 115 起，原樣放在 RiptOPL 的 `thirdparty/minimp3` 中。"
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [v1.1.0 介紹短片](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | 配合 Over the Rainbow 剪輯的 v1.1.0 |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**IGR 分支：** L1 + L2 + R1 + R2 + SELECT + START 可以經由 Neutrino LUNA 返回 RIPPS2，並還原 MMCE 開機卡。內建的 OPL 核心在返回前也會還原所記錄的編號記憶卡與通道。請見 [IGR 設定、需求與驗證](docs/igr.md)。"
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | 柱子前面的精靈架 |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## UDPFS 遊戲庫"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**AUDIO 和 MEDIA 放在哪裡。** 把 `AUDIO` 放在 `RIPPS2.elf` 旁邊，即 RIPPS2 啟動所在的磁碟機上：啟動時最先讀取它，開啟 **Fast Boot** (Settings > Game Sources > Cache) 時，開機聲會和設定一起在磁碟機和清單啟動前讀取，所以高塔第一幀出現時它已在播放（從組建 118 起）。RIPPS2 在記憶卡上而 `AUDIO` 在某個磁碟機上：執行 **BIOS Sounds > Rip** 後，START 只把 `boot.adp`（約 360 KB）複製到卡上 RIPPS2 旁邊，這樣開機聲會在柱子升起時響起，而不是等磁碟機就緒（從組建 121 起）。那裡只放選單會播放的東西。`MEDIA`（提取的 CD 和 DVD 影片、原尺寸截圖）適合放在你最大的磁碟機上：啟動時不讀取其中任何內容，因此該磁碟機的讀取速度無關緊要。"
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA)：透過電腦上的 [xeRAbora](https://github.com/hacan359/xerabora) 客戶端實現 RetroAchievements 遙測（固定為 [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)），被追蹤遊戲上的徽章、托盤中的光碟，以及 **YOUR ACCOUNT**：你檢查過的每個遊戲及已解鎖的內容；當 xeRAbora 對網路開放時，還有 **LEFT TO HUNT**：每個未解鎖的成就及獲得方法。"
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files 接受 OPL 的 `CD/` 與 `DVD/` 資料夾，與 ISO 一起放在共用根目錄或一般子資料夾中。伺服器解壓縮的遊戲保留其虛擬 `.iso` 名稱，因此 LUNA 和 Neutrino 也能使用同一個遊戲庫。瀏覽、伺服器支援與格式限制請見 [UDPFS 相容性](docs/udpfs-compatibility.md)。"
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

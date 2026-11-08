@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Mescle um `.tar` em outro** (build 123). Empacote um drive grande uma vez como mestre e, depois, empacote só a arte dos jogos novos e mescle esse `.tar` pequeno nele, em vez de empacotar todas as pastas ART de novo. No Memory Files, Triângulo num `.tar` > **MERGE A .TAR INTO THIS**: esse `.tar` é o que fica, e o RIPPS2 lista os outros para mesclar (naquela pasta, na pasta ART de cada drive iniciado e na raiz dele). Cache > ART Pack oferece o mesmo para o pacote em uso, e logo depois de fazer um pacote. Uma imagem que está nos dois vem do `.tar` mesclado, e as duas listas de jogos viram uma. A mescla é gravada ao lado do `.tar` mantido e só assume o nome dele quando cada byte está no drive, então uma parada, um drive cheio ou um cartão removido deixam o mantido como estava. No fim uma caixa mostra os dois arquivos e pergunta se apaga o mesclado (START apaga, Back mantém); o mantido nunca é oferecido."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "O [relatório da versão e do PR](docs/udpfs-layout-compatibility-release-and-pr.md) explica as mudanças de estrutura, o tratamento dos metadados do servidor, a correção do travamento ao iniciar e os resultados de validação das builds 145 e 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) de lieff (CC0 1.0, domínio público): a reprodução de MP3 no Memory Files e no AUDIO, desde a build 115, sem mudanças em `thirdparty/minimp3` do RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [O reel da v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | A v1.1.0, editada com Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Ramo IGR:** L1 + L2 + R1 + R2 + SELECT + START pode voltar ao RIPPS2 pelo Neutrino LUNA, restaurando o cartão de boot MMCE. O núcleo OPL embutido também restaura o cartão e o canal numerados que capturou antes de voltar. Veja [Configuração, requisitos e validação do IGR](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | A prateleira de elfos, em frente aos pilares |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Bibliotecas de jogos via UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Onde ficam AUDIO e MEDIA.** Deixe `AUDIO` ao lado do `RIPPS2.elf`, no drive de onde o RIPPS2 inicia: o boot lê ela primeiro, e com **Fast Boot** ligado (Settings > Game Sources > Cache) o som de boot é lido junto com as configurações, antes de os drives e as listas começarem, então ele já está tocando quando aparece o primeiro quadro das torres (desde a build 118). RIPPS2 num memory card com `AUDIO` num drive: depois de **BIOS Sounds > Rip**, START copia só o `boot.adp` (uns 360 KB) para o lado do RIPPS2 no cartão, então o som de boot toca enquanto os pilares sobem, e não quando o drive fica pronto (desde a build 121). Deixe ali só o que os menus tocam. `MEDIA` (CDs e DVDs de vídeo ripados, capturas em tamanho cheio) é para o seu maior drive: nada dela é lido no boot, então a velocidade de leitura desse drive pouco importa."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): telemetria do RetroAchievements pelo cliente [xeRAbora](https://github.com/hacan359/xerabora) no seu PC (fixado na [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), selos nos jogos acompanhados, o disco na bandeja e **YOUR ACCOUNT**, cada jogo que você conferiu com o que desbloqueou e, com o xeRAbora aberto na rede, **LEFT TO HUNT**: cada conquista bloqueada e como conseguir."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "O UDPFS Files aceita as pastas `CD/` e `DVD/` do OPL junto com as ISOs, na raiz do compartilhamento ou em subpastas comuns. Jogos descompactados pelo servidor mantêm seus nomes `.iso` virtuais, então a mesma biblioteca também serve para o LUNA e o Neutrino. Veja [Compatibilidade do UDPFS](docs/udpfs-compatibility.md) para navegação, suporte de servidores e limites de formato."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Flet én `.tar` ind i en anden** (build 123). Pak et stort drev én gang som master, og pak senere kun de nye spils billeder og flet den lille `.tar` ind i den, i stedet for at pakke hver ART-mappe igen. I Memory Files: Trekant på en `.tar` > **MERGE A .TAR INTO THIS**: den `.tar` er den, der beholdes, og RIPPS2 viser de andre at flette ind (i den mappe, i hvert startet drevs ART-mappe og i dets rod). Cache > ART Pack tilbyder det samme for pakken i brug, og lige efter en pakke er bygget. Et billede, der er i begge, kommer fra den indflettede `.tar`, og de to spillister bliver til én. Fletningen skrives ved siden af den beholdte `.tar` og overtager først dens navn, når hver byte er på drevet, så et stop, et fuldt drev eller et udtaget kort efterlader den beholdte, som den var. Til sidst nævner en boks begge filer og spørger, om den indflettede skal slettes (START sletter den, Back beholder den); den beholdte bliver aldrig tilbudt."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[Beskrivelsen af udgivelsen og PR'en](docs/udpfs-layout-compatibility-release-and-pr.md) forklarer ændringerne i opbygningen, håndteringen af serverens metadata, rettelsen af frysningen ved start og testresultaterne for build 145 og 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) af lieff (CC0 1.0, public domain): MP3-afspilning i Memory Files og AUDIO, fra build 115, uændret i RiptOPLs `thirdparty/minimp3`."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [v1.1.0-reelen](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | v1.1.0, klippet til Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**IGR-gren:** L1 + L2 + R1 + R2 + SELECT + START kan vende tilbage til RIPPS2 gennem Neutrino LUNA og genskaber MMCE-opstartskortet. Den indbyggede OPL-kerne genskaber også det opfangede nummererede kort og den kanal, før den vender tilbage. Se [IGR: opsætning, krav og afprøvning](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Alfehylden, foran søjlerne |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Spilbiblioteker via UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Hvor AUDIO og MEDIA skal ligge.** Hold `AUDIO` ved siden af `RIPPS2.elf`, på det drev RIPPS2 starter fra: opstarten læser den først, og med **Fast Boot** slået til (Settings > Game Sources > Cache) læses opstartslyden med indstillingerne, før drevene og listerne starter, så den allerede spiller, når tårnenes første billede kommer frem (fra build 118). RIPPS2 på et memory card med `AUDIO` på et drev: efter **BIOS Sounds > Rip** kopierer START kun `boot.adp` (omkring 360 KB) ved siden af RIPPS2 på kortet, så opstartslyden spiller, mens søjlerne rejser sig, i stedet for når drevet er klar (fra build 121). Hold kun det, menuerne spiller, der. `MEDIA` (rippede cd'er og dvd-videoer, billeder i fuld størrelse) er til dit største drev: intet i den læses ved opstart, så hvor hurtigt det drev læser, betyder ikke meget."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): RetroAchievements-telemetri gennem [xeRAbora](https://github.com/hacan359/xerabora)-klienten på din pc (låst til [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), mærker på fulgte spil, disken i skuffen, og **YOUR ACCOUNT**, hvert spil du har tjekket med det du har låst op, og, med xeRAbora åben for netværket, **LEFT TO HUNT**: hver låst præstation og hvordan du opnår den."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files accepterer OPL's mapper `CD/` og `DVD/` ved siden af ISO-filer, i roden af delingen eller i almindelige undermapper. Spil, som serveren pakker ud, beholder deres virtuelle `.iso`-navne, så LUNA og Neutrino kan bruge samme bibliotek. Se [UDPFS-kompatibilitet](docs/udpfs-compatibility.md) om browsing, serverunderstøttelse og formatgrænser."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

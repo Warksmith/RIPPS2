@@ -193,13 +193,15 @@ Từ bản dựng 118, **Settings > Game Sources > Cache > ART Pack** gói thư 
 
 **Gộp một `.tar` vào cái khác** (bản dựng 123). Gói một ổ lớn một lần làm bản chính, sau đó chỉ gói ảnh của các game mới và gộp `.tar` nhỏ đó vào, thay vì gói lại mọi thư mục ART. Trong Memory Files, tam giác trên một `.tar` > **MERGE A .TAR INTO THIS**: `.tar` đó là cái được giữ, và RIPPS2 liệt kê những cái khác để gộp vào (trong cùng thư mục, trong thư mục ART của mỗi ổ đã khởi động và ở gốc của nó). Cache > ART Pack đề xuất điều tương tự cho gói đang dùng, và ngay sau khi làm một gói. Ảnh có ở cả hai lấy từ `.tar` được thêm vào, và hai danh sách game thành một. Bản gộp được ghi cạnh `.tar` được giữ và chỉ lấy tên của nó khi mọi byte đã nằm trên ổ, nên một lần dừng, ổ đầy hay thẻ bị rút ra đều để cái được giữ nguyên như cũ. Cuối cùng một hộp thoại nêu tên cả hai tệp và hỏi có xóa cái được thêm không (START xóa, Back giữ); cái được giữ không bao giờ được đề xuất xóa.
 
-## UDPFS game libraries
+<a id="udpfs-game-libraries"></a>
 
-UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+## Thư viện game qua UDPFS
 
-**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+UDPFS Files nhận các thư mục `CD/` và `DVD/` của OPL cùng với ISO, ở gốc thư mục chia sẻ hoặc trong các thư mục con thông thường. Game do máy chủ giải nén giữ tên `.iso` ảo của chúng, nên LUNA và Neutrino cũng dùng được cùng một thư viện. Xem [Tương thích UDPFS](docs/udpfs-compatibility.md) về duyệt, hỗ trợ máy chủ và giới hạn định dạng.
 
-The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+**Nhánh IGR:** L1 + L2 + R1 + R2 + SELECT + START có thể quay về RIPPS2 qua Neutrino LUNA, đồng thời khôi phục thẻ khởi động MMCE. Lõi OPL tích hợp cũng khôi phục thẻ và kênh có đánh số đã ghi lại trước khi quay về. Xem [IGR: thiết lập, yêu cầu và kiểm chứng](docs/igr.md).
+
+[Bài viết về bản phát hành và PR](docs/udpfs-layout-compatibility-release-and-pr.md) giải thích các thay đổi bố cục, cách xử lý siêu dữ liệu của máy chủ, bản sửa lỗi treo khi khởi chạy và kết quả kiểm chứng của bản dựng 145 và 146.
 
 <a id="your-hardware"></a>
 

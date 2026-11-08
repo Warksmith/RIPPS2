@@ -193,13 +193,15 @@ A 118-as buildtől a **Settings > Game Sources > Cache > ART Pack** minden elind
 
 **Olvassz egy `.tar` fájlt egy másikba** (123-as build). Csomagolj be egyszer egy nagy meghajtót mesterként, később pedig csak az új játékok képeit csomagold be, és olvaszd ezt a kis `.tar` fájlt bele, ahelyett hogy minden ART mappát újra becsomagolnál. A Memory Filesban: Háromszög egy `.tar` fájlon > **MERGE A .TAR INTO THIS**: ez a `.tar` marad meg, a RIPPS2 pedig felsorolja a többit, amelyeket beleolvaszthatsz (abban a mappában, minden elindított meghajtó ART mappájában és a gyökerében). A Cache > ART Pack ugyanezt kínálja a használt csomaghoz, és közvetlenül egy csomag elkészülte után is. Egy kép, amely mindkettőben megvan, a beolvasztott `.tar` fájlból jön, és a két játéklista eggyé válik. Az összeolvasztás a megtartott `.tar` mellé íródik, és csak akkor kapja meg a nevét, amikor minden bájt a meghajtón van, így egy leállás, egy megtelt meghajtó vagy egy kihúzott kártya a megtartottat olyan állapotban hagyja, amilyen volt. A végén egy ablak megnevezi mindkét fájlt, és megkérdezi, törölje-e a beolvasztottat (a START törli, a Back megtartja); a megtartottat sosem ajánlja fel.
 
-## UDPFS game libraries
+<a id="udpfs-game-libraries"></a>
 
-UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+## Játékkönyvtárak UDPFS-en
 
-**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+Az UDPFS Files elfogadja az OPL `CD/` és `DVD/` mappáit az ISO-k mellett, a megosztás gyökerében vagy sima almappákban. A szerver által kicsomagolt játékok megtartják virtuális `.iso` nevüket, így ugyanazt a könyvtárat a LUNA és a Neutrino is használhatja. Lásd [UDPFS-kompatibilitás](docs/udpfs-compatibility.md) a böngészésről, a szerverek támogatásáról és a formátumok korlátairól.
 
-The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+**IGR-ág:** L1 + L2 + R1 + R2 + SELECT + START a Neutrino LUNA-n át visszatérhet a RIPPS2-be, és visszaállítja az MMCE indítókártyát. A beépített OPL-mag is visszaállítja a rögzített számozott kártyát és csatornát a visszatérés előtt. Lásd [IGR: beállítás, követelmények és ellenőrzés](docs/igr.md).
+
+A [kiadás és a PR leírása](docs/udpfs-layout-compatibility-release-and-pr.md) elmagyarázza az elrendezés változásait, a szerver metaadatainak kezelését, az indításkori lefagyás javítását és a 145-ös és 146-os build ellenőrzési eredményeit.
 
 <a id="your-hardware"></a>
 

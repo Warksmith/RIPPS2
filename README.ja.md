@@ -193,13 +193,15 @@ RIPPS2 はリビングから出なかった PS2 の音がします: **Sony の�
 
 **`.tar` を別の `.tar` にマージ** (ビルド 123)。大きなドライブを一度マスターとしてまとめ、後から新しいゲームの画像だけをまとめて、その小さな `.tar` をマージします。ART フォルダーをすべてまとめ直す必要はありません。Memory Files で `.tar` 上の三角 > **MERGE A .TAR INTO THIS**: その `.tar` が残すものになり、RIPPS2 がマージ候補を一覧します (同じフォルダー、開始済みの各ドライブの ART フォルダーとそのルートから)。Cache > ART Pack は使用中のパックにも、パックを作った直後にも同じことを勧めます。両方にある画像は追加する方のものになり、2 つのゲーム一覧は 1 つになります。マージは残す `.tar` の隣に書かれ、すべてのバイトがドライブに書かれたときだけその名前になります。だから停止、満杯のドライブ、抜かれたカードがあっても、残す方はそのままです。最後にダイアログが両方のファイル名を示し、追加した方を消すか尋ねます (START で消去、Back で保持)。残す方が候補になることはありません。
 
-## UDPFS game libraries
+<a id="udpfs-game-libraries"></a>
 
-UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+## UDPFS のゲームライブラリ
 
-**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+UDPFS Files は、共有のルートや通常のサブフォルダーにある ISO と並べて、OPL の `CD/` と `DVD/` フォルダーも読み込みます。サーバーが展開するゲームは仮想の `.iso` 名を保つので、同じライブラリを LUNA と Neutrino でも使えます。ブラウズ、サーバー対応、形式の制限は [UDPFS の互換性](docs/udpfs-compatibility.md) を参照してください。
 
-The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+**IGR ブランチ:** L1 + L2 + R1 + R2 + SELECT + START で Neutrino LUNA を通って RIPPS2 に戻れます。MMCE のブートカードも元に戻します。内蔵の OPL コアも、戻る前に記録した番号付きのカードとチャンネルを元に戻します。[IGR の設定、必要なもの、検証](docs/igr.md) を参照してください。
+
+[リリースと PR の説明](docs/udpfs-layout-compatibility-release-and-pr.md) では、構成の変更、サーバーのメタデータの扱い、起動時のフリーズの修正、ビルド 145 と 146 の検証結果を説明しています。
 
 <a id="your-hardware"></a>
 

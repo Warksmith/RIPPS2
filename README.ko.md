@@ -193,13 +193,15 @@ RIPPS2에서는 거실을 떠난 적 없는 PS2의 소리가 납니다: **Sony �
 
 **`.tar`를 다른 `.tar`에 합치기** (빌드 123). 큰 드라이브를 한 번 마스터로 묶은 뒤, 나중에는 새 게임의 이미지만 묶어서 그 작은 `.tar`를 합치세요. ART 폴더를 모두 다시 묶을 필요가 없습니다. Memory Files에서 `.tar`에서 세모 > **MERGE A .TAR INTO THIS**: 그 `.tar`가 남길 것이 되고, RIPPS2가 합칠 후보를 나열합니다 (같은 폴더, 시작된 각 드라이브의 ART 폴더와 그 루트에서). Cache > ART Pack은 사용 중인 팩에도, 팩을 만든 직후에도 같은 것을 권합니다. 양쪽에 있는 이미지는 추가하는 쪽에서 오고, 두 게임 목록은 하나가 됩니다. 합친 결과는 남길 `.tar` 옆에 쓰이고 모든 바이트가 드라이브에 있을 때만 그 이름을 가지므로, 멈춤, 가득 찬 드라이브, 뽑힌 카드가 있어도 남길 쪽은 그대로입니다. 마지막에 대화 상자가 두 파일 이름을 보여 주고 추가한 쪽을 지울지 묻습니다 (START는 지우고 Back은 유지). 남길 쪽은 결코 후보가 되지 않습니다.
 
-## UDPFS game libraries
+<a id="udpfs-game-libraries"></a>
 
-UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+## UDPFS 게임 라이브러리
 
-**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+UDPFS Files는 공유 폴더의 루트나 일반 하위 폴더에 있는 ISO와 함께 OPL의 `CD/`와 `DVD/` 폴더도 받아들입니다. 서버가 압축을 푸는 게임은 가상 `.iso` 이름을 유지하므로, 같은 라이브러리를 LUNA와 Neutrino에서도 쓸 수 있습니다. 탐색, 서버 지원, 형식 제한은 [UDPFS 호환성](docs/udpfs-compatibility.md)을 참고하세요.
 
-The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+**IGR 브랜치:** L1 + L2 + R1 + R2 + SELECT + START로 Neutrino LUNA를 거쳐 RIPPS2로 돌아올 수 있으며, MMCE 부트 카드도 복원합니다. 내장 OPL 코어도 돌아오기 전에 기록해 둔 번호 붙은 카드와 채널을 복원합니다. [IGR 설정, 요구 사항, 검증](docs/igr.md)을 참고하세요.
+
+[릴리스와 PR 설명](docs/udpfs-layout-compatibility-release-and-pr.md)에서는 구성 변경, 서버 메타데이터 처리, 실행 시 멈춤 수정, 빌드 145와 146의 검증 결과를 설명합니다.
 
 <a id="your-hardware"></a>
 

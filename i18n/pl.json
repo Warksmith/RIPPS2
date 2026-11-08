@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Scal jeden `.tar` z drugim** (build 123). Spakuj raz duży napęd jako główny, a później spakuj tylko grafiki nowych gier i scal ten mały `.tar` z głównym, zamiast pakować ponownie każdy folder ART. W Memory Files: Trójkąt na `.tar` > **MERGE A .TAR INTO THIS**: ten `.tar` jest tym, który zostaje, a RIPPS2 wylicza pozostałe do scalenia (w tym folderze, w folderze ART każdego uruchomionego napędu i w jego katalogu głównym). Cache > ART Pack oferuje to samo dla używanej paczki, a także zaraz po zbudowaniu paczki. Obraz obecny w obu pochodzi z dołączanego `.tar`, a dwie listy gier stają się jedną. Scalenie jest zapisywane obok zachowanego `.tar` i przejmuje jego nazwę dopiero, gdy każdy bajt jest na napędzie, więc przerwanie, pełny napęd albo wyjęta karta zostawiają zachowany plik w stanie sprzed scalenia. Na koniec okienko podaje oba pliki i pyta, czy usunąć dołączony (START usuwa, Back zostawia); zachowany nigdy nie jest proponowany."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[Opis wydania i PR](docs/udpfs-layout-compatibility-release-and-pr.md) wyjaśnia zmiany układu, obsługę metadanych serwera, poprawkę zawieszania przy uruchamianiu oraz wyniki weryfikacji buildów 145 i 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) od lieff (CC0 1.0, domena publiczna): odtwarzanie MP3 w Memory Files i AUDIO, od buildu 115, bez zmian w `thirdparty/minimp3` w RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [Reel v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | v1.1.0, zmontowana do Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Gałąź IGR:** L1 + L2 + R1 + R2 + SELECT + START może wrócić do RIPPS2 przez Neutrino LUNA, przywracając kartę rozruchową MMCE. Wbudowany rdzeń OPL także przywraca przechwyconą numerowaną kartę i kanał przed powrotem. Zobacz [IGR: konfiguracja, wymagania i weryfikacja](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Półkę z elfami, przed filarami |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Biblioteki gier przez UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Gdzie trafiają AUDIO i MEDIA.** Trzymaj `AUDIO` obok `RIPPS2.elf`, na napędzie, z którego startuje RIPPS2: start czyta go jako pierwszy, a z włączonym **Fast Boot** (Settings > Game Sources > Cache) dźwięk startu jest czytany razem z ustawieniami, zanim ruszą napędy i listy, więc już gra, gdy pojawia się pierwsza klatka wież (od buildu 118). RIPPS2 na karcie pamięci z `AUDIO` na napędzie: po **BIOS Sounds > Rip** START kopiuje tylko `boot.adp` (około 360 KB) obok RIPPS2 na karcie, więc dźwięk startu gra, gdy filary wyrastają, a nie dopiero wtedy, gdy napęd jest gotowy (od buildu 121). Trzymaj tam tylko to, co grają menu. `MEDIA` (zgrane płyty CD i DVD wideo, ujęcia w pełnym rozmiarze) jest na twój największy napęd: nic z niego nie jest czytane przy starcie, więc to, jak szybko ten napęd czyta, ma niewielkie znaczenie."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): telemetria RetroAchievements przez klienta [xeRAbora](https://github.com/hacan359/xerabora) na twoim PC (przypięty do [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), odznaki na śledzonych grach, płyta w szufladzie i **YOUR ACCOUNT**, każda sprawdzona gra z tym, co odblokowałeś, a gdy xeRAbora jest otwarta na sieć, **LEFT TO HUNT**: każde zablokowane osiągnięcie i jak je zdobyć."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files przyjmuje foldery OPL `CD/` i `DVD/` obok plików ISO, w katalogu głównym udziału lub w zwykłych podfolderach. Gry rozpakowywane przez serwer zachowują wirtualne nazwy `.iso`, więc z tej samej biblioteki mogą korzystać też LUNA i Neutrino. Zobacz [Zgodność UDPFS](docs/udpfs-compatibility.md), aby poznać przeglądanie, obsługę serwerów i ograniczenia formatów."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

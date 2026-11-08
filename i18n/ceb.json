@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Isagol ang usa ka `.tar` ngadto sa lain** (build 123). Putosa kausa ang dako nga drive isip master, unya sa sunod ang mga hulagway lang sa bag-ong mga dula ug isagol kanang gamay nga `.tar`, imbes putuson pag-usab ang matag ART folder. Sa Memory Files, Triangle sa usa ka `.tar` > **MERGE A .TAR INTO THIS**: kana nga `.tar` ang tipigan, ug ilista sa RIPPS2 ang uban nga masagol (sa samang folder, sa ART folder sa matag nasugdang drive ug sa root niini). Itanyag usab sa Cache > ART Pack ang pareho para sa pack nga gigamit, ug dayon human sa paghimo og pack. Ang hulagway nga anaa sa duha kuhaon gikan sa gidugang nga `.tar`, ug mahimong usa ang duha ka lista sa dula. Isulat ang nasagol tupad sa gitipigan nga `.tar` ug kuhaon lang ang ngalan niini kon anaa na sa drive ang matag byte, busa ang paghunong, puno nga drive, o gibira nga card magbilin sa gitipigan sama sa kaniadto. Sa katapusan, isulti sa usa ka dialog ang duha ka ngalan sa file ug mangutana kon papason ba ang gidugang (gipapas sa START, gitipigan sa Back); dili gayud itanyag ang gitipigan."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "Ang [paghulagway sa release ug PR](docs/udpfs-layout-compatibility-release-and-pr.md) nagpatin-aw sa mga kausaban sa layout, sa pagdumala sa metadata sa server, sa ayo sa pag-freeze sa paglansad ug sa mga resulta sa pag-validate sa mga build 145 ug 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) ni lieff (CC0 1.0, public domain): pagpatugtog og MP3 sa Memory Files ug AUDIO, sukad sa build 115, walay giusab sa `thirdparty/minimp3` sa RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [v1.1.0 reel](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | Ang v1.1.0, gi-edit uban sa Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Sanga sa IGR:** Ang L1 + L2 + R1 + R2 + SELECT + START makabalik sa RIPPS2 pinaagi sa Neutrino LUNA, ug ibalik ang MMCE boot card. Ibalik usab sa built-in nga OPL core ang nakuha nga may numero nga card ug channel sa dili pa mobalik. Tan-awa ang [Setup, mga kinahanglanon ug pag-validate sa IGR](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Ang estante sa duwende, atubangan sa mga haligi |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Mga librarya sa dula pinaagi sa UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Asa ibutang ang AUDIO ug MEDIA.** Ibutang ang `AUDIO` tupad sa `RIPPS2.elf`, sa drive diin mo-boot ang RIPPS2: kini ang unang basahon sa boot, ug kon naka-on ang **Fast Boot** (Settings > Game Sources > Cache) basahon ang boot sound uban sa mga setting, sa dili pa magsugod ang mga drive ug lista, busa nagtugtog na kini pagtungha sa unang frame sa mga torre (sukad sa build 118). RIPPS2 sa memory card ug `AUDIO` sa usa ka drive: human sa **BIOS Sounds > Rip**, kopyahon lang sa START ang `boot.adp` (mga 360 KB) tupad sa RIPPS2 sa card, aron motingog ang boot sound samtang mosaka ang mga haligi ug dili kon andam na ang drive (sukad sa build 121). Ibutang lang didto ang gipatugtog sa mga menu. Ang `MEDIA` (mga gi-rip nga CD ug DVD video, mga kuha sa bug-os nga gidak-on) para sa imong pinakadako nga drive: walay basahon didto sa boot, busa dili kaayo importante ang katulin sa pagbasa sa maong drive."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): RetroAchievements telemetry pinaagi sa [xeRAbora](https://github.com/hacan359/xerabora) client sa imong PC (naka-pin sa [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), mga badge sa mga gisubay nga dula, ang disc sa tray, ug **YOUR ACCOUNT**: matag dula nga imong gisusi uban sa imong na-unlock, ug kon abli sa network ang xeRAbora, **LEFT TO HUNT**: matag naka-lock nga achievement ug unsaon pagkuha niini."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "Ang UDPFS Files modawat sa mga folder nga `CD/` ug `DVD/` sa OPL uban sa mga ISO, sa root sa share o sa ordinaryong mga subfolder. Ang mga dula nga gi-decompress sa server magpabilin sa ilang virtual nga ngalan nga `.iso`, busa magamit usab sa LUNA ug Neutrino ang samang librarya. Tan-awa ang [Compatibility sa UDPFS](docs/udpfs-compatibility.md) para sa pag-browse, suporta sa server ug mga limitasyon sa format."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

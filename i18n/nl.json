@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Een `.tar` in een andere samenvoegen** (build 123). Pak een grote schijf één keer in als master, pak later alleen de artwork van de nieuwe games in en voeg die kleine `.tar` erin samen, in plaats van elke ART-map opnieuw in te pakken. In Memory Files: Driehoek op een `.tar` > **MERGE A .TAR INTO THIS**: die `.tar` is degene die blijft, en RIPPS2 toont de andere om samen te voegen (in die map, in de ART-map van elke gestarte schijf en in de hoofdmap ervan). Cache > ART Pack biedt hetzelfde voor het pakket in gebruik, en vlak nadat een pakket gebouwd is. Een afbeelding die in beide zit, komt uit de samengevoegde `.tar`, en de twee gamelijsten worden er één. De samenvoeging wordt naast de behouden `.tar` geschreven en neemt pas diens naam over als elke byte op de schijf staat, zodat een onderbreking, een volle schijf of een uitgetrokken kaart de behouden versie laat zoals ze was. Aan het eind noemt een venster beide bestanden en vraagt of de samengevoegde verwijderd moet worden (START verwijdert hem, Back houdt hem); de behouden wordt nooit aangeboden."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "Het [verslag van de release en de PR](docs/udpfs-layout-compatibility-release-and-pr.md) legt de wijzigingen in de indeling uit, de omgang met de metadata van de server, de oplossing voor het vastlopen bij het starten en de testresultaten van builds 145 en 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) van lieff (CC0 1.0, publiek domein): MP3-weergave in Memory Files en AUDIO, sinds build 115, ongewijzigd in `thirdparty/minimp3` van RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [De v1.1.0-reel](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | v1.1.0, gemonteerd op Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**IGR-tak:** L1 + L2 + R1 + R2 + SELECT + START kan via Neutrino LUNA terug naar RIPPS2, en zet de MMCE-opstartkaart terug. De ingebouwde OPL-core zet ook de vastgelegde genummerde kaart en het kanaal terug voor hij terugkeert. Zie [IGR: instellen, vereisten en controle](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | De elfenplank, voor de pilaren |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Gamebibliotheken via UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Waar AUDIO en MEDIA horen.** Houd `AUDIO` naast `RIPPS2.elf`, op de schijf waarvan RIPPS2 start: het opstarten leest hem als eerste, en met **Fast Boot** aan (Settings > Game Sources > Cache) wordt het opstartgeluid met de instellingen gelezen, voordat schijven en lijsten starten, zodat het al speelt als het eerste beeld van de torens verschijnt (sinds build 118). RIPPS2 op een memory card met `AUDIO` op een schijf: na **BIOS Sounds > Rip** kopieert START alleen `boot.adp` (ongeveer 360 KB) naast RIPPS2 op de kaart, zodat het opstartgeluid speelt terwijl de pilaren opkomen en niet pas als de schijf klaar is (sinds build 121). Houd daar alleen wat de menu's spelen. `MEDIA` (geripte cd's en dvd-video's, opnames op volle grootte) is voor je grootste schijf: er wordt bij het opstarten niets uit gelezen, dus hoe snel die schijf leest, doet er weinig toe."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): RetroAchievements-telemetrie via de [xeRAbora](https://github.com/hacan359/xerabora)-client op je pc (vastgezet op [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), badges op gevolgde games, de disc in de lade, en **YOUR ACCOUNT**, elke game die je hebt gecontroleerd met wat je hebt vrijgespeeld en, met xeRAbora open voor het netwerk, **LEFT TO HUNT**: elke vergrendelde prestatie en hoe je die verdient."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files accepteert de OPL-mappen `CD/` en `DVD/` naast ISO's, in de hoofdmap van de share of in gewone submappen. Games die de server uitpakt houden hun virtuele `.iso`-namen, zodat LUNA en Neutrino dezelfde bibliotheek kunnen gebruiken. Zie [UDPFS-compatibiliteit](docs/udpfs-compatibility.md) voor bladeren, serverondersteuning en formaatgrenzen."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

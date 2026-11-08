@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Slå ihop en `.tar` med en annan** (build 123). Packa en stor enhet en gång som huvudfil, packa sedan bara de nya spelens bilder och slå ihop den lilla `.tar`-filen med den, i stället för att packa varje ART-mapp igen. I Memory Files: Triangel på en `.tar` > **MERGE A .TAR INTO THIS**: den `.tar`-filen är den som behålls, och RIPPS2 listar de andra att slå ihop (i den mappen, i varje startad enhets ART-mapp och i dess rot). Cache > ART Pack erbjuder samma sak för paketet som används, och direkt efter att ett paket har byggts. En bild som finns i båda kommer från den inslagna `.tar`-filen, och de två spellistorna blir en. Sammanslagningen skrivs bredvid den behållna `.tar`-filen och tar dess namn först när varje byte finns på enheten, så ett avbrott, en full enhet eller ett utdraget kort lämnar den behållna som den var. På slutet nämner en ruta båda filerna och frågar om den inslagna ska raderas (START raderar den, Back behåller den); den behållna erbjuds aldrig."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[Redogörelsen för releasen och PR:en](docs/udpfs-layout-compatibility-release-and-pr.md) förklarar ändringarna i upplägget, hanteringen av serverns metadata, rättelsen av frysningen vid start och testresultaten för build 145 och 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) av lieff (CC0 1.0, allmän egendom): MP3-uppspelning i Memory Files och AUDIO, från build 115, oförändrad i RiptOPL:s `thirdparty/minimp3`."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [Reelen för v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | v1.1.0, klippt till Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**IGR-gren:** L1 + L2 + R1 + R2 + SELECT + START kan gå tillbaka till RIPPS2 via Neutrino LUNA och återställer MMCE-startkortet. Den inbyggda OPL-kärnan återställer också det fångade numrerade kortet och kanalen innan den går tillbaka. Se [IGR: inställning, krav och kontroll](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Alvhyllan, framför pelarna |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Spelbibliotek via UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Var AUDIO och MEDIA ska ligga.** Ha `AUDIO` bredvid `RIPPS2.elf`, på enheten RIPPS2 startar från: starten läser den först, och med **Fast Boot** på (Settings > Game Sources > Cache) läses startljudet med inställningarna, innan enheterna och listorna startar, så det spelar redan när tornens första bildruta visas (från build 118). RIPPS2 på ett minneskort med `AUDIO` på en enhet: efter **BIOS Sounds > Rip** kopierar START bara `boot.adp` (ungefär 360 KB) bredvid RIPPS2 på kortet, så startljudet spelar medan pelarna reser sig i stället för när enheten är klar (från build 121). Ha bara det menyerna spelar där. `MEDIA` (rippade cd- och dvd-videor, bilder i full storlek) är för din största enhet: inget i den läses vid start, så hur snabbt den enheten läser spelar liten roll."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): RetroAchievements-telemetri via [xeRAbora](https://github.com/hacan359/xerabora)-klienten på din dator (låst till [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), märken på följda spel, skivan i facket, och **YOUR ACCOUNT**, varje spel du har kollat med vad du har låst upp och, med xeRAbora öppet mot nätverket, **LEFT TO HUNT**: varje låst prestation och hur du får den."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files godtar OPL:s mappar `CD/` och `DVD/` bredvid ISO-filer, i resursens rot eller i vanliga undermappar. Spel som servern packar upp behåller sina virtuella `.iso`-namn, så LUNA och Neutrino kan använda samma bibliotek. Se [UDPFS-kompatibilitet](docs/udpfs-compatibility.md) om bläddring, serverstöd och formatgränser."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

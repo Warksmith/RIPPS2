@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Junta um `.tar` noutro** (build 123). Empacota uma unidade grande uma vez como mestre e, mais tarde, empacota só a arte dos jogos novos e junta esse `.tar` pequeno nele, em vez de voltar a empacotar todas as pastas ART. No Memory Files, Triângulo num `.tar` > **MERGE A .TAR INTO THIS**: esse `.tar` é o que fica, e o RIPPS2 lista os outros para juntar (nessa pasta, na pasta ART de cada unidade iniciada e na sua raiz). Cache > ART Pack oferece o mesmo para o pacote em uso, e logo depois de criar um pacote. Uma imagem que está nos dois vem do `.tar` juntado, e as duas listas de jogos passam a ser uma. A junção é escrita ao lado do `.tar` mantido e só fica com o nome dele quando cada byte está na unidade, por isso uma paragem, uma unidade cheia ou um cartão retirado deixam o mantido como estava. No fim uma caixa mostra os dois ficheiros e pergunta se apaga o juntado (START apaga, Back mantém); o mantido nunca é oferecido."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "O [relatório da versão e do PR](docs/udpfs-layout-compatibility-release-and-pr.md) explica as alterações de estrutura, o tratamento dos metadados do servidor, a correção do bloqueio ao iniciar e os resultados de validação das builds 145 e 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) de lieff (CC0 1.0, domínio público): a reprodução de MP3 no Memory Files e no AUDIO, desde a build 115, sem alterações em `thirdparty/minimp3` do RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [O reel da v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | A v1.1.0, montada ao som de Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Ramo IGR:** L1 + L2 + R1 + R2 + SELECT + START pode voltar ao RIPPS2 através do Neutrino LUNA, repondo o cartão de arranque MMCE. O núcleo OPL integrado também repõe o cartão e o canal numerados que capturou antes de voltar. Consulte [Configuração, requisitos e validação do IGR](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | A prateleira de elfos, à frente dos pilares |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Bibliotecas de jogos por UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Onde ficam AUDIO e MEDIA.** Mantém `AUDIO` ao lado do `RIPPS2.elf`, na unidade de onde o RIPPS2 arranca: o arranque lê-a primeiro, e com **Fast Boot** ligado (Settings > Game Sources > Cache) o som de arranque é lido com as definições, antes de as unidades e listas começarem, por isso já está a tocar quando aparece a primeira imagem das torres (desde a build 118). RIPPS2 num cartão de memória com `AUDIO` numa unidade: depois de **BIOS Sounds > Rip**, START copia só o `boot.adp` (cerca de 360 KB) para o lado do RIPPS2 no cartão, por isso o som de arranque toca enquanto os pilares sobem, e não quando a unidade está pronta (desde a build 121). Deixa lá só o que os menus tocam. `MEDIA` (CD e DVD vídeo extraídos, capturas em tamanho real) é para a tua maior unidade: nada dela é lido no arranque, por isso a velocidade de leitura dessa unidade pouco importa."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): telemetria do RetroAchievements através do cliente [xeRAbora](https://github.com/hacan359/xerabora) no teu PC (fixado na [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), emblemas nos jogos acompanhados, o disco no tabuleiro e **YOUR ACCOUNT**, todos os jogos que verificaste com o que desbloqueaste e, com o xeRAbora aberto à rede, **LEFT TO HUNT**: todas as conquistas bloqueadas e como as conseguir."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "O UDPFS Files aceita as pastas `CD/` e `DVD/` do OPL a par das ISO, na raiz da partilha ou em subpastas normais. Os jogos descomprimidos pelo servidor mantêm os seus nomes `.iso` virtuais, por isso a mesma biblioteca serve também o LUNA e o Neutrino. Consulte [Compatibilidade do UDPFS](docs/udpfs-compatibility.md) para a navegação, o suporte de servidores e os limites de formato."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

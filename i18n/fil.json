@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Pagsamahin ang isang `.tar` sa isa pa** (build 123). I-impake nang isang beses ang malaking drive bilang master, saka sa susunod ang mga larawan lang ng mga bagong laro at isama ang maliit na `.tar` na iyon, sa halip na i-impake muli ang bawat ART folder. Sa Memory Files, Triangle sa isang `.tar` > **MERGE A .TAR INTO THIS**: ang `.tar` na iyon ang itinatabi, at inililista ng RIPPS2 ang iba pang maisasama (sa parehong folder, sa ART folder ng bawat nasimulang drive at sa root nito). Inaalok din ng Cache > ART Pack ang pareho para sa pack na ginagamit, at agad pagkagawa ng pack. Ang larawang nasa pareho ay kinukuha mula sa idinagdag na `.tar`, at nagiging isa ang dalawang listahan ng laro. Isinusulat ang pinagsama sa tabi ng itinatabing `.tar` at kinukuha lang ang pangalan nito kapag nasa drive na ang bawat byte, kaya iniiwan ng paghinto, punong drive, o hinugot na card ang itinatabi gaya ng dati. Sa dulo, binabanggit ng isang dialog ang dalawang pangalan ng file at nagtatanong kung buburahin ang idinagdag (binubura ng START, itinatabi ng Back); hindi kailanman inaalok ang itinatabi."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "Ipinapaliwanag ng [paglalarawan ng release at PR](docs/udpfs-layout-compatibility-release-and-pr.md) ang mga pagbabago sa ayos, ang paghawak sa metadata ng server, ang ayos sa pag-freeze sa paglunsad at ang mga resulta ng pag-validate ng mga build 145 at 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) ni lieff (CC0 1.0, public domain): pagpapatugtog ng MP3 sa Memory Files at AUDIO, mula build 115, walang binago sa `thirdparty/minimp3` ng RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [v1.1.0 reel](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | Ang v1.1.0, inedit kasabay ng Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Sangay ng IGR:** Ang L1 + L2 + R1 + R2 + SELECT + START ay makakabalik sa RIPPS2 sa pamamagitan ng Neutrino LUNA, at ibinabalik ang MMCE boot card. Ibinabalik din ng built-in na OPL core ang nakuhang may-numerong card at channel bago bumalik. Tingnan ang [Setup, mga kailangan at pag-validate ng IGR](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Ang estante ng duwende, sa harap ng mga haligi |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Mga library ng laro sa UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Saan ilalagay ang AUDIO at MEDIA.** Ilagay ang `AUDIO` sa tabi ng `RIPPS2.elf`, sa drive kung saan nagbo-boot ang RIPPS2: ito ang unang binabasa ng boot, at kapag naka-on ang **Fast Boot** (Settings > Game Sources > Cache) binabasa ang boot sound kasama ng mga setting, bago magsimula ang mga drive at listahan, kaya tumutugtog na ito pagsulpot ng unang frame ng mga tore (mula build 118). RIPPS2 sa memory card at `AUDIO` sa isang drive: pagkatapos ng **BIOS Sounds > Rip**, kinokopya lang ng START ang `boot.adp` (mga 360 KB) sa tabi ng RIPPS2 sa card, para tumunog ang boot sound habang umaangat ang mga haligi at hindi kapag handa na ang drive (mula build 121). Doon ilagay lang ang pinapatugtog ng mga menu. Ang `MEDIA` (mga na-rip na CD at DVD video, mga kuha sa buong laki) ay para sa pinakamalaki mong drive: walang binabasa roon sa boot, kaya hindi gaanong mahalaga ang bilis ng pagbasa ng drive na iyon."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): RetroAchievements telemetry sa pamamagitan ng [xeRAbora](https://github.com/hacan359/xerabora) client sa PC mo (naka-pin sa [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), mga badge sa mga sinusubaybayang laro, ang disc sa tray, at **YOUR ACCOUNT**: bawat larong nasuri mo kasama ang na-unlock mo, at kapag bukas sa network ang xeRAbora, **LEFT TO HUNT**: bawat naka-lock na achievement at kung paano ito makukuha."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "Tinatanggap ng UDPFS Files ang mga folder na `CD/` at `DVD/` ng OPL kasama ng mga ISO, sa root ng share o sa karaniwang mga subfolder. Ang mga larong dine-decompress ng server ay nananatili sa kanilang virtual na pangalang `.iso`, kaya magagamit din ng LUNA at Neutrino ang iisang library. Tingnan ang [Compatibility ng UDPFS](docs/udpfs-compatibility.md) para sa pag-browse, suporta ng server at mga limitasyon ng format."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

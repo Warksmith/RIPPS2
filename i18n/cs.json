@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Slouč jeden `.tar` do druhého** (build 123). Zabal velký disk jednou jako hlavní, později zabal jen obrázky nových her a ten malý `.tar` do něj slouč, místo abys znovu balil každou složku ART. V Memory Files: Trojúhelník na `.tar` > **MERGE A .TAR INTO THIS**: ten `.tar` je ten, který zůstane, a RIPPS2 vypíše ostatní ke sloučení (v té složce, ve složce ART každého spuštěného disku a v jeho kořeni). Cache > ART Pack nabízí totéž pro používaný balíček, i hned po jeho sestavení. Obrázek, který je v obou, pochází z připojovaného `.tar`, a dva seznamy her se stanou jedním. Sloučení se zapisuje vedle ponechaného `.tar` a jeho jméno převezme, až když je každý bajt na disku, takže přerušení, plný disk nebo vytažená karta nechají ponechaný soubor, jak byl. Na konci okno vyjmenuje oba soubory a zeptá se, zda smazat ten připojený (START ho smaže, Back ho ponechá); ponechaný se nikdy nenabízí."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[Popis vydání a PR](docs/udpfs-layout-compatibility-release-and-pr.md) vysvětluje změny uspořádání, zacházení s metadaty serveru, opravu zamrznutí při spuštění a výsledky ověření buildů 145 a 146."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- [minimp3](https://github.com/lieff/minimp3) od lieff (CC0 1.0, volné dílo): přehrávání MP3 v Memory Files a AUDIO, od buildu 115, beze změn v `thirdparty/minimp3` z RiptOPL."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [Reel k v1.1.0](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | v1.1.0, sestříhaná na Over the Rainbow |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**Větev IGR:** L1 + L2 + R1 + R2 + SELECT + START se může vrátit do RIPPS2 přes Neutrino LUNA a obnoví přitom spouštěcí kartu MMCE. Vestavěné jádro OPL před návratem také obnoví zachycenou očíslovanou kartu a kanál. Viz [IGR: nastavení, požadavky a ověření](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Polici s elfy, před sloupy |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## Knihovny her přes UDPFS"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**Kam patří AUDIO a MEDIA.** Měj `AUDIO` vedle `RIPPS2.elf`, na disku, ze kterého RIPPS2 startuje: start ji čte jako první a se zapnutým **Fast Boot** (Settings > Game Sources > Cache) se zvuk spuštění načte s nastavením, ještě než se spustí disky a seznamy, takže už hraje, když se objeví první snímek věží (od buildu 118). RIPPS2 na paměťové kartě s `AUDIO` na disku: po **BIOS Sounds > Rip** START zkopíruje jen `boot.adp` (asi 360 KB) vedle RIPPS2 na kartu, takže zvuk spuštění hraje, zatímco sloupy stoupají, a ne až když je disk připraven (od buildu 121). Nech tam jen to, co hrají menu. `MEDIA` (ripnutá CD a DVD video, snímky v plné velikosti) je pro tvůj největší disk: nic z ní se při startu nečte, takže na rychlosti čtení toho disku záleží málo."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): telemetrie RetroAchievements přes klienta [xeRAbora](https://github.com/hacan359/xerabora) na tvém PC (připnutý na [v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18)), odznaky u sledovaných her, disk v mechanice a **YOUR ACCOUNT**, každá hra, kterou jsi zkontroloval, s tím, co máš odemčeno, a když je xeRAbora otevřená do sítě, **LEFT TO HUNT**: každý zamčený úspěch a jak ho získat."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files přijímá složky OPL `CD/` a `DVD/` vedle souborů ISO, v kořeni sdílené složky nebo v běžných podsložkách. Hry, které rozbalí server, si ponechávají virtuální názvy `.iso`, takže stejnou knihovnu mohou používat i LUNA a Neutrino. Viz [Kompatibilita UDPFS](docs/udpfs-compatibility.md) k procházení, podpoře serverů a omezením formátů."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

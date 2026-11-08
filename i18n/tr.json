@@ -39,6 +39,10 @@
   "en": "1a34a34f9fd6",
   "t": "**Bir `.tar` dosyasını diğerine birleştir** (derleme 123). Büyük bir sürücüyü bir kez ana paket olarak paketle, sonra yalnızca yeni oyunların resimlerini paketle ve her ART klasörünü yeniden paketlemek yerine o küçük `.tar` dosyasını ona birleştir. Memory Files'ta bir `.tar` üzerinde Üçgen > **MERGE A .TAR INTO THIS**: o `.tar` saklanan olandır ve RIPPS2 birleştirilecek diğerlerini listeler (o klasörde, başlatılmış her sürücünün ART klasöründe ve kökünde). Cache > ART Pack aynısını kullanılan paket için ve bir paket oluşturulduktan hemen sonra sunar. İkisinde de olan bir resim eklenen `.tar` dosyasından gelir ve iki oyun listesi bir olur. Birleştirme saklanan `.tar` dosyasının yanına yazılır ve onun adını yalnızca her bayt sürücüdeyken alır; böylece bir durdurma, dolu bir sürücü ya da çekilen bir kart saklananı olduğu gibi bırakır. Sonunda bir kutu iki dosyanın adını verir ve eklenenin silinip silinmeyeceğini sorar (START siler, Back saklar); saklanan hiçbir zaman önerilmez."
  },
+ "1a53e5b62fab": {
+  "en": "1a53e5b62fab",
+  "t": "[Sürüm ve PR açıklaması](docs/udpfs-layout-compatibility-release-and-pr.md), düzen değişikliklerini, sunucu üst verilerinin işlenmesini, başlatmada donma düzeltmesini ve 145 ile 146 numaralı derlemelerin doğrulama sonuçlarını anlatır."
+ },
  "1b244f8b7fa1": {
   "en": "1b244f8b7fa1",
   "t": "- lieff'in [minimp3](https://github.com/lieff/minimp3)'ü (CC0 1.0, kamu malı): derleme 115'ten beri Memory Files ve AUDIO'da MP3 çalma, RiptOPL'in `thirdparty/minimp3` içinde değiştirilmeden."
@@ -230,6 +234,10 @@
  "85be5f3270be": {
   "en": "85be5f3270be",
   "t": "| [v1.1.0 reel'i](https://youtu.be/Q8ZLd6ArV8s) | 3:57 | Over the Rainbow eşliğinde kurgulanmış v1.1.0 |"
+ },
+ "8949c310528f": {
+  "en": "8949c310528f",
+  "t": "**IGR dalı:** L1 + L2 + R1 + R2 + SELECT + START Neutrino LUNA üzerinden RIPPS2'ye dönebilir ve MMCE açılış kartını geri yükler. Yerleşik OPL çekirdeği de dönmeden önce yakaladığı numaralı kartı ve kanalı geri yükler. Bkz. [IGR kurulumu, gereksinimleri ve doğrulaması](docs/igr.md)."
  },
  "8b21d2e8e31d": {
   "en": "8b21d2e8e31d",
@@ -447,6 +455,10 @@
   "en": "e9327262f54a",
   "t": "| **Storage** | Sütunların önünde duran elf rafı |"
  },
+ "ea1e4495b9fa": {
+  "en": "ea1e4495b9fa",
+  "t": "## UDPFS oyun kütüphaneleri"
+ },
  "eaeacc987e24": {
   "en": "eaeacc987e24",
   "t": "**AUDIO ve MEDIA nereye gider.** `AUDIO` klasörünü `RIPPS2.elf` yanında, RIPPS2'nin başladığı sürücüde tut: açılış onu önce okur ve **Fast Boot** açıkken (Settings > Game Sources > Cache) açılış sesi ayarlarla birlikte, sürücüler ve listeler başlamadan önce okunur; böylece kulelerin ilk karesi göründüğünde zaten çalıyordur (derleme 118'den beri). Hafıza kartında RIPPS2, bir sürücüde `AUDIO`: **BIOS Sounds > Rip** sonrasında START yalnızca `boot.adp` dosyasını (yaklaşık 360 KB) kartta RIPPS2'nin yanına kopyalar; böylece açılış sesi sütunlar yükselirken çalar, sürücü hazır olduğunda değil (derleme 121'den beri). Orada yalnızca menülerin çaldıklarını tut. `MEDIA` (rip'lenmiş CD'ler ve DVD videolar, tam boyutlu çekimler) en büyük sürücün içindir: açılışta ondan hiçbir şey okunmaz, o yüzden o sürücünün ne kadar hızlı okuduğu pek önemli değildir."
@@ -454,6 +466,10 @@
  "ee61bf5fd1dd": {
   "en": "ee61bf5fd1dd",
   "t": "- **Achievements** (SpiritofRA): bilgisayarındaki [xeRAbora](https://github.com/hacan359/xerabora) istemcisi üzerinden RetroAchievements telemetrisi ([v0.1.0-alpha.18](https://github.com/hacan359/xerabora/releases/tag/v0.1.0-alpha.18) sürümüne sabitli), takip edilen oyunlarda rozetler, tepsideki disk ve **YOUR ACCOUNT**: denetlediğin her oyun, açtıklarınla birlikte; xeRAbora ağa açıkken de **LEFT TO HUNT**: kilitli her başarım ve nasıl kazanılacağı."
+ },
+ "ef27a1a3d9c8": {
+  "en": "ef27a1a3d9c8",
+  "t": "UDPFS Files, OPL'nin `CD/` ve `DVD/` klasörlerini ISO dosyalarıyla birlikte, paylaşımın kökünde ya da sıradan alt klasörlerde kabul eder. Sunucunun açtığı oyunlar sanal `.iso` adlarını korur, böylece aynı kütüphaneyi LUNA ve Neutrino da kullanabilir. Gezinme, sunucu desteği ve biçim sınırları için [UDPFS uyumluluğu](docs/udpfs-compatibility.md) belgesine bak."
  },
  "f1197cf975f9": {
   "en": "f1197cf975f9",

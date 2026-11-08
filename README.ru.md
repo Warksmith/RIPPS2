@@ -193,13 +193,15 @@ RIPPS2 звучит как PS2, которая никогда не покида�
 
 **Слей один `.tar` с другим** (сборка 123). Упакуй большой накопитель один раз как основной, а потом упакуй только картинки новых игр и слей этот маленький `.tar` с основным, вместо того чтобы заново упаковывать каждую папку ART. В Memory Files: Треугольник на `.tar` > **MERGE A .TAR INTO THIS**: этот `.tar` и есть тот, что остаётся, а RIPPS2 перечисляет остальные для слияния (в этой папке, в папке ART каждого запущенного накопителя и в его корне). Cache > ART Pack предлагает то же для используемого пакета, а также сразу после сборки пакета. Картинка, которая есть в обоих, берётся из добавляемого `.tar`, а два списка игр становятся одним. Слияние пишется рядом с сохраняемым `.tar` и получает его имя только когда каждый байт уже на накопителе, поэтому остановка, заполненный накопитель или вынутая карта оставляют сохраняемый файл таким, каким он был. В конце окно называет оба файла и спрашивает, удалить ли добавленный (START удаляет, Back оставляет); сохраняемый никогда не предлагается.
 
-## UDPFS game libraries
+<a id="udpfs-game-libraries"></a>
 
-UDPFS Files accepts OPL `CD/` and `DVD/` folders alongside ISOs at the share root or in ordinary subfolders. Server-decompressed games keep their virtual `.iso` names, so one library can also be used by LUNA and Neutrino. See [UDPFS compatibility](docs/udpfs-compatibility.md) for browsing, server support and format limits.
+## Библиотеки игр через UDPFS
 
-**IGR branch:** L1 + L2 + R1 + R2 + SELECT + START can return through Neutrino LUNA to RIPPS2, with MMCE boot-card restoration. The built-in OPL core also restores a captured numbered card/channel before returning. See [IGR setup, requirements and validation](docs/igr.md).
+UDPFS Files принимает папки OPL `CD/` и `DVD/` рядом с ISO, в корне общей папки или в обычных подпапках. Игры, которые распаковывает сервер, сохраняют виртуальные имена `.iso`, поэтому одной библиотекой могут пользоваться и LUNA, и Neutrino. См. [Совместимость UDPFS](docs/udpfs-compatibility.md) о просмотре, поддержке серверов и ограничениях форматов.
 
-The [release and PR writeup](docs/udpfs-layout-compatibility-release-and-pr.md) explains the layout changes, server metadata handling, launch freeze fix and validation results for builds 145–146.
+**Ветка IGR:** L1 + L2 + R1 + R2 + SELECT + START может вернуться в RIPPS2 через Neutrino LUNA, восстанавливая загрузочную карту MMCE. Встроенное ядро OPL перед возвратом тоже восстанавливает захваченные номер карты и канал. См. [IGR: настройка, требования и проверка](docs/igr.md).
+
+[Описание релиза и PR](docs/udpfs-layout-compatibility-release-and-pr.md) объясняет изменения структуры, обработку метаданных сервера, исправление зависания при запуске и результаты проверки сборок 145 и 146.
 
 <a id="your-hardware"></a>
 
